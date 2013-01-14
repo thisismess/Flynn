@@ -26,11 +26,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		D323154E16A3DBED0071D96D /* Spellcaster */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Spellcaster; sourceTree = BUILT_PRODUCTS_DIR; };
+		D323154E16A3DBED0071D96D /* spellcaster */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = spellcaster; sourceTree = BUILT_PRODUCTS_DIR; };
 		D323155216A3DBED0071D96D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		D323155516A3DBED0071D96D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		D323155816A3DBED0071D96D /* Spellcaster-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Spellcaster-Prefix.pch"; sourceTree = "<group>"; };
-		D323155916A3DBED0071D96D /* Spellcaster.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Spellcaster.1; sourceTree = "<group>"; };
+		D323155516A3DBED0071D96D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = main.m; path = source/main.m; sourceTree = "<group>"; };
+		D323155816A3DBED0071D96D /* Spellcaster-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Spellcaster-Prefix.pch"; path = "source/Spellcaster-Prefix.pch"; sourceTree = "<group>"; };
+		D323155916A3DBED0071D96D /* Spellcaster.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; name = Spellcaster.1; path = resources/Spellcaster.1; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +57,7 @@
 		D323154F16A3DBED0071D96D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D323154E16A3DBED0071D96D /* Spellcaster */,
+				D323154E16A3DBED0071D96D /* spellcaster */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -73,8 +73,8 @@
 		D323155416A3DBED0071D96D /* Spellcaster */ = {
 			isa = PBXGroup;
 			children = (
+				D323156016A3DC240071D96D /* Source */,
 				D323155516A3DBED0071D96D /* main.m */,
-				D323155916A3DBED0071D96D /* Spellcaster.1 */,
 				D323155716A3DBED0071D96D /* Supporting Files */,
 			);
 			path = Spellcaster;
@@ -83,9 +83,17 @@
 		D323155716A3DBED0071D96D /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				D323155916A3DBED0071D96D /* Spellcaster.1 */,
 				D323155816A3DBED0071D96D /* Spellcaster-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		D323156016A3DC240071D96D /* Source */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Source;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -105,7 +113,7 @@
 			);
 			name = Spellcaster;
 			productName = Spellcaster;
-			productReference = D323154E16A3DBED0071D96D /* Spellcaster */;
+			productReference = D323154E16A3DBED0071D96D /* spellcaster */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -201,8 +209,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Spellcaster/Spellcaster-Prefix.pch";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				GCC_PREFIX_HEADER = "Spellcaster/source/Spellcaster-Prefix.pch";
+				PRODUCT_NAME = spellcaster;
 			};
 			name = Debug;
 		};
@@ -210,8 +218,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Spellcaster/Spellcaster-Prefix.pch";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				GCC_PREFIX_HEADER = "Spellcaster/source/Spellcaster-Prefix.pch";
+				PRODUCT_NAME = spellcaster;
 			};
 			name = Release;
 		};
