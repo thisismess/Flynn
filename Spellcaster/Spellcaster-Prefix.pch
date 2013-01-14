@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'Spellcaster' target in the 'Spellcaster' project
+//
+
+#ifdef __OBJC__
+  #import <Foundation/Foundation.h>
+#endif
