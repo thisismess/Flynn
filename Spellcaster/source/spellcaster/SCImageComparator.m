@@ -79,9 +79,21 @@
     NSData *currData = (NSData *)CGDataProviderCopyData(dataProvider);
     const uint8_t *currentPixels = [currData bytes];
     
+    vImage_Buffer currentBuffer;
+    currentBuffer.data = (void *)currentPixels;
+    currentBuffer.width = width;
+    currentBuffer.height = height;
+    currentBuffer.rowBytes = bytesPerRow;
+    
     dataProvider = CGImageGetDataProvider(image);
     NSData *nextData = (NSData *)CGDataProviderCopyData(dataProvider);
     const uint8_t *nextPixels = [nextData bytes];
+    
+    vImage_Buffer nextBuffer;
+    nextBuffer.data = (void *)nextPixels;
+    nextBuffer.width = width;
+    nextBuffer.height = height;
+    nextBuffer.rowBytes = bytesPerRow;
     
     size_t wblocks = (size_t)ceil((float)width / (float)_block);
     size_t hblocks = (size_t)ceil((float)height / (float)_block);
@@ -90,7 +102,7 @@
     
     for(y = 0; y < hblocks; y++){
       for(x = 0; x < wblocks; x++){
-        if(SCImageCompareBlocks_ARGB8888(currentPixels, nextPixels, 0, _block, x, y, width, height, bytesPerPixel, bytesPerRow)){
+        if(SCImageCompareBlocks_ARGB8888(&currentBuffer, &nextBuffer, 0, _block, x, y)){
           if(position >= 0){
             [ranges addObject:[SCRange rangeWithPosition:position count:((y * _block) + x) - position]];
             position = -1; // clear the position

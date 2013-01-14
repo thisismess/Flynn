@@ -29,21 +29,26 @@
 
 #import "SCImage.h"
 
+static const size_t kSCImageBytesPerPixel_ARGB8888 = 4;
+
 /**
  * Obtain a pixel offset in the provided image data
  */
-const uint8_t * SCImageGetPixel_ARGB8888(const uint8_t *data, size_t x, size_t y, size_t width, size_t height, size_t bytesPerPixel, size_t bytesPerRow) {
-  size_t offset = (y * bytesPerRow) + (x * bytesPerPixel);
-  return (offset < ((bytesPerRow * height) - bytesPerPixel)) ? (data + offset) : NULL;
+const uint8_t * SCImageGetPixel(const vImage_Buffer *data, size_t bytesPerPixel, size_t x, size_t y) {
+  assert(data != NULL);
+  size_t offset = (y * data->rowBytes) + (x * bytesPerPixel);
+  return (offset < ((data->rowBytes * data->height) - bytesPerPixel)) ? (data->data + offset) : NULL;
 }
 
 /**
  * Compare a pixel between two images
  */
-BOOL SCImageComparePixels_ARGB8888(const uint8_t *data1, const uint8_t *data2, float threshold, size_t x, size_t y, size_t width, size_t height, size_t bytesPerPixel, size_t bytesPerRow) {
-  const uint8_t *a = SCImageGetPixel_ARGB8888(data1, x, y, width, height, bytesPerPixel, bytesPerRow);
-  const uint8_t *b = SCImageGetPixel_ARGB8888(data2, x, y, width, height, bytesPerPixel, bytesPerRow);
-  if(a == b) return TRUE; // same memory or both null, must be the same
+BOOL SCImageComparePixels(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, float threshold, size_t x, size_t y) {
+  assert(data1 != NULL);
+  assert(data2 != NULL);
+  const uint8_t *a = SCImageGetPixel(data1, bytesPerPixel, x, y);
+  const uint8_t *b = SCImageGetPixel(data2, bytesPerPixel, x, y);
+  if(a == b) return TRUE; // same memory or both pointers null, must be the same
   if(a == NULL || b == NULL) return FALSE;
   for(int i = 0; i < bytesPerPixel; i++){ if(abs(a[i] - b[i]) > threshold) return FALSE; }
   return TRUE; // we've processed the entire pixel and all's well
@@ -52,13 +57,44 @@ BOOL SCImageComparePixels_ARGB8888(const uint8_t *data1, const uint8_t *data2, f
 /**
  * Compare a block of pixel between two images
  */
-BOOL SCImageCompareBlocks_ARGB8888(const uint8_t *data1, const uint8_t *data2, float threshold, size_t sblock, size_t xblock, size_t yblock, size_t width, size_t height, size_t bytesPerPixel, size_t bytesPerRow) {
-  for(int y = 0; y < sblock; y++){
-    for(int x = 0; x < sblock; x++){
-      if(!SCImageComparePixels_ARGB8888(data1, data2, threshold, (xblock * sblock) + x, (yblock * sblock) + y, width, height, bytesPerPixel, bytesPerRow)) return FALSE;
+BOOL SCImageCompareBlocks(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, float threshold, size_t xblock, size_t yblock, size_t blocksize) {
+  for(int y = 0; y < blocksize; y++){
+    for(int x = 0; x < blocksize; x++){
+      if(!SCImageComparePixels(data1, data2, bytesPerPixel, threshold, (xblock * blocksize) + x, (yblock * blocksize) + y)){
+        // pixels don't match, so blocks don't match, return false
+        return FALSE;
+      }
     }
   }
   return TRUE;
 }
 
+/**
+ * Copy a block from the provided image data into the provided buffer. The @p block image buffer is expected
+ * to have its data allocated with enough room to store the block.
+ */
+BOOL SCImageCopyBlock(const vImage_Buffer *data, vImage_Buffer *block, size_t bytesPerPixel, size_t xblock, size_t yblock, size_t blocksize) {
+  return FALSE;
+}
+
+/**
+ * Obtain a pixel offset in the provided image data
+ */
+const uint8_t * SCImageGetPixel_ARGB8888(const vImage_Buffer *data, size_t x, size_t y) {
+  return SCImageGetPixel(data, kSCImageBytesPerPixel_ARGB8888, x, y);
+}
+
+/**
+ * Compare a pixel between two images
+ */
+BOOL SCImageComparePixels_ARGB8888(const vImage_Buffer *data1, const vImage_Buffer *data2, float threshold, size_t x, size_t y) {
+  return SCImageComparePixels(data1, data2, kSCImageBytesPerPixel_ARGB8888, threshold, x, y);
+}
+
+/**
+ * Compare a block of pixel between two images
+ */
+BOOL SCImageCompareBlocks_ARGB8888(const vImage_Buffer *data1, const vImage_Buffer *data2, float threshold, size_t xblock, size_t yblock, size_t blocksize) {
+  return SCImageCompareBlocks(data1, data2, kSCImageBytesPerPixel_ARGB8888, threshold, xblock, yblock, blocksize);
+}
 
