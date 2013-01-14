@@ -27,10 +27,66 @@
 // Designed and developed by Mess - http://thisismess.com/
 // 
 
-#import <Foundation/Foundation.h>
+#import "SCManifest.h"
+#import "SCImageSequence.h"
+#import "SCImageComparator.h"
+#import "SCBlockEncoder.h"
 
 int main(int argc, const char * argv[]) {
   @autoreleasepool {
+    
+    for(int i = 1; i < argc; i++){
+      NSString *path = [[NSString alloc] initWithUTF8String:argv[i]];
+      SCImageSequence *sequence = [[SCImageSequence alloc] initWithDirectoryPath:path prefix:@"frame-"];
+      SCBlockEncoder *encoder = [[SCBlockEncoder alloc] initWithDirectoryPath:[path stringByAppendingPathComponent:@"spellcaster"] prefix:@"frame-"];
+      SCManifest *manifest = [[SCManifest alloc] init];
+      SCImageComparator *comparator = nil;
+      NSError *error = nil;
+      CGImageRef image;
+      
+      if(![sequence open:&error]){
+        NSLog(@"* * * %@", [error localizedDescription]);
+        goto error;
+      }
+      
+      if(![encoder open:&error]){
+        NSLog(@"* * * %@", [error localizedDescription]);
+        goto error;
+      }
+      
+      if((image = [sequence copyNextFrameImageWithError:&error]) != NULL){
+        comparator = [[SCImageComparator alloc] initWithKeyframeImage:image block:8];
+        CGImageRelease(image);
+      }else{
+        NSLog(@"* * * %@", [error localizedDescription]);
+        goto error;
+      }
+      
+      while((image = [sequence copyNextFrameImageWithError:&error]) != NULL){
+        NSLog(@"OK: %@", [comparator updateBlocksForImage:image]);
+        CGImageRelease(image);
+      }if(error != nil){
+        NSLog(@"* * * %@", [error localizedDescription]);
+        goto error;
+      }
+      
+      if(![encoder close:&error]){
+        NSLog(@"* * * %@", [error localizedDescription]);
+        goto error;
+      }
+      
+      if(![sequence close:&error]){
+        NSLog(@"* * * %@", [error localizedDescription]);
+        goto error;
+      }
+      
+      error:
+      [manifest release];
+      [encoder release];
+      [comparator release];
+      [sequence release];
+      [path release];
+    }
     
   }
   return 0;
