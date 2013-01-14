@@ -27,6 +27,8 @@
 // Designed and developed by Mess - http://thisismess.com/
 // 
 
+#import <ImageIO/ImageIO.h>
+
 #import "SCRange.h"
 
 /**
@@ -36,9 +38,17 @@
  * 
  * @author Brian William Wolter
  */
-@interface SCBlockEncoder : NSObject
+@interface SCBlockEncoder : NSObject {
+  
+  uint8_t * _blockBuffer;
+  uint8_t * _imageBuffer;
+  size_t    _length;
+  size_t    _offset;
+  size_t    _encodedImages;
+  
+}
 
--(id)initWithDirectoryPath:(NSString *)directory prefix:(NSString *)prefix;
+-(id)initWithDirectoryPath:(NSString *)directory prefix:(NSString *)prefix blockLength:(NSUInteger)blockLength bytesPerPixel:(NSUInteger)bytesPerPixel;
 
 -(BOOL)open:(NSError **)error;
 -(BOOL)close:(NSError **)error;
@@ -47,6 +57,8 @@
 
 @property (readonly) NSString * directory;
 @property (readonly) NSString * prefix;
+@property (readonly) NSUInteger blockLength;
+@property (readonly) NSUInteger bytesPerPixel;
 
 @end
 

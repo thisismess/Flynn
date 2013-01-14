@@ -21,6 +21,7 @@
 		D323158416A4980C0071D96D /* SCImageComparator.m in Sources */ = {isa = PBXBuildFile; fileRef = D323158316A4980B0071D96D /* SCImageComparator.m */; };
 		D323158716A4A4560071D96D /* SCBlockEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = D323158616A4A4560071D96D /* SCBlockEncoder.m */; };
 		D323158916A4A6AA0071D96D /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D323158816A4A6AA0071D96D /* Accelerate.framework */; };
+		D323158D16A4C7BE0071D96D /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D323158C16A4C7BE0071D96D /* CoreServices.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -62,6 +63,7 @@
 		D323158516A4A4560071D96D /* SCBlockEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCBlockEncoder.h; sourceTree = "<group>"; };
 		D323158616A4A4560071D96D /* SCBlockEncoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCBlockEncoder.m; sourceTree = "<group>"; };
 		D323158816A4A6AA0071D96D /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		D323158C16A4C7BE0071D96D /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D323158D16A4C7BE0071D96D /* CoreServices.framework in Frameworks */,
 				D323155316A3DBED0071D96D /* Foundation.framework in Frameworks */,
 				D323157316A3F42A0071D96D /* ImageIO.framework in Frameworks */,
 				D323158916A4A6AA0071D96D /* Accelerate.framework in Frameworks */,
@@ -99,6 +102,7 @@
 		D323155116A3DBED0071D96D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D323158C16A4C7BE0071D96D /* CoreServices.framework */,
 				D323155216A3DBED0071D96D /* Foundation.framework */,
 				D323157216A3F42A0071D96D /* ImageIO.framework */,
 				D323158816A4A6AA0071D96D /* Accelerate.framework */,

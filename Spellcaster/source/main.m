@@ -34,57 +34,81 @@
 
 int main(int argc, const char * argv[]) {
   @autoreleasepool {
+    size_t blockLength = 8;
     
     for(int i = 1; i < argc; i++){
       NSString *path = [[NSString alloc] initWithUTF8String:argv[i]];
-      SCImageSequence *sequence = [[SCImageSequence alloc] initWithDirectoryPath:path prefix:@"frame-"];
-      SCBlockEncoder *encoder = [[SCBlockEncoder alloc] initWithDirectoryPath:[path stringByAppendingPathComponent:@"spellcaster"] prefix:@"frame-"];
       SCManifest *manifest = [[SCManifest alloc] init];
+      SCImageSequence *sequence = [[SCImageSequence alloc] initWithDirectoryPath:path prefix:@"_t-frame-"];
       SCImageComparator *comparator = nil;
+      SCBlockEncoder *encoder = nil;
       NSError *error = nil;
       CGImageRef image;
       
       if(![sequence open:&error]){
-        NSLog(@"* * * %@", [error localizedDescription]);
-        goto error;
-      }
-      
-      if(![encoder open:&error]){
-        NSLog(@"* * * %@", [error localizedDescription]);
+        NSLog(@"* * * Could not open frame sequence: %@", [error localizedDescription]);
         goto error;
       }
       
       if((image = [sequence copyNextFrameImageWithError:&error]) != NULL){
-        comparator = [[SCImageComparator alloc] initWithKeyframeImage:image block:8];
+        comparator = [[SCImageComparator alloc] initWithKeyframeImage:image blockLength:blockLength];
+        encoder = [[SCBlockEncoder alloc] initWithDirectoryPath:[path stringByAppendingPathComponent:@"spellcaster"] prefix:@"frame-" blockLength:blockLength bytesPerPixel:CGImageGetBitsPerPixel(image) / CGImageGetBitsPerComponent(image)];
         CGImageRelease(image);
       }else{
-        NSLog(@"* * * %@", [error localizedDescription]);
+        NSLog(@"* * * Could not read keyframe image: %@", [error localizedDescription]);
+        goto error;
+      }
+      
+      if(![encoder open:&error]){
+        NSLog(@"* * * Could not open block encoder: %@", [error localizedDescription]);
         goto error;
       }
       
       while((image = [sequence copyNextFrameImageWithError:&error]) != NULL){
-        NSLog(@"OK: %@", [comparator updateBlocksForImage:image]);
+        BOOL more = TRUE;
+        
+        NSArray *blocks;
+        if((blocks = [comparator updateBlocksForImage:image error:&error]) == nil){
+          NSLog(@"* * * Could not determine update blocks from frame image: %@", [error localizedDescription]);
+          more = FALSE; error = nil;
+          goto done;
+        }
+        
+        NSLog(@"==> %@", blocks);
+        
+        if(![encoder encodeBlocks:blocks forImage:image error:&error]){
+          NSLog(@"* * * Could not encode update blocks from frame image: %@", [error localizedDescription]);
+          more = FALSE; error = nil;
+          goto done;
+        }
+        
+        NSLog(@"##> ...");
+        
+        done:
         CGImageRelease(image);
-      }if(error != nil){
-        NSLog(@"* * * %@", [error localizedDescription]);
+        if(!more) break;
+      }
+      
+      if(error != nil){
+        NSLog(@"* * * Could not process frame image: %@", [error localizedDescription]);
         goto error;
       }
       
       if(![encoder close:&error]){
-        NSLog(@"* * * %@", [error localizedDescription]);
+        NSLog(@"* * * Could not close block encoder: %@", [error localizedDescription]);
         goto error;
       }
       
       if(![sequence close:&error]){
-        NSLog(@"* * * %@", [error localizedDescription]);
+        NSLog(@"* * * Could not close frame sequence: %@", [error localizedDescription]);
         goto error;
       }
       
       error:
-      [manifest release];
       [encoder release];
       [comparator release];
       [sequence release];
+      [manifest release];
       [path release];
     }
     

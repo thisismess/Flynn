@@ -44,7 +44,7 @@
 -(NSString *)externalRepresentation;
 
 @property (readonly) NSUInteger version;
-@property (readonly) NSUInteger block;
+@property (readonly) NSUInteger blockLength;
 @property (readonly) NSUInteger images;
 @property (readonly) NSArray  * frames;
 

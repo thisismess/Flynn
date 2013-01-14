@@ -37,12 +37,12 @@
  */
 @interface SCImageComparator : NSObject
 
--(id)initWithKeyframeImage:(CGImageRef)keyframe block:(NSUInteger)block;
+-(id)initWithKeyframeImage:(CGImageRef)keyframe blockLength:(NSUInteger)blockLength;
 
--(NSArray *)updateBlocksForImage:(CGImageRef)image;
+-(NSArray *)updateBlocksForImage:(CGImageRef)image error:(NSError **)error;
 
 @property (readonly) CGImageRef currentImage;
-@property (readonly) NSUInteger block;
+@property (readonly) NSUInteger blockLength;
 
 @end
 

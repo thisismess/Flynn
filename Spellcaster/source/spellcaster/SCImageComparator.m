@@ -29,11 +29,12 @@
 
 #import "SCImageComparator.h"
 #import "SCImage.h"
+#import "SCError.h"
 
 @implementation SCImageComparator
 
 @synthesize currentImage = _currentImage;
-@synthesize block = _block;
+@synthesize blockLength = _blockLength;
 
 /**
  * Clean up
@@ -46,10 +47,10 @@
 /**
  * Initialize with a keyframe
  */
--(id)initWithKeyframeImage:(CGImageRef)keyframe block:(NSUInteger)block {
+-(id)initWithKeyframeImage:(CGImageRef)keyframe blockLength:(NSUInteger)blockLength {
   if((self = [super init]) != nil){
     if(keyframe != NULL) _currentImage = CGImageRetain(keyframe);
-    _block = block;
+    _blockLength = blockLength;
   }
   return self;
 }
@@ -59,7 +60,7 @@
  * the provided image. The parameter image is retained as the current frame
  * for use in a subsequent invocation.
  */
--(NSArray *)updateBlocksForImage:(CGImageRef)image {
+-(NSArray *)updateBlocksForImage:(CGImageRef)image error:(NSError **)error {
   NSMutableArray *ranges = [NSMutableArray array];
   if(_currentImage != NULL){
     CGDataProviderRef dataProvider;
@@ -71,10 +72,18 @@
     size_t bitsPerComponent = CGImageGetBitsPerComponent(image);
     size_t bytesPerPixel = bitsPerPixel / bitsPerComponent;
     
+    // make sure the next image matches the dimensions of the current image
     if(CGImageGetWidth(_currentImage) != width || CGImageGetWidth(_currentImage) != width){
-      NSLog(@"* * * Frame images in an animation must be exactly the same size");
+      if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame images in an animation must be exactly the same size (%zdx%zd)", CGImageGetWidth(_currentImage), CGImageGetHeight(_currentImage)], NSLocalizedDescriptionKey, nil]];
       return nil;
     }
+    
+    // make sure the image is has dimensions in multiples of blocks
+    if((width % _blockLength) != 0 || (height & _blockLength) != 0){
+      if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame image must have dimensions in multiples of blocks (%ldx%ld)", _blockLength, _blockLength], NSLocalizedDescriptionKey, nil]];
+      return nil;
+    }
+    
     dataProvider = CGImageGetDataProvider(_currentImage);
     NSData *currData = (NSData *)CGDataProviderCopyData(dataProvider);
     const uint8_t *currentPixels = [currData bytes];
@@ -95,28 +104,28 @@
     nextBuffer.height = height;
     nextBuffer.rowBytes = bytesPerRow;
     
-    size_t wblocks = (size_t)ceil((float)width / (float)_block);
-    size_t hblocks = (size_t)ceil((float)height / (float)_block);
-    size_t x = 0, y = 0;
+    size_t wblocks = width / _blockLength;
+    size_t hblocks = height / _blockLength;
     ssize_t position = -1;
+    size_t x = 0, y = 0;
     
     for(y = 0; y < hblocks; y++){
       for(x = 0; x < wblocks; x++){
-        if(SCImageCompareBlocks_ARGB8888(&currentBuffer, &nextBuffer, 0, _block, x, y)){
+        if(SCImageCompareBlocks(&currentBuffer, &nextBuffer, bytesPerPixel, 0, _blockLength, x, y)){
           if(position >= 0){
-            [ranges addObject:[SCRange rangeWithPosition:position count:((y * _block) + x) - position]];
+            [ranges addObject:[SCRange rangeWithPosition:position count:((y * _blockLength) + x) - position]];
             position = -1; // clear the position
           }
         }else{
           // update the position if we haven't started a range yet
-          if(position < 0) position = (y * _block) + x;
+          if(position < 0) position = (y * _blockLength) + x;
         }
       }
     }
     
     // handle the last row
     if(position >= 0){
-      [ranges addObject:[SCRange rangeWithPosition:position count:((y * _block) + x) - position]];
+      [ranges addObject:[SCRange rangeWithPosition:position count:((y * _blockLength) + x) - position]];
       position = -1; // clear the position
     }
     

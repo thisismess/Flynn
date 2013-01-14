@@ -35,7 +35,7 @@ static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 @implementation SCManifest
 
 @synthesize version = _version;
-@synthesize block = _block;
+@synthesize blockLength = _blockLength;
 @synthesize images = _images;
 @synthesize frames = _frames;
 
@@ -116,7 +116,7 @@ static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 -(NSString *)externalRepresentation {
   NSMutableDictionary *external = [NSMutableDictionary dictionary];
   [external setObject:[NSNumber numberWithInteger:self.version] forKey:@"version"];
-  [external setObject:[NSNumber numberWithInteger:self.block] forKey:@"blockSize"];
+  [external setObject:[NSNumber numberWithInteger:self.blockLength] forKey:@"blockSize"];
   [external setObject:[NSNumber numberWithInteger:self.images] forKey:@"imagesRequired"];
   [external setObject:[NSNumber numberWithInteger:[self.frames count]] forKey:@"frameCount"];
   [external setObject:self.frames forKey:@"frames"];
