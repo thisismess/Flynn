@@ -739,7 +739,6 @@ AC.Ajax.AjaxResponse.prototype = {_request: null,_transport: null,initialize: fu
         this._request = b;
         if (c.readyState === 4) {
             if (c.status == 0 || (c.status >= 200 && c.status < 300)) {
-            	console.log(b.options().onSuccess);
                 b.options().onSuccess ? b.options().onSuccess(this) : AC.Function.emptyFunction();
                 a = true
             }
