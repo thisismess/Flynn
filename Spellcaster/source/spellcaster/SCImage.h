@@ -29,7 +29,7 @@
  */
 static inline const uint8_t * SCImageGetPixel(const vImage_Buffer *data, size_t bytesPerPixel, size_t x, size_t y) {
   size_t offset = (y * data->rowBytes) + (x * bytesPerPixel);
-  return (offset < ((data->rowBytes * data->height) - bytesPerPixel)) ? (data->data + offset) : NULL;
+  return (offset <= ((data->rowBytes * data->height) - bytesPerPixel)) ? (data->data + offset) : NULL;
 }
 
 BOOL SCImagePixelsEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, size_t threshold, size_t x, size_t y);
