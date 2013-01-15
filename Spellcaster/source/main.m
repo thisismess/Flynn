@@ -31,14 +31,17 @@
 #import "SCCodec.h"
 #import "SCLog.h"
 
-void SCProcessDirectory(NSString *path, NSDictionary *settings);
+void SCProcessDirectory(NSString *inputDirectory, NSString *outputDirectory, NSDictionary *settings);
 
 int main(int argc, const char * argv[]) {
   @autoreleasepool {
     NSMutableDictionary *options = [[NSMutableDictionary alloc] init];
     NSString *outputDirectory = nil;
+    NSString *prefix = nil;
+    NSString *name = nil;
     
     static struct option longopts[] = {
+      { "name",             required_argument,  NULL,         'n' },  // name of the animation
       { "prefix",           required_argument,  NULL,         'p' },  // input frame prefix
       { "output",           required_argument,  NULL,         'o' },  // base path for output
       { "block-threshold",  required_argument,  NULL,         't' },  // block pixel discrepency threshold
@@ -49,11 +52,15 @@ int main(int argc, const char * argv[]) {
     };
     
     int flag;
-    while((flag = getopt_long(argc, (char **)argv, "p:o:b:I:t:v", longopts, NULL)) != -1){
+    while((flag = getopt_long(argc, (char **)argv, "n:p:o:b:I:t:v", longopts, NULL)) != -1){
       switch(flag){
         
+        case 'n':
+          name = [NSString stringWithUTF8String:optarg];
+          break;
+          
         case 'p':
-          // 
+          prefix = [NSString stringWithUTF8String:optarg];
           break;
           
         case 'o':
@@ -93,9 +100,9 @@ int main(int argc, const char * argv[]) {
     argc -= optind;
     
     for(int i = 0; i < argc; i++){
-      NSString *path = [[NSString alloc] initWithUTF8String:argv[i]];
-      SCProcessDirectory(path, options);
-      [path release];
+      NSString *inputDirectory = [[NSString alloc] initWithUTF8String:argv[i]];
+      SCProcessDirectory(inputDirectory, (outputDirectory != nil) ? outputDirectory : [outputDirectory stringByAppendingPathComponent:@"spellcaster"], options);
+      [inputDirectory release];
     }
     
     [options release];
@@ -106,12 +113,12 @@ int main(int argc, const char * argv[]) {
 /**
  * Process a directory
  */
-void SCProcessDirectory(NSString *path, NSDictionary *settings) {
+void SCProcessDirectory(NSString *inputDirectory, NSString *outputDirectory, NSDictionary *settings) {
   size_t blockLength = 8;
   size_t imageLength = 1624;
   
   SCManifest *manifest = [[SCManifest alloc] init];
-  SCImageSequence *sequence = [[SCImageSequence alloc] initWithDirectoryPath:path prefix:@""];
+  SCImageSequence *sequence = [[SCImageSequence alloc] initWithDirectoryPath:inputDirectory prefix:@""];
   SCImageComparator *comparator = nil;
   SCBlockEncoder *encoder = nil;
   NSError *error = nil;
@@ -124,7 +131,7 @@ void SCProcessDirectory(NSString *path, NSDictionary *settings) {
   
   if((image = [sequence copyNextFrameImageWithError:&error]) != NULL){
     comparator = [[SCImageComparator alloc] initWithKeyframeImage:image blockLength:blockLength];
-    encoder = [[SCBlockEncoder alloc] initWithDirectoryPath:[path stringByAppendingPathComponent:@"spellcaster"] prefix:@"spellcaster_" imageLength:imageLength blockLength:blockLength bytesPerPixel:CGImageGetBitsPerPixel(image) / CGImageGetBitsPerComponent(image)];
+    encoder = [[SCBlockEncoder alloc] initWithDirectoryPath:outputDirectory prefix:@"spellcaster_" imageLength:imageLength blockLength:blockLength bytesPerPixel:CGImageGetBitsPerPixel(image) / CGImageGetBitsPerComponent(image)];
     CGImageRelease(image);
   }else{
     SCLog(@"Could not read keyframe image: %@", [error localizedDescription]);
@@ -181,7 +188,7 @@ void SCProcessDirectory(NSString *path, NSDictionary *settings) {
     goto error;
   }
   
-  if(![[manifest externalRepresentation] writeToFile:[path stringByAppendingPathComponent:@"spellcaster/spellcaster_manifest.json"]  atomically:TRUE encoding:NSUTF8StringEncoding error:&error]){
+  if(![[manifest externalRepresentation] writeToFile:[outputDirectory stringByAppendingPathComponent:@"spellcaster_manifest.json"]  atomically:TRUE encoding:NSUTF8StringEncoding error:&error]){
     SCLog(@"Could not write manifest file: %@", [error localizedDescription]);
     goto error;
   }
