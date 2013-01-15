@@ -43,7 +43,7 @@ var Spellcaster = AC.Class({
         this.mask().setAttribute("data-hires", "false");
         Element.addClassName(this.mask(), "mask");
         Element.insert(this.element(), this.mask());
-        h = new AC.Flow.Ambient(this.mask(), j + k + "_###.png", j + k + "_manifest.json", j + k + "_keyframe.png", {autoplay: true, endState: j + k + "_endframe.png",fps: 1, continuous:true});
+        h = new AC.Flow.Ambient(this.mask(), j + k + "_###.png", j + k + "_manifest.json", j + k + "_keyframe.png", {autoplay: true, endState: j + k + "_endframe.png", fps: 1, continuous:true });
         this.setFlow(h);
         this.flow().setDelegate(this);
     },
