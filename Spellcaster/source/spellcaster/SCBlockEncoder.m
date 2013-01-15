@@ -123,7 +123,7 @@ static const NSUInteger kSCBlockEncoderMaxImageLength = 1624;
   }
   
   // make sure the image is has dimensions in multiples of blocks
-  if((width % _blockLength) != 0 || (height & _blockLength) != 0){
+  if((width % _blockLength) != 0 || (height % _blockLength) != 0){
     if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame image must have dimensions in multiples of blocks (%ldx%ld)", _blockLength, _blockLength], NSLocalizedDescriptionKey, nil]];
     goto error;
   }
@@ -134,10 +134,9 @@ static const NSUInteger kSCBlockEncoderMaxImageLength = 1624;
   // unpack our image data
   CGDataProviderRef dataProvider = CGImageGetDataProvider(image);
   imageData = (NSData *)CGDataProviderCopyData(dataProvider);
-  const uint8_t *imagePixels = [imageData bytes];
   
   vImage_Buffer buffer;
-  buffer.data = (void *)imagePixels;
+  buffer.data = (void *)[imageData bytes];
   buffer.width = width;
   buffer.height = height;
   buffer.rowBytes = bytesPerRow;
@@ -229,7 +228,8 @@ error:
   
   // setup our output path
   NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"frame-%04zd.png", _encodedImages]];
-  NSLog(@"Creating %ldx%ld for %ld bytes (%ld blocks): %@", width, height, _offset, blocks, outputPath);
+  //
+  NSLog(@"Export %ldx%ld for %ld bytes (%ld blocks): %@", width, height, _offset, blocks, outputPath);
   
   // setup our colorspace
   colorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
@@ -247,7 +247,7 @@ error:
   }
   
   // create a destination for our image
-  if((imageDestination = CGImageDestinationCreateWithURL((CFURLRef)[NSURL fileURLWithPath:outputPath], kUTTypePNG, 1, nil)) == NULL){
+  if((imageDestination = CGImageDestinationCreateWithURL((CFURLRef)[NSURL fileURLWithPath:outputPath], kUTTypeJPEG, 1, nil)) == NULL){
     if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image destination", NSLocalizedDescriptionKey, nil]];
     goto error;
   }

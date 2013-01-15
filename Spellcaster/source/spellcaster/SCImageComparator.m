@@ -98,11 +98,11 @@
     NSData *nextData = (NSData *)CGDataProviderCopyData(dataProvider);
     const uint8_t *nextPixels = [nextData bytes];
     
-    vImage_Buffer nextBuffer;
-    nextBuffer.data = (void *)nextPixels;
-    nextBuffer.width = width;
-    nextBuffer.height = height;
-    nextBuffer.rowBytes = bytesPerRow;
+    vImage_Buffer updateBuffer;
+    updateBuffer.data = (void *)nextPixels;
+    updateBuffer.width = width;
+    updateBuffer.height = height;
+    updateBuffer.rowBytes = bytesPerRow;
     
     size_t wblocks = width / _blockLength;
     size_t hblocks = height / _blockLength;
@@ -111,21 +111,19 @@
     
     for(y = 0; y < hblocks; y++){
       for(x = 0; x < wblocks; x++){
-        if(SCImageCompareBlocks(&currentBuffer, &nextBuffer, bytesPerPixel, 0, _blockLength, x, y)){
-          if(position >= 0){
-            [ranges addObject:[SCRange rangeWithPosition:position count:((y * _blockLength) + x) - position]];
-            position = -1; // clear the position
-          }
-        }else{
-          // update the position if we haven't started a range yet
-          if(position < 0) position = (y * _blockLength) + x;
+        if(!SCImageBlocksEqual(&currentBuffer, &updateBuffer, bytesPerPixel, 0, x, y, _blockLength)){
+          // update the range offset if we're not already in a run
+          if(position < 0) position = (y * wblocks) + x;
+        }else if(position >= 0){
+          [ranges addObject:[SCRange rangeWithPosition:position count:((y * wblocks) + x) - position]];
+          position = -1; // clear the run offset position
         }
       }
     }
     
     // handle the last row
     if(position >= 0){
-      [ranges addObject:[SCRange rangeWithPosition:position count:((y * _blockLength) + x) - position]];
+      [ranges addObject:[SCRange rangeWithPosition:position count:((y * wblocks) + x) - position]];
     }
     
     [currData release];

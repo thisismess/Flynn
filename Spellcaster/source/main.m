@@ -64,6 +64,7 @@ int main(int argc, const char * argv[]) {
         goto error;
       }
       
+      size_t frames = 0;
       while((image = [sequence copyNextFrameImageWithError:&error]) != NULL){
         BOOL more = TRUE;
         
@@ -80,7 +81,7 @@ int main(int argc, const char * argv[]) {
           goto done;
         }
         
-        NSLog(@"Did frame...");
+        fprintf(stderr, "%04ld\n", frames++);
         
         done:
         CGImageRelease(image);
