@@ -28,14 +28,15 @@
 #import "SCImageSequence.h"
 #import "SCImageComparator.h"
 #import "SCBlockEncoder.h"
-#import "SCOptions.h"
+#import "SCCodec.h"
 #import "SCLog.h"
 
-void SCProcessDirectory(NSString *path, SCOptions *options);
+void SCProcessDirectory(NSString *path, NSDictionary *settings);
 
 int main(int argc, const char * argv[]) {
   @autoreleasepool {
-    SCMutableOptions *options = [[SCMutableOptions alloc] init];
+    NSMutableDictionary *options = [[NSMutableDictionary alloc] init];
+    NSString *outputDirectory = nil;
     
     static struct option longopts[] = {
       { "prefix",           required_argument,  NULL,         'p' },  // input frame prefix
@@ -52,23 +53,23 @@ int main(int argc, const char * argv[]) {
       switch(flag){
         
         case 'p':
-          options.prefix = [NSString stringWithUTF8String:optarg];
+          // 
           break;
           
         case 'o':
-          //options.output = [NSString stringWithUTF8String:optarg];
+          outputDirectory = [NSString stringWithUTF8String:optarg];
           break;
           
         case 'b':
-          options.blockLength = atoi(optarg);
+          [options setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kSCCodecBlockSizeKey];
           break;
           
         case 'I':
-          options.imageLength = atoi(optarg);
+          [options setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kSCCodecImageSizeKey];
           break;
           
         case 't':
-          //
+          [options setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kSCCodecBlockPixelDiscrepancyThresholdKey];
           break;
           
         case 'v':
@@ -81,10 +82,12 @@ int main(int argc, const char * argv[]) {
       }
     }
     
+    /*
     if((options.imageLength % options.blockLength) != 0){
       SCLog(@"Encoded images must have dimensions that are a multiple of the block size (%ldx%ld)", options.blockLength, options.blockLength);
       exit(-1);
     }
+    */
     
     argv += optind;
     argc -= optind;
@@ -103,7 +106,9 @@ int main(int argc, const char * argv[]) {
 /**
  * Process a directory
  */
-void SCProcessDirectory(NSString *path, SCOptions *options) {
+void SCProcessDirectory(NSString *path, NSDictionary *settings) {
+  size_t blockLength = 8;
+  size_t imageLength = 1624;
   
   SCManifest *manifest = [[SCManifest alloc] init];
   SCImageSequence *sequence = [[SCImageSequence alloc] initWithDirectoryPath:path prefix:@"_t-frame-"];
@@ -118,8 +123,8 @@ void SCProcessDirectory(NSString *path, SCOptions *options) {
   }
   
   if((image = [sequence copyNextFrameImageWithError:&error]) != NULL){
-    comparator = [[SCImageComparator alloc] initWithKeyframeImage:image blockLength:options.blockLength];
-    encoder = [[SCBlockEncoder alloc] initWithDirectoryPath:[path stringByAppendingPathComponent:@"spellcaster"] prefix:@"frame-" imageLength:options.imageLength blockLength:options.blockLength bytesPerPixel:CGImageGetBitsPerPixel(image) / CGImageGetBitsPerComponent(image)];
+    comparator = [[SCImageComparator alloc] initWithKeyframeImage:image blockLength:blockLength];
+    encoder = [[SCBlockEncoder alloc] initWithDirectoryPath:[path stringByAppendingPathComponent:@"spellcaster"] prefix:@"spellcaster_" imageLength:imageLength blockLength:blockLength bytesPerPixel:CGImageGetBitsPerPixel(image) / CGImageGetBitsPerComponent(image)];
     CGImageRelease(image);
   }else{
     SCLog(@"Could not read keyframe image: %@", [error localizedDescription]);
@@ -176,7 +181,7 @@ void SCProcessDirectory(NSString *path, SCOptions *options) {
     goto error;
   }
   
-  if(![[manifest externalRepresentation] writeToFile:[path stringByAppendingPathComponent:@"spellcaster/manifest.json"]  atomically:TRUE encoding:NSUTF8StringEncoding error:&error]){
+  if(![[manifest externalRepresentation] writeToFile:[path stringByAppendingPathComponent:@"spellcaster/spellcaster_manifest.json"]  atomically:TRUE encoding:NSUTF8StringEncoding error:&error]){
     SCLog(@"Could not write manifest file: %@", [error localizedDescription]);
     goto error;
   }

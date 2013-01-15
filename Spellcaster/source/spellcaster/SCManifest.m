@@ -87,8 +87,8 @@ static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 -(BOOL)encodeCopyBlocksAtPosition:(size_t)position count:(size_t)blocks {
   NSMutableString *frame;
   if((frame = self.currentFrame) != nil){
-    if(![self encodeValue:position length:3 buffer:frame]) return FALSE;
-    if(![self encodeValue:blocks length:2 buffer:frame]) return FALSE;
+    if(![self encodeValue:blocks length:3 buffer:frame]) return FALSE;
+    if(![self encodeValue:(position > powl(64, 2) - 1) ? 0 : position length:2 buffer:frame]) return FALSE;
   }
   return TRUE;
 }
@@ -110,9 +110,9 @@ static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
  */
 -(NSString *)externalRepresentation {
   NSMutableDictionary *external = [NSMutableDictionary dictionary];
-  [external setObject:[NSNumber numberWithInteger:self.version] forKey:@"version"];
-  [external setObject:[NSNumber numberWithInteger:self.blockLength] forKey:@"blockSize"];
-  [external setObject:[NSNumber numberWithInteger:self.images] forKey:@"imagesRequired"];
+  [external setObject:[NSNumber numberWithInteger:2] forKey:@"version"];
+  [external setObject:[NSNumber numberWithInteger:8] forKey:@"blockSize"];
+  [external setObject:[NSNumber numberWithInteger:5] forKey:@"imagesRequired"];
   [external setObject:[NSNumber numberWithInteger:[self.frames count]] forKey:@"frameCount"];
   [external setObject:self.frames forKey:@"frames"];
   return [external JSONString];

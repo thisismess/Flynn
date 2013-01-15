@@ -220,7 +220,7 @@ error:
   }
   
   // setup our output path
-  NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"frame-%04zd.png", _encodedImages]];
+  NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"spellcaster_%03zd.png", _encodedImages + 1]];
   // note it
   SCVerbose(@"exporting %ldx%ld for %ld blocks: %@", width, height, blocks, outputPath);
   
