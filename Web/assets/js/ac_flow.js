@@ -167,7 +167,6 @@ AC.Object.extend(AC.Flow.prototype, {
         while (b) {
             k = Math.min((b * j), p - h, i - o);
             f = k / j;
-            console.log(e);
             e.clearRect(h, g, k, j);
             e.drawImage(c[r], o, n, k, j, h, g, k, j);
             b -= f;
@@ -303,11 +302,9 @@ AC.Flow.SharedMethods.benchmarkEnd = function () {
 };
 AC.Object.extend(AC.Flow.prototype, {
     __onDiffLoaded: function ac___onDiffLoaded() {
-        console.log("Diff loaded");
         this.__blocksPerFullDiff = (this.diff()[0].width / this.__manifest.size()) * (this.diff()[0].height / this.__manifest.size())
     },
     __onDidLoadKeyframe: function ac___onDidLoadKeyframe(a) {
-        console.log("Keyframe loaded");
         this.setKeyframe(a);
         this.setWidth(a.width);
         this.setHeight(a.height);
@@ -315,7 +312,6 @@ AC.Object.extend(AC.Flow.prototype, {
         this.__canPlay()
     },
     __onManifestLoad: function ac___onManifestLoad() {
-        console.log("Manifest loaded");
         this.setDiff(this.__diffSrc);
         delete this.__diffSrc;
         this.setFramecount(this.__manifest.framecount() + 1);
