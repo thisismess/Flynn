@@ -34,21 +34,25 @@ static const size_t kSCImageBytesPerPixel_ARGB8888 = 4;
 /**
  * Compare a pixel between two images
  */
-BOOL SCImagePixelsEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, float threshold, size_t x, size_t y) {
+BOOL SCImagePixelsEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, size_t threshold, size_t x, size_t y) {
   assert(data1 != NULL);
   assert(data2 != NULL);
   const uint8_t *a = SCImageGetPixel(data1, bytesPerPixel, x, y);
   const uint8_t *b = SCImageGetPixel(data2, bytesPerPixel, x, y);
   if(a == b) return TRUE; // same memory, must be the same
   if(a == NULL || b == NULL) return FALSE;
-  for(int i = 0; i < bytesPerPixel; i++){ if(abs(a[i] - b[i]) > threshold) return FALSE; }
+  size_t misses = 0;
+  //for(int i = 0; i < bytesPerPixel; i++){ if(abs(a[i] - b[i]) > threshold) return FALSE; }
+  for(int i = 0; i < bytesPerPixel; i++){
+    if(a[i] != b[i]){ if(++misses > threshold) return FALSE; }
+  }
   return TRUE; // we've processed the pixel and all's well
 }
 
 /**
  * Compare a block of pixel between two images
  */
-BOOL SCImageBlocksEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, float threshold, size_t xblock, size_t yblock, size_t blocksize) {
+BOOL SCImageBlocksEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, size_t threshold, size_t xblock, size_t yblock, size_t blocksize) {
   for(int y = 0; y < blocksize; y++){
     for(int x = 0; x < blocksize; x++){
       if(!SCImagePixelsEqual(data1, data2, bytesPerPixel, threshold, (xblock * blocksize) + x, (yblock * blocksize) + y)){
@@ -108,14 +112,14 @@ const uint8_t * SCImageGetPixel_ARGB8888(const vImage_Buffer *data, size_t x, si
 /**
  * Compare a pixel between two images
  */
-BOOL SCImagePixelsEqual_ARGB8888(const vImage_Buffer *data1, const vImage_Buffer *data2, float threshold, size_t x, size_t y) {
+BOOL SCImagePixelsEqual_ARGB8888(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t threshold, size_t x, size_t y) {
   return SCImagePixelsEqual(data1, data2, kSCImageBytesPerPixel_ARGB8888, threshold, x, y);
 }
 
 /**
  * Compare a block of pixel between two images
  */
-BOOL SCImageBlocksEqual_ARGB8888(const vImage_Buffer *data1, const vImage_Buffer *data2, float threshold, size_t xblock, size_t yblock, size_t blocksize) {
+BOOL SCImageBlocksEqual_ARGB8888(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t threshold, size_t xblock, size_t yblock, size_t blocksize) {
   return SCImageBlocksEqual(data1, data2, kSCImageBytesPerPixel_ARGB8888, threshold, xblock, yblock, blocksize);
 }
 

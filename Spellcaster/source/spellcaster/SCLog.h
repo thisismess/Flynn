@@ -27,39 +27,15 @@
 // Designed and developed by Mess - http://thisismess.com/
 // 
 
-#import <ImageIO/ImageIO.h>
+typedef enum {
+  kSCLogLevelInfo,
+  kSCLogLevelVerbose
+} SCLogLevel;
 
-#import "SCRange.h"
+#define SCLog(a...)     __SCLog(kSCLogLevelInfo, ##a)
+#define SCVerbose(a...) __SCLog(kSCLogLevelVerbose, ##a)
 
-/**
- * A block encoder. Encoders accumulate update blocks until there are enough
- * to render an image at which time an image is composited, written to disk,
- * and the process starts over.
- * 
- * @author Brian William Wolter
- */
-@interface SCBlockEncoder : NSObject {
-  
-  uint8_t * _blockBuffer;
-  uint8_t * _imageBuffer;
-  size_t    _length;
-  size_t    _offset;
-  size_t    _encodedImages;
-  
-}
-
--(id)initWithDirectoryPath:(NSString *)directory prefix:(NSString *)prefix imageLength:(NSUInteger)imageLength blockLength:(NSUInteger)blockLength bytesPerPixel:(NSUInteger)bytesPerPixel;
-
--(BOOL)open:(NSError **)error;
--(BOOL)close:(NSError **)error;
-
--(BOOL)encodeBlocks:(NSArray *)blocks forImage:(CGImageRef)image error:(NSError **)error;
-
-@property (readonly) NSString * directory;
-@property (readonly) NSString * prefix;
-@property (readonly) NSUInteger imageLength;
-@property (readonly) NSUInteger blockLength;
-@property (readonly) NSUInteger bytesPerPixel;
-
-@end
+SCLogLevel __SCGetLogLevel(void);
+void __SCSetLogLevel(SCLogLevel level);
+void __SCLog(int level, NSString *format, ...);
 

@@ -27,39 +27,36 @@
 // Designed and developed by Mess - http://thisismess.com/
 // 
 
-#import <ImageIO/ImageIO.h>
+#import "SCLog.h"
 
-#import "SCRange.h"
+static SCLogLevel __SCLogLevel = kSCLogLevelInfo;
 
 /**
- * A block encoder. Encoders accumulate update blocks until there are enough
- * to render an image at which time an image is composited, written to disk,
- * and the process starts over.
- * 
- * @author Brian William Wolter
+ * Obtain the application wide log level
  */
-@interface SCBlockEncoder : NSObject {
-  
-  uint8_t * _blockBuffer;
-  uint8_t * _imageBuffer;
-  size_t    _length;
-  size_t    _offset;
-  size_t    _encodedImages;
-  
+SCLogLevel __SCGetLogLevel(void) {
+  return __SCLogLevel;
 }
 
--(id)initWithDirectoryPath:(NSString *)directory prefix:(NSString *)prefix imageLength:(NSUInteger)imageLength blockLength:(NSUInteger)blockLength bytesPerPixel:(NSUInteger)bytesPerPixel;
+/**
+ * Obtain the application wide log level
+ */
+void __SCSetLogLevel(SCLogLevel level) {
+  __SCLogLevel = level;
+}
 
--(BOOL)open:(NSError **)error;
--(BOOL)close:(NSError **)error;
-
--(BOOL)encodeBlocks:(NSArray *)blocks forImage:(CGImageRef)image error:(NSError **)error;
-
-@property (readonly) NSString * directory;
-@property (readonly) NSString * prefix;
-@property (readonly) NSUInteger imageLength;
-@property (readonly) NSUInteger blockLength;
-@property (readonly) NSUInteger bytesPerPixel;
-
-@end
+/**
+ * Log a message
+ */
+void __SCLog(int level, NSString *format, ...) {
+  if(level <= __SCLogLevel){
+    va_list ap;
+    va_start(ap, format);
+    fputs([[[NSProcessInfo processInfo] processName] UTF8String], stderr);
+    fputs(": ", stderr);
+    fputs([[[[NSString alloc] initWithFormat:format arguments:ap] autorelease] UTF8String], stderr);
+    fputc('\n', stderr);
+    va_end(ap);
+  }
+}
 

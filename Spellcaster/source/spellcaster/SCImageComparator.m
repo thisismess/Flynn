@@ -111,7 +111,7 @@
     
     for(y = 0; y < hblocks; y++){
       for(x = 0; x < wblocks; x++){
-        if(!SCImageBlocksEqual(&currentBuffer, &updateBuffer, bytesPerPixel, 0, x, y, _blockLength)){
+        if(!SCImageBlocksEqual(&currentBuffer, &updateBuffer, bytesPerPixel, 1, x, y, _blockLength)){
           // update the range offset if we're not already in a run
           if(position < 0) position = (y * wblocks) + x;
         }else if(position >= 0){
