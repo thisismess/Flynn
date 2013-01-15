@@ -74,15 +74,13 @@ int main(int argc, const char * argv[]) {
           goto done;
         }
         
-        NSLog(@"==> %@", blocks);
-        
         if(![encoder encodeBlocks:blocks forImage:image error:&error]){
           NSLog(@"* * * Could not encode update blocks from frame image: %@", [error localizedDescription]);
           more = FALSE; error = nil;
           goto done;
         }
         
-        NSLog(@"##> ...");
+        NSLog(@"Did frame...");
         
         done:
         CGImageRelease(image);

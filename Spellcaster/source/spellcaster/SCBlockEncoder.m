@@ -82,6 +82,9 @@ static const NSUInteger kSCBlockEncoderMaxImageLength = 1624;
     return FALSE;
   }
   
+  // clear the offset
+  _offset = 0;
+  
   return TRUE;
 }
 
@@ -141,7 +144,8 @@ static const NSUInteger kSCBlockEncoderMaxImageLength = 1624;
   
   // copy in blocks
   for(SCRange *block in blocks){
-    for(size_t i = block.position; i < block.count; i++){
+    for(size_t i = 0; i < block.count; i++){
+      size_t position = block.position + i;
       
       // make sure we have room for our block
       if((_offset + bytesPerBlock) >= _length){
@@ -151,12 +155,12 @@ static const NSUInteger kSCBlockEncoderMaxImageLength = 1624;
       }
       
       // determine our block coordinates for the block offset
-      size_t xblock = i % wblocks;
-      size_t yblock = i / wblocks;
+      size_t xblock = position % wblocks;
+      size_t yblock = position / wblocks;
       
       // copy in our block
       if(!SCImageCopyOutSequentialBlock(&buffer, _blockBuffer + _offset, bytesPerPixel, xblock, yblock, _blockLength)){
-        if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Could not copy block at position %ld (%ld, %ld)", i, xblock, yblock], NSLocalizedDescriptionKey, nil]];
+        if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Could not copy block at position %ld (%ld, %ld)", position, xblock, yblock], NSLocalizedDescriptionKey, nil]];
         goto error;
       }
       
@@ -199,10 +203,16 @@ error:
   // determine the length of a single block, in bytes
   size_t bytesPerBlock = _bytesPerPixel * _blockLength * _blockLength;
   
+  // make sure we don't exceed our dimension constraints
+  if(width > kSCBlockEncoderMaxImageLength || height > kSCBlockEncoderMaxImageLength){
+    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Block buffer is too large", NSLocalizedDescriptionKey, nil]];
+    goto error;
+  }
+  
   // setup our image buffer
   vImage_Buffer buffer;
-  buffer.width = imageLength * _blockLength;
-  buffer.height = imageLength * _blockLength;
+  buffer.width = width;
+  buffer.height = height;
   buffer.data = _imageBuffer;
   buffer.rowBytes = _bytesPerPixel * buffer.width;
   
@@ -211,26 +221,33 @@ error:
     // determine our block coordinates for the block offset
     size_t xblock = i % imageLength, yblock = i / imageLength;
     // copy in the block
-    SCImageCopyInSequentialBlock(_blockBuffer + (i * bytesPerBlock), &buffer, _bytesPerPixel, xblock, yblock, _blockLength);
+    if(!SCImageCopyInSequentialBlock(_blockBuffer + (i * bytesPerBlock), &buffer, _bytesPerPixel, xblock, yblock, _blockLength)){
+      if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not copy image block", NSLocalizedDescriptionKey, nil]];
+      goto error;
+    }
   }
+  
+  // setup our output path
+  NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"frame-%04zd.png", _encodedImages]];
+  NSLog(@"Creating %ldx%ld for %ld bytes (%ld blocks): %@", width, height, _offset, blocks, outputPath);
   
   // setup our colorspace
   colorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
   
   // setup our data provider
-  if((dataProvider = CGDataProviderCreateWithData(NULL, _imageBuffer, _offset, NULL)) == NULL){
+  if((dataProvider = CGDataProviderCreateWithData(NULL, buffer.data, buffer.rowBytes * height, NULL)) == NULL){
     if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image data provider", NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
   // create an image from our buffer
-  if((image = CGImageCreate(width, height, 8, _bytesPerPixel * 8, buffer.rowBytes, colorspace, kCGImageAlphaFirst, dataProvider, NULL, FALSE, kCGRenderingIntentDefault)) == NULL){
+  if((image = CGImageCreate(width, height, 8, _bytesPerPixel * 8, buffer.rowBytes, colorspace, kCGImageAlphaLast, dataProvider, NULL, FALSE, kCGRenderingIntentDefault)) == NULL){
     if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image from block data", NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
   // create a destination for our image
-  if((imageDestination = CGImageDestinationCreateWithURL((CFURLRef)[NSURL fileURLWithPath:[self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"frame-%04zd.png", _encodedImages]]], kUTTypePNG, 1, nil)) == NULL){
+  if((imageDestination = CGImageDestinationCreateWithURL((CFURLRef)[NSURL fileURLWithPath:outputPath], kUTTypePNG, 1, nil)) == NULL){
     if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image destination", NSLocalizedDescriptionKey, nil]];
     goto error;
   }

@@ -126,7 +126,6 @@
     // handle the last row
     if(position >= 0){
       [ranges addObject:[SCRange rangeWithPosition:position count:((y * _blockLength) + x) - position]];
-      position = -1; // clear the position
     }
     
     [currData release];

@@ -32,15 +32,6 @@
 static const size_t kSCImageBytesPerPixel_ARGB8888 = 4;
 
 /**
- * Obtain a pixel offset in the provided image data
- */
-const uint8_t * SCImageGetPixel(const vImage_Buffer *data, size_t bytesPerPixel, size_t x, size_t y) {
-  assert(data != NULL);
-  size_t offset = (y * data->rowBytes) + (x * bytesPerPixel);
-  return (offset < ((data->rowBytes * data->height) - bytesPerPixel)) ? (data->data + offset) : NULL;
-}
-
-/**
  * Compare a pixel between two images
  */
 BOOL SCImageComparePixels(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, float threshold, size_t x, size_t y) {
@@ -51,7 +42,7 @@ BOOL SCImageComparePixels(const vImage_Buffer *data1, const vImage_Buffer *data2
   if(a == b) return TRUE; // same memory or both pointers null, must be the same
   if(a == NULL || b == NULL) return FALSE;
   for(int i = 0; i < bytesPerPixel; i++){ if(abs(a[i] - b[i]) > threshold) return FALSE; }
-  return TRUE; // we've processed the entire pixel and all's well
+  return TRUE; // we've processed the pixel and all's well
 }
 
 /**
@@ -79,7 +70,8 @@ BOOL SCImageCopyOutSequentialBlock(const vImage_Buffer *data, uint8_t *block, si
   assert(block != NULL);
   size_t index = 0, bytesPerRow = bytesPerPixel * blocksize;
   for(int y = 0; y < blocksize; y++){
-    const uint8_t * row = SCImageGetPixel(data, bytesPerPixel, (xblock * blocksize), (yblock * blocksize) + y);
+    const uint8_t *row;
+    if((row = SCImageGetPixel(data, bytesPerPixel, (xblock * blocksize), (yblock * blocksize) + y)) == NULL) return FALSE;
     memcpy(block + index, row, bytesPerRow);
     index += bytesPerRow;
   }
@@ -96,8 +88,11 @@ BOOL SCImageCopyInSequentialBlock(const uint8_t *block, vImage_Buffer *data, siz
   assert(data != NULL);
   size_t index = 0, bytesPerRow = bytesPerPixel * blocksize;
   for(int y = 0; y < blocksize; y++){
-    uint8_t * row = (uint8_t *)SCImageGetPixel(data, bytesPerPixel, (xblock * blocksize), (yblock * blocksize) + y);
+    uint8_t *row;
+    if((row = (uint8_t *)SCImageGetPixel(data, bytesPerPixel, (xblock * blocksize), (yblock * blocksize) + y)) == NULL) return FALSE;
     memcpy(row, block + index, bytesPerRow);
+    for(int i = 0; i < blocksize; i++) fprintf(stderr, "%02x", *(block + index + i));
+    fputc('\n', stderr);
     index += bytesPerRow;
   }
   return TRUE;
