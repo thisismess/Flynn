@@ -48,11 +48,6 @@ var Spellcaster = AC.Class({
         this.flow().setDelegate(this);
     },
 
-    willPlay: function(h)
-    {
-        alert("Here");
-    },
-
     enhance: function(h) 
     {
         AC.Element.addClassName(h, "enhanced");
