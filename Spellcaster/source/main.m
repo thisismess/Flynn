@@ -38,27 +38,6 @@ int main(int argc, const char * argv[]) {
     NSMutableDictionary *options = [[NSMutableDictionary alloc] init];
     NSString *outputDirectory = nil;
     
-    NSMutableString *ok = [NSMutableString string];
-    [ok appendString:[NSString stringWithFormat:@"%d ", 64]];
-    [[[[SCManifest alloc] init] autorelease] encodeValue:64 length:3 buffer:ok];
-    [ok appendString:@" "];
-    [ok appendString:[NSString stringWithFormat:@"%d ", 65]];
-    [[[[SCManifest alloc] init] autorelease] encodeValue:65 length:3 buffer:ok];
-    [ok appendString:@" "];
-    [ok appendString:[NSString stringWithFormat:@"%d ", 66]];
-    [[[[SCManifest alloc] init] autorelease] encodeValue:66 length:3 buffer:ok];
-    [ok appendString:@" "];
-    [ok appendString:[NSString stringWithFormat:@"%d ", 4095]];
-    [[[[SCManifest alloc] init] autorelease] encodeValue:4095 length:3 buffer:ok];
-    [ok appendString:@" "];
-    [ok appendString:[NSString stringWithFormat:@"%d ", 4096]];
-    [[[[SCManifest alloc] init] autorelease] encodeValue:4096 length:3 buffer:ok];
-    [ok appendString:@" "];
-    [ok appendString:[NSString stringWithFormat:@"%d ", 4097]];
-    [[[[SCManifest alloc] init] autorelease] encodeValue:4097 length:3 buffer:ok];
-    NSLog(@"FUCK: %@", ok);
-    return 0;
-    
     static struct option longopts[] = {
       { "prefix",           required_argument,  NULL,         'p' },  // input frame prefix
       { "output",           required_argument,  NULL,         'o' },  // base path for output
