@@ -162,6 +162,9 @@ AC.Object.extend(AC.Flow.prototype, {
         var n = Math.floor(q / (a || 1)) * j;
         var h = (m.location % this.__columnsInCanvas) * j;
         var g = Math.floor(m.location / this.__columnsInCanvas) * j;
+        console.log("Writting block");
+        console.log(m);
+        console.log(n);
         var k;
         var f;
         while (b) {
