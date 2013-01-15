@@ -23,6 +23,7 @@
 		D323158916A4A6AA0071D96D /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D323158816A4A6AA0071D96D /* Accelerate.framework */; };
 		D323158D16A4C7BE0071D96D /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D323158C16A4C7BE0071D96D /* CoreServices.framework */; };
 		D3D7D1E316A5091A0071DE5D /* SCOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D7D1E216A5091A0071DE5D /* SCOptions.m */; };
+		D3D7D1E716A5183D0071DE5D /* SCLog.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D7D1E616A5183D0071DE5D /* SCLog.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -67,6 +68,8 @@
 		D323158C16A4C7BE0071D96D /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		D3D7D1E116A5091A0071DE5D /* SCOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCOptions.h; sourceTree = "<group>"; };
 		D3D7D1E216A5091A0071DE5D /* SCOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCOptions.m; sourceTree = "<group>"; };
+		D3D7D1E516A5183C0071DE5D /* SCLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCLog.h; sourceTree = "<group>"; };
+		D3D7D1E616A5183D0071DE5D /* SCLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCLog.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +150,8 @@
 			children = (
 				D323157816A4873F0071D96D /* sequence */,
 				D323157416A482E80071D96D /* SCError.h */,
+				D3D7D1E516A5183C0071DE5D /* SCLog.h */,
+				D3D7D1E616A5183D0071DE5D /* SCLog.m */,
 				D3D7D1E116A5091A0071DE5D /* SCOptions.h */,
 				D3D7D1E216A5091A0071DE5D /* SCOptions.m */,
 				D323156C16A3F1CD0071D96D /* SCRange.h */,
@@ -254,6 +259,7 @@
 				D323158416A4980C0071D96D /* SCImageComparator.m in Sources */,
 				D323158716A4A4560071D96D /* SCBlockEncoder.m in Sources */,
 				D3D7D1E316A5091A0071DE5D /* SCOptions.m in Sources */,
+				D3D7D1E716A5183D0071DE5D /* SCLog.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

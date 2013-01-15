@@ -27,43 +27,15 @@
 // Designed and developed by Mess - http://thisismess.com/
 // 
 
-#import "SCRange.h"
+typedef enum {
+  kSCLogLevelInfo,
+  kSCLogLevelVerbose
+} SCLogLevel;
 
-/**
- * Spellcaster options.
- * 
- * @author Brian William Wolter
- */
-@interface SCOptions : NSObject {
-  
-  NSString  * _prefix;
-  BOOL        _verbose;
-  size_t      _blockLength;
-  size_t      _imageLength;
-  
-}
+#define SCLog(a...)     __SCLog(kSCLogLevelInfo, ##a)
+#define SCVerbose(a...) __SCLog(kSCLogLevelVerbose, ##a)
 
--(void)info:(NSString *)format, ...;
--(void)error:(NSString *)format, ...;
-
-@property (readonly) NSString * prefix;
-@property (readonly) BOOL       verbose;
-@property (readonly) size_t     blockLength;
-@property (readonly) size_t     imageLength;
-
-@end
-
-/**
- * Mutable spellcaster options.
- * 
- * @author Brian William Wolter
- */
-@interface SCMutableOptions : SCOptions
-
--(void)setPrefix:(NSString *)prefix;
--(void)setVerbose:(BOOL)verbose;
--(void)setBlockLength:(size_t)blockLength;
--(void)setImageLength:(size_t)imageLength;
-
-@end
+SCLogLevel __SCGetLogLevel(void);
+void __SCSetLogLevel(SCLogLevel level);
+void __SCLog(int level, NSString *format, ...);
 

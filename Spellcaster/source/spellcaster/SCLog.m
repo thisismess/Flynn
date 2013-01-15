@@ -27,30 +27,29 @@
 // Designed and developed by Mess - http://thisismess.com/
 // 
 
-#import "SCOptions.h"
+#import "SCLog.h"
 
-@implementation SCOptions
+static SCLogLevel __SCLogLevel = kSCLogLevelInfo;
 
-@synthesize prefix = _prefix;
-@synthesize verbose = _verbose;
-@synthesize blockLength = _blockLength;
-@synthesize imageLength = _imageLength;
-
--(void)dealloc {
-  [_prefix release];
-  [super dealloc];
+/**
+ * Obtain the application wide log level
+ */
+SCLogLevel __SCGetLogLevel(void) {
+  return __SCLogLevel;
 }
 
--(id)init {
-  if((self = [super init]) != nil){
-    _blockLength = 8;
-    _imageLength = 1624;
-  }
-  return self;
+/**
+ * Obtain the application wide log level
+ */
+void __SCSetLogLevel(SCLogLevel level) {
+  __SCLogLevel = level;
 }
 
--(void)info:(NSString *)format, ... {
-  if(self.verbose){
+/**
+ * Log a message
+ */
+void __SCLog(int level, NSString *format, ...) {
+  if(level <= __SCLogLevel){
     va_list ap;
     va_start(ap, format);
     fputs([[[NSProcessInfo processInfo] processName] UTF8String], stderr);
@@ -60,37 +59,4 @@
     va_end(ap);
   }
 }
-
--(void)error:(NSString *)format, ... {
-  va_list ap;
-  va_start(ap, format);
-  fputs([[[NSProcessInfo processInfo] processName] UTF8String], stderr);
-  fputs(": ", stderr);
-  fputs([[[[NSString alloc] initWithFormat:format arguments:ap] autorelease] UTF8String], stderr);
-  fputc('\n', stderr);
-  va_end(ap);
-}
-
-@end
-
-@implementation SCMutableOptions
-
--(void)setPrefix:(NSString *)prefix {
-  [_prefix release];
-  _prefix = [prefix copy];
-}
-
--(void)setVerbose:(BOOL)verbose {
-  _verbose = verbose;
-}
-
--(void)setBlockLength:(size_t)blockLength {
-  _blockLength = blockLength;
-}
-
--(void)setImageLength:(size_t)imageLength {
-  _imageLength = imageLength;
-}
-
-@end
 

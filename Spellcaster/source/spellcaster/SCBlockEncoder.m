@@ -30,6 +30,7 @@
 #import "SCBlockEncoder.h"
 #import "SCImage.h"
 #import "SCError.h"
+#import "SCLog.h"
 
 @implementation SCBlockEncoder
 
@@ -225,8 +226,8 @@ error:
   
   // setup our output path
   NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"frame-%04zd.png", _encodedImages]];
-  // ...
-  NSLog(@"Export %ldx%ld for %ld bytes (%ld blocks): %@", width, height, _offset, blocks, outputPath);
+  // note it
+  SCVerbose(@"exporting %ldx%ld for %ld blocks: %@", width, height, blocks, outputPath);
   
   // setup our colorspace
   colorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);

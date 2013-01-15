@@ -34,14 +34,16 @@
 #import "SCImageComparator.h"
 #import "SCBlockEncoder.h"
 #import "SCOptions.h"
+#import "SCLog.h"
 
-void SCProcessDirectory(NSString *path);
+void SCProcessDirectory(NSString *path, SCOptions *options);
 
 int main(int argc, const char * argv[]) {
   @autoreleasepool {
     SCMutableOptions *options = [[SCMutableOptions alloc] init];
-    /*
+    
     static struct option longopts[] = {
+      { "prefix",       required_argument,  NULL,         'p' },  // input frame prefix
       { "output",       required_argument,  NULL,         'o' },  // base path for output
       { "block-size",   required_argument,  NULL,         'b' },  // block size
       { "image-size",   required_argument,  NULL,         'I' },  // maximum image size
@@ -50,11 +52,15 @@ int main(int argc, const char * argv[]) {
     };
     
     int flag;
-    while((flag = getopt_long(argc, (char **)argv, "o:b:I:v", longopts, NULL)) != -1){
+    while((flag = getopt_long(argc, (char **)argv, "p:o:b:I:v", longopts, NULL)) != -1){
       switch(flag){
         
+        case 'p':
+          options.prefix = [NSString stringWithUTF8String:optarg];
+          break;
+          
         case 'o':
-          //options |= kWGOptionWrite;
+          //options.output = [NSString stringWithUTF8String:optarg];
           break;
           
         case 'b':
@@ -66,27 +72,26 @@ int main(int argc, const char * argv[]) {
           break;
           
         case 'v':
-          options.verbose = TRUE;
+          __SCSetLogLevel(kSCLogLevelVerbose);
           break;
           
         default:
-          NSLog(@"* * * Invalid?");
           exit(0);
           
       }
     }
-    */
+    
     if((options.imageLength % options.blockLength) != 0){
-      NSLog(@"* * * Encoded images must have dimensions that are a multiple of the block size");
+      SCLog(@"Encoded images must have dimensions that are a multiple of the block size (%ldx%ld)", options.blockLength, options.blockLength);
       exit(-1);
     }
     
-    //argv += optind;
-    //argc -= optind;
+    argv += optind;
+    argc -= optind;
     
-    for(int i = 1; i < argc; i++){
+    for(int i = 0; i < argc; i++){
       NSString *path = [[NSString alloc] initWithUTF8String:argv[i]];
-      SCProcessDirectory(path);
+      SCProcessDirectory(path, options);
       [path release];
     }
     
@@ -98,9 +103,7 @@ int main(int argc, const char * argv[]) {
 /**
  * Process a directory
  */
-void SCProcessDirectory(NSString *path) {
-  size_t maxImageSize = 1624;
-  size_t blockLength  = 8;
+void SCProcessDirectory(NSString *path, SCOptions *options) {
   
   SCManifest *manifest = [[SCManifest alloc] init];
   SCImageSequence *sequence = [[SCImageSequence alloc] initWithDirectoryPath:path prefix:@"_t-frame-"];
@@ -110,21 +113,21 @@ void SCProcessDirectory(NSString *path) {
   CGImageRef image;
   
   if(![sequence open:&error]){
-    NSLog(@"* * * Could not open frame sequence: %@", [error localizedDescription]);
+    SCLog(@"Could not open frame sequence: %@", [error localizedDescription]);
     goto error;
   }
   
   if((image = [sequence copyNextFrameImageWithError:&error]) != NULL){
-    comparator = [[SCImageComparator alloc] initWithKeyframeImage:image blockLength:blockLength];
-    encoder = [[SCBlockEncoder alloc] initWithDirectoryPath:[path stringByAppendingPathComponent:@"spellcaster"] prefix:@"frame-" imageLength:maxImageSize blockLength:blockLength bytesPerPixel:CGImageGetBitsPerPixel(image) / CGImageGetBitsPerComponent(image)];
+    comparator = [[SCImageComparator alloc] initWithKeyframeImage:image blockLength:options.blockLength];
+    encoder = [[SCBlockEncoder alloc] initWithDirectoryPath:[path stringByAppendingPathComponent:@"spellcaster"] prefix:@"frame-" imageLength:options.imageLength blockLength:options.blockLength bytesPerPixel:CGImageGetBitsPerPixel(image) / CGImageGetBitsPerComponent(image)];
     CGImageRelease(image);
   }else{
-    NSLog(@"* * * Could not read keyframe image: %@", [error localizedDescription]);
+    SCLog(@"Could not read keyframe image: %@", [error localizedDescription]);
     goto error;
   }
   
   if(![encoder open:&error]){
-    NSLog(@"* * * Could not open block encoder: %@", [error localizedDescription]);
+    SCLog(@"Could not open block encoder: %@", [error localizedDescription]);
     goto error;
   }
   
@@ -135,19 +138,19 @@ void SCProcessDirectory(NSString *path) {
     
     NSArray *blocks;
     if((blocks = [comparator updateBlocksForImage:image error:&error]) == nil){
-      NSLog(@"* * * Could not determine update blocks from frame image: %@", [error localizedDescription]);
+      SCLog(@"Could not determine update blocks from frame image: %@", [error localizedDescription]);
       more = FALSE; error = nil;
       goto done;
     }
     
     if(![encoder encodeBlocks:blocks forImage:image error:&error]){
-      NSLog(@"* * * Could not encode update blocks from frame image: %@", [error localizedDescription]);
+      SCLog(@"Could not encode update blocks from frame image: %@", [error localizedDescription]);
       more = FALSE; error = nil;
       goto done;
     }
     
     if(![manifest startFrame]){
-      NSLog(@"* * * Could not start a manifest frame");
+      SCLog(@"Could not start a manifest frame");
       more = FALSE; error = nil;
       goto done;
     }
@@ -155,13 +158,13 @@ void SCProcessDirectory(NSString *path) {
     for(SCRange *range in blocks){
       diffblocks += range.count;
       if(![manifest encodeCopyBlocks:range]){
-        NSLog(@"* * * Could not encode copy-block command");
+        SCLog(@"Could not encode copy-block command");
         more = FALSE; error = nil;
         goto done;
       }
     }
     
-    fprintf(stderr, "%04ld: %ld updated blocks in %ld ranges\n", frames++, diffblocks, [blocks count]);
+    SCVerbose(@"%04ld: updated %ld blocks in %ld ranges", frames++, diffblocks, [blocks count]);
     
     done:
     CGImageRelease(image);
@@ -169,22 +172,22 @@ void SCProcessDirectory(NSString *path) {
   }
   
   if(error != nil){
-    NSLog(@"* * * Could not process frame image: %@", [error localizedDescription]);
+    SCLog(@"Could not process frame image: %@", [error localizedDescription]);
     goto error;
   }
   
   if(![[manifest externalRepresentation] writeToFile:[path stringByAppendingPathComponent:@"spellcaster/manifest.json"]  atomically:TRUE encoding:NSUTF8StringEncoding error:&error]){
-    NSLog(@"* * * Could not write manifest file: %@", [error localizedDescription]);
+    SCLog(@"Could not write manifest file: %@", [error localizedDescription]);
     goto error;
   }
   
   if(![encoder close:&error]){
-    NSLog(@"* * * Could not close block encoder: %@", [error localizedDescription]);
+    SCLog(@"Could not close block encoder: %@", [error localizedDescription]);
     goto error;
   }
   
   if(![sequence close:&error]){
-    NSLog(@"* * * Could not close frame sequence: %@", [error localizedDescription]);
+    SCLog(@"Could not close frame sequence: %@", [error localizedDescription]);
     goto error;
   }
   
