@@ -145,7 +145,7 @@ void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSDictio
   
   size_t frames = 0;
   while((image = [sequence copyNextFrameImageWithError:&error]) != NULL){
-    size_t diffblocks = 0;
+    size_t diffblocks = 0, totalblocks = (CGImageGetWidth(image) / blockLength) * (CGImageGetHeight(image) / blockLength);
     BOOL more = TRUE;
     
     NSArray *blocks;
@@ -176,7 +176,8 @@ void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSDictio
       }
     }
     
-    SCVerbose(@"%04ld: updated %ld blocks in %ld ranges", frames++, diffblocks, [blocks count]);
+    SCVerbose(@"%04ld: updated %ld of %ld blocks in %ld ranges (%.1f%%)", frames++, diffblocks, totalblocks, [blocks count], ((double)diffblocks / (double)totalblocks) * 100.0);
+    //SCImageShowAttributes(image);
     
     done:
     CGImageRelease(image);

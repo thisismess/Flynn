@@ -102,8 +102,6 @@
     currentBuffer.height = height;
     currentBuffer.rowBytes = bytesPerRow;
     
-    SCImageShowAttributes(image);
-    
     dataProvider = CGImageGetDataProvider(image);
     NSData *nextData = (NSData *)CGDataProviderCopyData(dataProvider);
     const uint8_t *nextPixels = [nextData bytes];
@@ -116,42 +114,24 @@
     
     size_t wblocks = width / _blockLength;
     size_t hblocks = height / _blockLength;
-    ssize_t position = -1;
+    ssize_t position = -1, count = 0;
     size_t x = 0, y = 0;
     
     for(y = 0; y < hblocks; y++){
       for(x = 0; x < wblocks; x++){
-        
-        BOOL equal;
-        if(!(equal = SCImageBlocksEqual(&currentBuffer, &updateBuffer, bytesPerPixel, 1, x, y, _blockLength))){
-          // update the range offset if we're not already in a run
+        if(!SCImageBlocksEqual(&currentBuffer, &updateBuffer, bytesPerPixel, 1, x, y, _blockLength)){
           if(position < 0) position = (y * wblocks) + x;
+          count++; // increment the run count
         }else if(position >= 0){
-          [ranges addObject:[SCRange rangeWithPosition:position count:((y * wblocks) + x) - position]];
-          position = -1; // clear the run offset position
+          [ranges addObject:[SCRange rangeWithPosition:position count:count]];
+          position = -1; count = 0; // clear the run position and count
         }
-        
-        // if we're debugging, display the engire block
-#if defined(__SPELL_DEBUG_IMAGE_DATA__)
-        for(int z = 0; z < _blockLength; z++){
-          const uint8_t *row;
-          if((row = SCImageGetPixel(&currentBuffer, bytesPerPixel, (x * _blockLength) + z, (y * _blockLength))) != NULL){
-            fprintf(stderr, "%06ld, %06ld [%c] ", x, y, (equal) ? ' ' : '*');
-            for(int i = 0; i < _blockLength * bytesPerPixel; i++){
-              fprintf(stderr, "%02x", *(row + i));
-              if(((i + 1) % bytesPerPixel) == 0) fputc(' ', stderr);
-            }
-            fputc('\n', stderr);
-          }
-        }
-#endif
-        
       }
     }
     
     // handle the last row
     if(position >= 0){
-      [ranges addObject:[SCRange rangeWithPosition:position count:((y * wblocks) + x) - position]];
+      [ranges addObject:[SCRange rangeWithPosition:position count:count]];
     }
     
     [currData release];
