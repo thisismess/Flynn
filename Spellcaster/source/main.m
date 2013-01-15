@@ -177,7 +177,6 @@ void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSDictio
     }
     
     SCVerbose(@"%04ld: updated %ld of %ld blocks in %ld ranges (%.1f%%)", frames++, diffblocks, totalblocks, [blocks count], ((double)diffblocks / (double)totalblocks) * 100.0);
-    //SCImageShowAttributes(image);
     
     done:
     CGImageRelease(image);
