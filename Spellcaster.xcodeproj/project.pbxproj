@@ -70,6 +70,7 @@
 		D3D7D1E216A5091A0071DE5D /* SCOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCOptions.m; sourceTree = "<group>"; };
 		D3D7D1E516A5183C0071DE5D /* SCLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCLog.h; sourceTree = "<group>"; };
 		D3D7D1E616A5183D0071DE5D /* SCLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCLog.m; sourceTree = "<group>"; };
+		D3D7D1E816A51C550071DE5D /* SCCodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCCodec.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,6 +153,7 @@
 				D323157416A482E80071D96D /* SCError.h */,
 				D3D7D1E516A5183C0071DE5D /* SCLog.h */,
 				D3D7D1E616A5183D0071DE5D /* SCLog.m */,
+				D3D7D1E816A51C550071DE5D /* SCCodec.h */,
 				D3D7D1E116A5091A0071DE5D /* SCOptions.h */,
 				D3D7D1E216A5091A0071DE5D /* SCOptions.m */,
 				D323156C16A3F1CD0071D96D /* SCRange.h */,
