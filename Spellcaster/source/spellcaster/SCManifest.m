@@ -87,8 +87,8 @@ static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 -(BOOL)encodeCopyBlocksAtPosition:(size_t)position count:(size_t)blocks {
   NSMutableString *frame;
   if((frame = self.currentFrame) != nil){
-    if(![self encodeValue:blocks length:3 buffer:frame]) return FALSE;
-    if(![self encodeValue:(position > powl(64, 2) - 1) ? 0 : position length:2 buffer:frame]) return FALSE;
+    if(![self encodeValue:position length:3 buffer:frame]) return FALSE;
+    if(![self encodeValue:blocks length:2 buffer:frame]) return FALSE;
   }
   return TRUE;
 }

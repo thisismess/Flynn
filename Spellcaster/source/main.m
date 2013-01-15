@@ -111,7 +111,7 @@ void SCProcessDirectory(NSString *path, NSDictionary *settings) {
   size_t imageLength = 1624;
   
   SCManifest *manifest = [[SCManifest alloc] init];
-  SCImageSequence *sequence = [[SCImageSequence alloc] initWithDirectoryPath:path prefix:@"_t-frame-"];
+  SCImageSequence *sequence = [[SCImageSequence alloc] initWithDirectoryPath:path prefix:@""];
   SCImageComparator *comparator = nil;
   SCBlockEncoder *encoder = nil;
   NSError *error = nil;

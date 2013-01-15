@@ -113,7 +113,7 @@
   CGDataProviderRef dataProvider = NULL;
   NSString *path, *extension;
   
-  if(_currentFrame > ([_imagePaths count] - 1)){
+  if(_currentFrame >= [_imagePaths count]){
     if(error) *error = nil; // not a real error
     goto error;
   }
