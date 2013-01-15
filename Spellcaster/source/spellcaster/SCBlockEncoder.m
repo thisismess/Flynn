@@ -1,30 +1,25 @@
 // 
-// @COPYRIGHT_NOTICE@
+// Copyright 2013 Mess, All rights reserved.
 // 
-// @MESS_LICENSE_START@
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
 // 
-// This software is provided to you by Kaart Marketing, LLC, d/b/a Mess
-// Marketing ('Mess') in consideration of your acceptance of the terms
-// under which it was developed for or licensed to you (the 'Agreement').
-// You may not use this software except in compliance with the Agreement.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// The Mess Software is provided by Mess on an "AS IS" basis.  MESS MAKES NO
-// WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED
-// WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A
-// PARTICULAR PURPOSE, REGARDING THE MESS SOFTWARE OR ITS USE AND OPERATION
-// ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 // 
-// IN NO EVENT SHALL MESS BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL OR
-// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-// INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION, MODIFICATION
-// AND/OR DISTRIBUTION OF THE MESS SOFTWARE, HOWEVER CAUSED AND WHETHER UNDER
-// THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE), STRICT LIABILITY OR
-// OTHERWISE, EVEN IF MESS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// 
-// @MESS_LICENSE_END@
-// 
-// Designed and developed by Mess - http://thisismess.com/
+// Made by Mess - http://thisismess.com/
 // 
 
 #import "SCBlockEncoder.h"
@@ -225,7 +220,7 @@ error:
   }
   
   // setup our output path
-  NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"frame-%04zd.png", _encodedImages]];
+  NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"spellcaster_%03zd.png", _encodedImages + 1]];
   // note it
   SCVerbose(@"exporting %ldx%ld for %ld blocks: %@", width, height, blocks, outputPath);
   

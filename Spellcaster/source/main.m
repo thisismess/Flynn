@@ -1,30 +1,25 @@
 // 
-// @COPYRIGHT_NOTICE@
+// Copyright 2013 Mess, All rights reserved.
 // 
-// @MESS_LICENSE_START@
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
 // 
-// This software is provided to you by Kaart Marketing, LLC, d/b/a Mess
-// Marketing ('Mess') in consideration of your acceptance of the terms
-// under which it was developed for or licensed to you (the 'Agreement').
-// You may not use this software except in compliance with the Agreement.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// The Mess Software is provided by Mess on an "AS IS" basis.  MESS MAKES NO
-// WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED
-// WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A
-// PARTICULAR PURPOSE, REGARDING THE MESS SOFTWARE OR ITS USE AND OPERATION
-// ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 // 
-// IN NO EVENT SHALL MESS BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL OR
-// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-// INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION, MODIFICATION
-// AND/OR DISTRIBUTION OF THE MESS SOFTWARE, HOWEVER CAUSED AND WHETHER UNDER
-// THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE), STRICT LIABILITY OR
-// OTHERWISE, EVEN IF MESS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// 
-// @MESS_LICENSE_END@
-// 
-// Designed and developed by Mess - http://thisismess.com/
+// Made by Mess - http://thisismess.com/
 // 
 
 #import <getopt.h>
@@ -33,42 +28,48 @@
 #import "SCImageSequence.h"
 #import "SCImageComparator.h"
 #import "SCBlockEncoder.h"
-#import "SCOptions.h"
+#import "SCCodec.h"
 #import "SCLog.h"
 
-void SCProcessDirectory(NSString *path, SCOptions *options);
+void SCProcessDirectory(NSString *path, NSDictionary *settings);
 
 int main(int argc, const char * argv[]) {
   @autoreleasepool {
-    SCMutableOptions *options = [[SCMutableOptions alloc] init];
+    NSMutableDictionary *options = [[NSMutableDictionary alloc] init];
+    NSString *outputDirectory = nil;
     
     static struct option longopts[] = {
-      { "prefix",       required_argument,  NULL,         'p' },  // input frame prefix
-      { "output",       required_argument,  NULL,         'o' },  // base path for output
-      { "block-size",   required_argument,  NULL,         'b' },  // block size
-      { "image-size",   required_argument,  NULL,         'I' },  // maximum image size
-      { "verbose",      no_argument,        NULL,         'v' },  // be more verbose
-      { NULL,           0,                  NULL,          0  }
+      { "prefix",           required_argument,  NULL,         'p' },  // input frame prefix
+      { "output",           required_argument,  NULL,         'o' },  // base path for output
+      { "block-threshold",  required_argument,  NULL,         't' },  // block pixel discrepency threshold
+      { "block-size",       required_argument,  NULL,         'b' },  // block size
+      { "image-size",       required_argument,  NULL,         'I' },  // maximum image size
+      { "verbose",          no_argument,        NULL,         'v' },  // be more verbose
+      { NULL,               0,                  NULL,          0  }
     };
     
     int flag;
-    while((flag = getopt_long(argc, (char **)argv, "p:o:b:I:v", longopts, NULL)) != -1){
+    while((flag = getopt_long(argc, (char **)argv, "p:o:b:I:t:v", longopts, NULL)) != -1){
       switch(flag){
         
         case 'p':
-          options.prefix = [NSString stringWithUTF8String:optarg];
+          // 
           break;
           
         case 'o':
-          //options.output = [NSString stringWithUTF8String:optarg];
+          outputDirectory = [NSString stringWithUTF8String:optarg];
           break;
           
         case 'b':
-          options.blockLength = atoi(optarg);
+          [options setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kSCCodecBlockSizeKey];
           break;
           
         case 'I':
-          options.imageLength = atoi(optarg);
+          [options setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kSCCodecImageSizeKey];
+          break;
+          
+        case 't':
+          [options setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kSCCodecBlockPixelDiscrepancyThresholdKey];
           break;
           
         case 'v':
@@ -81,10 +82,12 @@ int main(int argc, const char * argv[]) {
       }
     }
     
+    /*
     if((options.imageLength % options.blockLength) != 0){
       SCLog(@"Encoded images must have dimensions that are a multiple of the block size (%ldx%ld)", options.blockLength, options.blockLength);
       exit(-1);
     }
+    */
     
     argv += optind;
     argc -= optind;
@@ -103,7 +106,9 @@ int main(int argc, const char * argv[]) {
 /**
  * Process a directory
  */
-void SCProcessDirectory(NSString *path, SCOptions *options) {
+void SCProcessDirectory(NSString *path, NSDictionary *settings) {
+  size_t blockLength = 8;
+  size_t imageLength = 1624;
   
   SCManifest *manifest = [[SCManifest alloc] init];
   SCImageSequence *sequence = [[SCImageSequence alloc] initWithDirectoryPath:path prefix:@"_t-frame-"];
@@ -118,8 +123,8 @@ void SCProcessDirectory(NSString *path, SCOptions *options) {
   }
   
   if((image = [sequence copyNextFrameImageWithError:&error]) != NULL){
-    comparator = [[SCImageComparator alloc] initWithKeyframeImage:image blockLength:options.blockLength];
-    encoder = [[SCBlockEncoder alloc] initWithDirectoryPath:[path stringByAppendingPathComponent:@"spellcaster"] prefix:@"frame-" imageLength:options.imageLength blockLength:options.blockLength bytesPerPixel:CGImageGetBitsPerPixel(image) / CGImageGetBitsPerComponent(image)];
+    comparator = [[SCImageComparator alloc] initWithKeyframeImage:image blockLength:blockLength];
+    encoder = [[SCBlockEncoder alloc] initWithDirectoryPath:[path stringByAppendingPathComponent:@"spellcaster"] prefix:@"spellcaster_" imageLength:imageLength blockLength:blockLength bytesPerPixel:CGImageGetBitsPerPixel(image) / CGImageGetBitsPerComponent(image)];
     CGImageRelease(image);
   }else{
     SCLog(@"Could not read keyframe image: %@", [error localizedDescription]);
@@ -176,7 +181,7 @@ void SCProcessDirectory(NSString *path, SCOptions *options) {
     goto error;
   }
   
-  if(![[manifest externalRepresentation] writeToFile:[path stringByAppendingPathComponent:@"spellcaster/manifest.json"]  atomically:TRUE encoding:NSUTF8StringEncoding error:&error]){
+  if(![[manifest externalRepresentation] writeToFile:[path stringByAppendingPathComponent:@"spellcaster/spellcaster_manifest.json"]  atomically:TRUE encoding:NSUTF8StringEncoding error:&error]){
     SCLog(@"Could not write manifest file: %@", [error localizedDescription]);
     goto error;
   }

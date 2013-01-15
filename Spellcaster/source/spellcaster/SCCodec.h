@@ -22,26 +22,24 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCRange.h"
+/**
+ * The block size to use for encoding. This should be an NSNumber.
+ */
+#define kSCCodecBlockSizeKey @"SCCodecBlockSize"
 
 /**
- * An animation manifest. A manifest describes the animation's components and
- * its individual frames.
- * 
- * @author Brian William Wolter
+ * The maximum image size to use for encoding. This should be an NSNumber.
  */
-@interface SCManifest : NSObject
+#define kSCCodecImageSizeKey @"SCCodecImageSize"
 
--(BOOL)startFrame;
--(BOOL)encodeCopyBlocks:(SCRange *)range;
--(BOOL)encodeCopyBlocksAtPosition:(size_t)position count:(size_t)blocks;
+/**
+ * The format encoded images should be produced in. This should be a UTI string, only JPEG and PNG are supported.
+ */
+#define kSCCodecImageFormatKey @"SCCodecImageFormat"
 
--(NSString *)externalRepresentation;
+/**
+ * The maximum number of pixel discrepencies between two blocks before a block is updated. This should be an NSNumber.
+ */
+#define kSCCodecBlockPixelDiscrepancyThresholdKey @"SCCodecBlockPixelDiscrepancyThreshold"
 
-@property (readonly) NSUInteger version;
-@property (readonly) NSUInteger blockLength;
-@property (readonly) NSUInteger images;
-@property (readonly) NSArray  * frames;
-
-@end
 
