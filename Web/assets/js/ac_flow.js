@@ -167,6 +167,8 @@ AC.Object.extend(AC.Flow.prototype, {
         while (b) {
             k = Math.min((b * j), p - h, i - o);
             f = k / j;
+            console.log(e);
+            e.clearRect(h, g, k, j);
             e.drawImage(c[r], o, n, k, j, h, g, k, j);
             b -= f;
             if (b) {
