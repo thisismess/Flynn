@@ -68,3 +68,30 @@ BOOL SCImageWriteJPEGToPath(CGImageRef image, NSString *path, NSError **error) {
   return SCImageWriteToPath(image, (NSString *)kUTTypeJPEG, path, error);
 }
 
+/**
+ * Display attributes for an image
+ */
+void SCImageShowAttributes(CGImageRef image) {
+  if(image != nil){
+    size_t bpp = CGImageGetBitsPerPixel(image) / 8;
+    fprintf(stderr, "%p - ", image);
+    
+    fprintf(stderr, "%ld x %ld (", CGImageGetWidth(image), CGImageGetHeight(image));
+    for(int i = 0; i < bpp; i++) fprintf(stderr, "%ld", CGImageGetBitsPerComponent(image));
+    fprintf(stderr, ") ");
+    
+    switch(CGImageGetAlphaInfo(image)){
+      case kCGImageAlphaNone:               fprintf(stderr, "no alpha component");        break;
+      case kCGImageAlphaPremultipliedFirst: fprintf(stderr, "premultiplied alpha first"); break;
+      case kCGImageAlphaPremultipliedLast:  fprintf(stderr, "premultiplied alpha last");  break;
+      case kCGImageAlphaFirst:              fprintf(stderr, "alpha first");               break;
+      case kCGImageAlphaLast:               fprintf(stderr, "alpha last");                break;
+      case kCGImageAlphaNoneSkipFirst:      fprintf(stderr, "no alpha, skip first");      break;
+      case kCGImageAlphaNoneSkipLast:       fprintf(stderr, "no alpha, skip last");       break;
+      case kCGImageAlphaOnly:               fprintf(stderr, "alpha only");                break;
+    }
+    
+    fputc('\n', stderr);
+  }
+}
+

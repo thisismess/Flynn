@@ -162,7 +162,6 @@ AC.Object.extend(AC.Flow.prototype, {
         var n = Math.floor(q / (a || 1)) * j;
         var h = (m.location % this.__columnsInCanvas) * j;
         var g = Math.floor(m.location / this.__columnsInCanvas) * j;
-        console.log("Writing block from location " + m.location + ' and lenth ' + m.length);
         var k;
         var f;
         while (b) {
@@ -170,6 +169,8 @@ AC.Object.extend(AC.Flow.prototype, {
             f = k / j;
             e.clearRect(h, g, k, j);
             e.drawImage(c[r], o, n, k, j, h, g, k, j);
+            //e.lineWidth = 1;
+            //e.strokeRect(h, g, k, j);
             b -= f;
             if (b) {
                 if ((o += k) >= i) {

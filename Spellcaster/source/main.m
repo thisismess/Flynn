@@ -32,7 +32,7 @@
 #import "SCCodec.h"
 #import "SCLog.h"
 
-void SCProcessDirectory(NSString *inputDirectory, NSString *outputDirectory, NSDictionary *settings);
+void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSDictionary *settings);
 
 int main(int argc, const char * argv[]) {
   @autoreleasepool {
@@ -102,7 +102,7 @@ int main(int argc, const char * argv[]) {
     
     for(int i = 0; i < argc; i++){
       NSString *inputDirectory = [[NSString alloc] initWithUTF8String:argv[i]];
-      SCProcessDirectory(inputDirectory, (outputDirectory != nil) ? outputDirectory : [outputDirectory stringByAppendingPathComponent:@"spellcaster"], options);
+      SCSpellExport(inputDirectory, (outputDirectory != nil) ? outputDirectory : [outputDirectory stringByAppendingPathComponent:@"spellcaster"], options);
       [inputDirectory release];
     }
     
@@ -112,9 +112,9 @@ int main(int argc, const char * argv[]) {
 }
 
 /**
- * Process a directory
+ * Export
  */
-void SCProcessDirectory(NSString *inputDirectory, NSString *outputDirectory, NSDictionary *settings) {
+void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSDictionary *settings) {
   size_t blockLength = 8;
   size_t imageLength = 1624;
   

@@ -23,6 +23,7 @@
 // 
 
 #import "SCImageComparator.h"
+#import "SCUtility.h"
 #import "SCImage.h"
 #import "SCError.h"
 
@@ -101,6 +102,8 @@
     currentBuffer.height = height;
     currentBuffer.rowBytes = bytesPerRow;
     
+    SCImageShowAttributes(image);
+    
     dataProvider = CGImageGetDataProvider(image);
     NSData *nextData = (NSData *)CGDataProviderCopyData(dataProvider);
     const uint8_t *nextPixels = [nextData bytes];
@@ -118,13 +121,31 @@
     
     for(y = 0; y < hblocks; y++){
       for(x = 0; x < wblocks; x++){
-        if(!SCImageBlocksEqual(&currentBuffer, &updateBuffer, bytesPerPixel, 1, x, y, _blockLength)){
+        
+        BOOL equal;
+        if(!(equal = SCImageBlocksEqual(&currentBuffer, &updateBuffer, bytesPerPixel, 1, x, y, _blockLength))){
           // update the range offset if we're not already in a run
           if(position < 0) position = (y * wblocks) + x;
         }else if(position >= 0){
           [ranges addObject:[SCRange rangeWithPosition:position count:((y * wblocks) + x) - position]];
           position = -1; // clear the run offset position
         }
+        
+        // if we're debugging, display the engire block
+#if defined(__SPELL_DEBUG_IMAGE_DATA__)
+        for(int z = 0; z < _blockLength; z++){
+          const uint8_t *row;
+          if((row = SCImageGetPixel(&currentBuffer, bytesPerPixel, (x * _blockLength) + z, (y * _blockLength))) != NULL){
+            fprintf(stderr, "%06ld, %06ld [%c] ", x, y, (equal) ? ' ' : '*');
+            for(int i = 0; i < _blockLength * bytesPerPixel; i++){
+              fprintf(stderr, "%02x", *(row + i));
+              if(((i + 1) % bytesPerPixel) == 0) fputc(' ', stderr);
+            }
+            fputc('\n', stderr);
+          }
+        }
+#endif
+        
       }
     }
     

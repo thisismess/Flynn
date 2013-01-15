@@ -28,3 +28,5 @@ BOOL SCImageWriteToPath(CGImageRef image, NSString *format, NSString *path, NSEr
 BOOL SCImageWritePNGToPath(CGImageRef image, NSString *path, NSError **error);
 BOOL SCImageWriteJPEGToPath(CGImageRef image, NSString *path, NSError **error);
 
+void SCImageShowAttributes(CGImageRef image);
+
