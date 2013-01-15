@@ -27,39 +27,37 @@
 // Designed and developed by Mess - http://thisismess.com/
 // 
 
-#import <ImageIO/ImageIO.h>
-
 #import "SCRange.h"
 
 /**
- * A block encoder. Encoders accumulate update blocks until there are enough
- * to render an image at which time an image is composited, written to disk,
- * and the process starts over.
+ * Spellcaster options.
  * 
  * @author Brian William Wolter
  */
-@interface SCBlockEncoder : NSObject {
+@interface SCOptions : NSObject {
   
-  uint8_t * _blockBuffer;
-  uint8_t * _imageBuffer;
-  size_t    _length;
-  size_t    _offset;
-  size_t    _encodedImages;
+  BOOL    _verbose;
+  size_t  _blockLength;
+  size_t  _imageLength;
   
 }
 
--(id)initWithDirectoryPath:(NSString *)directory prefix:(NSString *)prefix imageLength:(NSUInteger)imageLength blockLength:(NSUInteger)blockLength bytesPerPixel:(NSUInteger)bytesPerPixel;
+@property (readonly) BOOL   verbose;
+@property (readonly) size_t blockLength;
+@property (readonly) size_t imageLength;
 
--(BOOL)open:(NSError **)error;
--(BOOL)close:(NSError **)error;
+@end
 
--(BOOL)encodeBlocks:(NSArray *)blocks forImage:(CGImageRef)image error:(NSError **)error;
+/**
+ * Mutable spellcaster options.
+ * 
+ * @author Brian William Wolter
+ */
+@interface SCMutableOptions : SCOptions
 
-@property (readonly) NSString * directory;
-@property (readonly) NSString * prefix;
-@property (readonly) NSUInteger imageLength;
-@property (readonly) NSUInteger blockLength;
-@property (readonly) NSUInteger bytesPerPixel;
+-(void)setVerbose:(BOOL)verbose;
+-(void)setBlockLength:(size_t)blockLength;
+-(void)setImageLength:(size_t)imageLength;
 
 @end
 

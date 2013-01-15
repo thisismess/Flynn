@@ -31,12 +31,11 @@
 #import "SCImage.h"
 #import "SCError.h"
 
-static const NSUInteger kSCBlockEncoderMaxImageLength = 1624;
-
 @implementation SCBlockEncoder
 
 @synthesize directory = _directory;
 @synthesize prefix = _prefix;
+@synthesize imageLength = _imageLength;
 @synthesize blockLength = _blockLength;
 @synthesize bytesPerPixel = _bytesPerPixel;
 
@@ -54,13 +53,14 @@ static const NSUInteger kSCBlockEncoderMaxImageLength = 1624;
 /**
  * Initialize with an output directory and file prefix
  */
--(id)initWithDirectoryPath:(NSString *)directory prefix:(NSString *)prefix blockLength:(NSUInteger)blockLength bytesPerPixel:(NSUInteger)bytesPerPixel {
+-(id)initWithDirectoryPath:(NSString *)directory prefix:(NSString *)prefix imageLength:(NSUInteger)imageLength blockLength:(NSUInteger)blockLength bytesPerPixel:(NSUInteger)bytesPerPixel {
   if((self = [super init]) != nil){
     _directory = [directory copy];
     _prefix = [prefix copy];
     _blockLength = blockLength;
+    _imageLength = imageLength;
     _bytesPerPixel = bytesPerPixel;
-    _length = kSCBlockEncoderMaxImageLength * kSCBlockEncoderMaxImageLength * bytesPerPixel;
+    _length = imageLength * imageLength * bytesPerPixel;
     _blockBuffer = malloc(_length);
     _imageBuffer = malloc(_length);
   }
@@ -188,10 +188,7 @@ error:
   CGImageRef image = NULL;
   
   // make sure we have some data
-  if(_offset < 1){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Block buffer contains no data", NSLocalizedDescriptionKey, nil]];
-    goto error;
-  }
+  if(_offset < 1) return TRUE;
   
   // determine the dimensions required for our image, in blocks
   size_t blocks = _offset / _blockLength / _blockLength / _bytesPerPixel;
@@ -203,7 +200,7 @@ error:
   size_t bytesPerBlock = _bytesPerPixel * _blockLength * _blockLength;
   
   // make sure we don't exceed our dimension constraints
-  if(width > kSCBlockEncoderMaxImageLength || height > kSCBlockEncoderMaxImageLength){
+  if(width > self.imageLength || height > self.imageLength){
     if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Block buffer is too large", NSLocalizedDescriptionKey, nil]];
     goto error;
   }
@@ -228,7 +225,7 @@ error:
   
   // setup our output path
   NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"frame-%04zd.png", _encodedImages]];
-  //
+  // ...
   NSLog(@"Export %ldx%ld for %ld bytes (%ld blocks): %@", width, height, _offset, blocks, outputPath);
   
   // setup our colorspace
@@ -247,7 +244,7 @@ error:
   }
   
   // create a destination for our image
-  if((imageDestination = CGImageDestinationCreateWithURL((CFURLRef)[NSURL fileURLWithPath:outputPath], kUTTypeJPEG, 1, nil)) == NULL){
+  if((imageDestination = CGImageDestinationCreateWithURL((CFURLRef)[NSURL fileURLWithPath:outputPath], kUTTypePNG, 1, nil)) == NULL){
     if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image destination", NSLocalizedDescriptionKey, nil]];
     goto error;
   }
