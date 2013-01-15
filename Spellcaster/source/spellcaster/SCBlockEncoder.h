@@ -39,7 +39,6 @@
   uint8_t * _imageBuffer;
   size_t    _length;
   size_t    _offset;
-  size_t    _encodedImages;
   
 }
 
@@ -55,6 +54,7 @@
 @property (readonly) NSUInteger imageLength;
 @property (readonly) NSUInteger blockLength;
 @property (readonly) NSUInteger bytesPerPixel;
+@property (readonly) NSUInteger encodedImages;
 
 @end
 

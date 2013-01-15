@@ -22,26 +22,9 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCRange.h"
+#import <ImageIO/ImageIO.h>
 
-/**
- * An animation manifest. A manifest describes the animation's components and
- * its individual frames.
- * 
- * @author Brian William Wolter
- */
-@interface SCManifest : NSObject
-
--(BOOL)startFrame;
--(BOOL)encodeCopyBlocks:(SCRange *)range;
--(BOOL)encodeCopyBlocksAtPosition:(size_t)position count:(size_t)blocks;
-
--(NSString *)externalRepresentation;
-
-@property (readwrite, assign) NSUInteger version;
-@property (readwrite, assign) NSUInteger blockLength;
-@property (readwrite, assign) NSUInteger encodedImages;
-@property (readonly)          NSArray  * frames;
-
-@end
+BOOL SCImageWriteToPath(CGImageRef image, NSString *format, NSString *path, NSError **error);
+BOOL SCImageWritePNGToPath(CGImageRef image, NSString *path, NSError **error);
+BOOL SCImageWriteJPEGToPath(CGImageRef image, NSString *path, NSError **error);
 

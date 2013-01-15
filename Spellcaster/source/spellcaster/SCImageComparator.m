@@ -30,6 +30,8 @@
 
 @synthesize currentImage = _currentImage;
 @synthesize blockLength = _blockLength;
+@synthesize bytesPerPixel = _bytesPerPixel;
+@synthesize bitmapInfo = _bitmapInfo;
 
 /**
  * Clean up
@@ -44,8 +46,12 @@
  */
 -(id)initWithKeyframeImage:(CGImageRef)keyframe blockLength:(NSUInteger)blockLength {
   if((self = [super init]) != nil){
-    if(keyframe != NULL) _currentImage = CGImageRetain(keyframe);
     _blockLength = blockLength;
+    if(keyframe != NULL){
+      _currentImage = CGImageRetain(keyframe);
+      _bytesPerPixel = CGImageGetBitsPerPixel(keyframe) / CGImageGetBitsPerComponent(keyframe);
+      _bitmapInfo = CGImageGetBitmapInfo(keyframe);
+    }
   }
   return self;
 }
@@ -66,6 +72,12 @@
     size_t bitsPerPixel = CGImageGetBitsPerPixel(image);
     size_t bitsPerComponent = CGImageGetBitsPerComponent(image);
     size_t bytesPerPixel = bitsPerPixel / bitsPerComponent;
+    
+    // make sure the pixel format is compatible
+    if(bytesPerPixel != self.bytesPerPixel || CGImageGetBitmapInfo(image) != self.bitmapInfo){
+      if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame image pixel format (%ld bits) is not compatible with the keyframe image (%ld bits)", bitsPerPixel, self.bytesPerPixel * 8], NSLocalizedDescriptionKey, nil]];
+      return nil;
+    }
     
     // make sure the next image matches the dimensions of the current image
     if(CGImageGetWidth(_currentImage) != width || CGImageGetWidth(_currentImage) != width){

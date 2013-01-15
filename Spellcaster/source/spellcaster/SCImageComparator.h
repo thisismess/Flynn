@@ -36,8 +36,10 @@
 
 -(NSArray *)updateBlocksForImage:(CGImageRef)image error:(NSError **)error;
 
-@property (readonly) CGImageRef currentImage;
-@property (readonly) NSUInteger blockLength;
+@property (readonly) CGImageRef   currentImage;
+@property (readonly) NSUInteger   blockLength;
+@property (readonly) NSUInteger   bytesPerPixel;
+@property (readonly) CGBitmapInfo bitmapInfo;
 
 @end
 

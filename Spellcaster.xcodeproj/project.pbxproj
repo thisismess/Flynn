@@ -23,6 +23,7 @@
 		D323158916A4A6AA0071D96D /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D323158816A4A6AA0071D96D /* Accelerate.framework */; };
 		D323158D16A4C7BE0071D96D /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D323158C16A4C7BE0071D96D /* CoreServices.framework */; };
 		D3D7D1E716A5183D0071DE5D /* SCLog.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D7D1E616A5183D0071DE5D /* SCLog.m */; };
+		D3D7D1EB16A5EEF00071DE5D /* SCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D7D1EA16A5EEF00071DE5D /* SCUtility.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -68,6 +69,8 @@
 		D3D7D1E516A5183C0071DE5D /* SCLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCLog.h; sourceTree = "<group>"; };
 		D3D7D1E616A5183D0071DE5D /* SCLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCLog.m; sourceTree = "<group>"; };
 		D3D7D1E816A51C550071DE5D /* SCCodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCCodec.h; sourceTree = "<group>"; };
+		D3D7D1E916A5EEF00071DE5D /* SCUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCUtility.h; sourceTree = "<group>"; };
+		D3D7D1EA16A5EEF00071DE5D /* SCUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCUtility.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +154,8 @@
 				D3D7D1E516A5183C0071DE5D /* SCLog.h */,
 				D3D7D1E616A5183D0071DE5D /* SCLog.m */,
 				D3D7D1E816A51C550071DE5D /* SCCodec.h */,
+				D3D7D1E916A5EEF00071DE5D /* SCUtility.h */,
+				D3D7D1EA16A5EEF00071DE5D /* SCUtility.m */,
 				D323156C16A3F1CD0071D96D /* SCRange.h */,
 				D323156D16A3F1CD0071D96D /* SCRange.m */,
 				D323157C16A496890071D96D /* SCImage.h */,
@@ -256,6 +261,7 @@
 				D323158416A4980C0071D96D /* SCImageComparator.m in Sources */,
 				D323158716A4A4560071D96D /* SCBlockEncoder.m in Sources */,
 				D3D7D1E716A5183D0071DE5D /* SCLog.m in Sources */,
+				D3D7D1EB16A5EEF00071DE5D /* SCUtility.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

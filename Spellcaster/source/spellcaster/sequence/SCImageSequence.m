@@ -33,6 +33,7 @@
  * Obtain image paths for the provided directory and prefix
  */
 +(NSArray *)imagePathsForDirectoryPath:(NSString *)directory prefix:(NSString *)prefix error:(NSError **)error {
+  NSError *inner = nil;
   BOOL isdir = FALSE;
   
   if(![[NSFileManager defaultManager] fileExistsAtPath:directory isDirectory:&isdir] || !isdir){
@@ -40,11 +41,15 @@
     return nil;
   }
   
-  NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:directory];
+  NSArray *contents;
+  if((contents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directory error:&inner]) == nil){
+    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Could not list directory directory: %@", [inner localizedDescription]], NSLocalizedDescriptionKey, nil]];
+    return nil;
+  }
+  
   NSMutableArray *imagePaths = [NSMutableArray array];
   
-  NSString *filename;
-  while((filename = [enumerator nextObject]) != nil){
+  for(NSString *filename in contents){
     NSString *extension = [filename pathExtension];
     if([extension caseInsensitiveCompare:@"png"] == NSOrderedSame || [extension caseInsensitiveCompare:@"jpg"] == NSOrderedSame || [extension caseInsensitiveCompare:@"jpeg"] == NSOrderedSame){
       if([filename length] > ([prefix length]  + 1 + [extension length] + 1)){

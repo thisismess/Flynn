@@ -34,6 +34,7 @@
 @synthesize imageLength = _imageLength;
 @synthesize blockLength = _blockLength;
 @synthesize bytesPerPixel = _bytesPerPixel;
+@synthesize encodedImages = _encodedImages;
 
 /**
  * Clean up

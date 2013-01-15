@@ -31,7 +31,7 @@ static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 
 @synthesize version = _version;
 @synthesize blockLength = _blockLength;
-@synthesize images = _images;
+@synthesize encodedImages = _encodedImages;
 @synthesize frames = _frames;
 
 /**
@@ -111,8 +111,8 @@ static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 -(NSString *)externalRepresentation {
   NSMutableDictionary *external = [NSMutableDictionary dictionary];
   [external setObject:[NSNumber numberWithInteger:2] forKey:@"version"];
-  [external setObject:[NSNumber numberWithInteger:8] forKey:@"blockSize"];
-  [external setObject:[NSNumber numberWithInteger:5] forKey:@"imagesRequired"];
+  [external setObject:[NSNumber numberWithInteger:self.blockLength] forKey:@"blockSize"];
+  [external setObject:[NSNumber numberWithInteger:self.encodedImages] forKey:@"imagesRequired"];
   [external setObject:[NSNumber numberWithInteger:[self.frames count]] forKey:@"frameCount"];
   [external setObject:self.frames forKey:@"frames"];
   return [external JSONString];

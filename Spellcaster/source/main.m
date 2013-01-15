@@ -28,6 +28,7 @@
 #import "SCImageSequence.h"
 #import "SCImageComparator.h"
 #import "SCBlockEncoder.h"
+#import "SCUtility.h"
 #import "SCCodec.h"
 #import "SCLog.h"
 
@@ -122,17 +123,16 @@ void SCProcessDirectory(NSString *inputDirectory, NSString *outputDirectory, NSD
   SCImageComparator *comparator = nil;
   SCBlockEncoder *encoder = nil;
   NSError *error = nil;
-  CGImageRef image;
+  CGImageRef keyframe = NULL, image;
   
   if(![sequence open:&error]){
     SCLog(@"Could not open frame sequence: %@", [error localizedDescription]);
     goto error;
   }
   
-  if((image = [sequence copyNextFrameImageWithError:&error]) != NULL){
-    comparator = [[SCImageComparator alloc] initWithKeyframeImage:image blockLength:blockLength];
-    encoder = [[SCBlockEncoder alloc] initWithDirectoryPath:outputDirectory prefix:@"spellcaster_" imageLength:imageLength blockLength:blockLength bytesPerPixel:CGImageGetBitsPerPixel(image) / CGImageGetBitsPerComponent(image)];
-    CGImageRelease(image);
+  if((keyframe = [sequence copyNextFrameImageWithError:&error]) != NULL){
+    comparator = [[SCImageComparator alloc] initWithKeyframeImage:keyframe blockLength:blockLength];
+    encoder = [[SCBlockEncoder alloc] initWithDirectoryPath:outputDirectory prefix:@"spellcaster_" imageLength:imageLength blockLength:blockLength bytesPerPixel:CGImageGetBitsPerPixel(keyframe) / CGImageGetBitsPerComponent(keyframe)];
   }else{
     SCLog(@"Could not read keyframe image: %@", [error localizedDescription]);
     goto error;
@@ -188,11 +188,6 @@ void SCProcessDirectory(NSString *inputDirectory, NSString *outputDirectory, NSD
     goto error;
   }
   
-  if(![[manifest externalRepresentation] writeToFile:[outputDirectory stringByAppendingPathComponent:@"spellcaster_manifest.json"]  atomically:TRUE encoding:NSUTF8StringEncoding error:&error]){
-    SCLog(@"Could not write manifest file: %@", [error localizedDescription]);
-    goto error;
-  }
-  
   if(![encoder close:&error]){
     SCLog(@"Could not close block encoder: %@", [error localizedDescription]);
     goto error;
@@ -203,7 +198,22 @@ void SCProcessDirectory(NSString *inputDirectory, NSString *outputDirectory, NSD
     goto error;
   }
   
+  if(!SCImageWritePNGToPath(keyframe, [outputDirectory stringByAppendingPathComponent:@"spellcaster_keyframe.png"], &error)){
+    SCLog(@"Could not write keyframe: %@", [error localizedDescription]);
+    goto error;
+  }
+  
+  manifest.version = 2;
+  manifest.blockLength = blockLength;
+  manifest.encodedImages = encoder.encodedImages;
+  
+  if(![[manifest externalRepresentation] writeToFile:[outputDirectory stringByAppendingPathComponent:@"spellcaster_manifest.json"]  atomically:TRUE encoding:NSUTF8StringEncoding error:&error]){
+    SCLog(@"Could not write manifest file: %@", [error localizedDescription]);
+    goto error;
+  }
+  
 error:
+  if(keyframe) CFRelease(keyframe);
   [encoder release];
   [comparator release];
   [sequence release];
