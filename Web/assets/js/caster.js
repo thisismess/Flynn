@@ -80,7 +80,7 @@
       
       ele.setup_debug_canvas = function()
       {
-        ele.debug = $('<canvas class="debug"></canvas>').appendTo(ele).attr({'width':ele.source.width, 'height':ele.source.height});
+        ele.debug = $('<canvas class="debug"></canvas>').appendTo(ele).attr({'width':ele.source.width, 'height':ele.source.height}).css("background", "#00ff00");
         ele.actual_debug = ele.debug[0];
       };
       
@@ -159,8 +159,8 @@
           context.clearRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
           
           // debug
-          context.fillStyle = "rgba("+ (progress * 0xff) +", "+ ((1.0 - progress) * 0xff) +", 0, 1)";
-          context.fillRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
+          //context.fillStyle = "rgba("+ (progress * 0xff) +", "+ ((1.0 - progress) * 0xff) +", 0, 1)";
+          //context.fillRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
           context.lineStyle = "black";
           context.strokeRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
           // note the source region
