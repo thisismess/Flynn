@@ -195,6 +195,7 @@
         
         ele.frame_count++; // note the frame
         ele.delay = 1000 / ele.options.fps;
+        abort();
         
         if(++ele.current_frame < ele.frames.length){
           ele.timeout = window.setTimeout(ele.next_frame, ele.delay);
