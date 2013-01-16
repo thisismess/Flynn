@@ -75,10 +75,12 @@
     size_t bytesPerPixel = bitsPerPixel / bitsPerComponent;
     
     // make sure the pixel format is compatible
+    /*
     if(bytesPerPixel != self.bytesPerPixel || CGImageGetBitmapInfo(image) != self.bitmapInfo){
       if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame image pixel format (%ld bits) is not compatible with the keyframe image (%ld bits)", bitsPerPixel, self.bytesPerPixel * 8], NSLocalizedDescriptionKey, nil]];
       return nil;
     }
+    */
     
     // make sure the next image matches the dimensions of the current image
     if(CGImageGetWidth(_currentImage) != width || CGImageGetWidth(_currentImage) != width){
