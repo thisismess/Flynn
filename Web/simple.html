@@ -1,0 +1,70 @@
+<html>
+	<title>AC Flow Test</title>
+	<script type="text/javascript">
+	  
+    function SCSpell(settings) {
+      
+      this._settings = settings;
+      this._blockOffset = 0;
+      
+      this.base64ValueForCharAt = function(c, a) {
+        var b = c.charCodeAt(a);
+        if(b > 64 && b < 91)  return b - 65;
+        if(b > 96 && b < 123) return b - 71;
+        if(b > 47 && b < 58)  return b + 4;
+        if(b === 43) return 62;
+        if(b === 47) return 63;
+        throw "Invalid Bas64 character: " + c.charAt(a);
+      };
+      
+      this.base64DecodeValue = function (e, a, d) {
+        var c = 0;
+        var b;
+        while(d--){
+          b = this.base64ValueForCharAt(e, a++);
+          c += (b << d * 6);
+        }
+        return c;
+      };
+      
+      this.originForBlockAtPosition = function(position, width, height) {
+        var wblocks = width / this._settings.blockLength;
+        return { x: position % wblocks, y: Math.floor(position / wblocks) };
+      };
+      
+      this.frameForBlockAtPosition = function(position, width, height) {
+        var origin = this.originForBlockAtPosition(position, width, height);
+        return { x: origin.x, y: origin.y, width: this._settings.blockLength, height: this._settings.blockLength };
+      };
+      
+      this.copyImageBlocks = function(destCanvas, sourceCanvas, position, count) {
+        var i;
+        for(i = 0; i < count; i++){
+          // this should eventually be optimized to copy the largest contiguous rectangle possible instead of individual blocks, but for the moment we'll keep it simple
+          var sourceBlockFrame = this.frameForBlockAtPosition(this._blockOffset++, /* use the source canvas width here */ 400, /* use the source canvas height here */ 400);
+          var destBlockFrame   = this.frameForBlockAtPosition(position, /* use the destination canvas width here */ 400, /* use the destination canvas height here */ 400);
+          console.log("COPY FROM: ("+ sourceBlockFrame.x +", "+ sourceBlockFrame.y +", "+ sourceBlockFrame.width +", "+ sourceBlockFrame.height +")");
+          console.log("COPY TO  : ("+ destBlockFrame.x +", "+ destBlockFrame.y +", "+ destBlockFrame.width +", "+ destBlockFrame.height +")");
+        }
+      };
+      
+      this.updateFrame = function(destCanvas, sourceCanvas, frame) {
+        var i;
+        for(i = 0; i <= frame.length - 5; i += 5){
+          var position = this.base64DecodeValue(frame, i, 3);
+          var count = this.base64DecodeValue(frame, i + 3, 2);
+          this.copyImageBlocks(destCanvas, sourceCanvas, position, count);
+        }
+      };
+      
+    }
+    
+    var kSettings = { blockLength: 8 };
+    var kManifest = {"frames":["AAAAZAAyAZABkAZACWAZADIAZAD6AZAEsAZAFeAZAGQAZAHCAZAH0AZAImAZAJYAZ","AAMAaAA+AaABwAaACiAaADUAaAEGAaAE4AaAFqAaAGcAaAHOAaAIAAaAIyAaAJkAa","AAZAZABLAZAB9AZACvAZADhAZAETAZAFFAZAF3AZAGpAZAHbAZAINAZAI/AZAJxAZ","AAlANABXANACJANAC7ANADtANAEfANAFRANAGDANAG1ANAHnANAIZANAJLANAJ9ANAKvANALhANAMTANANFANAN3ANAOpANAPbANAQNANAQ/ANARxANASjANATVAN","AJxAZAKjAZALVAZAMHAZAM5AZANrAZAOdAZAPPAZAQBAZAQzAZARlAZASXAZATJAZ","AJkAaAKWAaALIAaAL6AaAMsAaANeAaAOQAaAPCAaAP0AaAQmAaARYAaASKAaAS8Aa","AJYAZAKKAZAK8AZALuAZAMgAZANSAZAOEAZAO2AZAPoAZAQaAZARMAZAR+AZASwAZ","AJYANAKKANAK8ANALuANAMgANANSANAOEANAO2ANAPoANAQaANARMANAR+ANASwANATiANAUUANAVGANAV4ANAWqANAXcANAYOANAZAANAZyANAakANAbWANAcIANAc6AN","ATiAZAUUAZAVGAZAV4AZAWqAZAXcAZAYOAZAZAAZAZyAZAakAZAbWAZAcIAZAc6AZ","ATuAaAUgAaAVSAaAWEAaAW2AaAXoAaAYaAaAZMAaAZ+AaAawAaAbiAaAcUAaAdGAa","AT7AZAUtAZAVfAZAWRAZAXDAZAX1AZAYnAZAZZAZAaLAZAa9AZAbvAZAchAZAdTAZ","AUHANAU5ANAVrANAWdANAXPANAYBANAYzANAZlANAaXANAbJANAb7ANActANAdfANAeRANAfDANAf1ANAgnANAhZANAiLANAi9ANAjvANAkhANAlTANAmFANAm3AN","AdTAZAeFAZAe3AZAfpAZAgbAZAhNAZAh/AZAixAZAjjAZAkVAZAlHAZAl5AZAmrAZ","AdGAaAd4AaAeqAaAfcAaAgOAaAhAAaAhyAaAikAaAjWAaAkIAaAk6AaAlsAaAmeAa","Ac6AZAdsAZAeeAZAfQAZAgCAZAg0AZAhmAZAiYAZAjKAZAj8AZAkuAZAlgAZAmSAZ"],"blockSize":8,"frameCount":15,"imagesRequired":1,"version":2};
+    var spell = new SCSpell(kSettings);
+    console.log(spell);
+    spell.updateFrame(null, null, kManifest['frames'][0]);
+    
+	</script>
+	<figure id="animation" class="enhanced" style='width:400px; height:400px; background-color:blue; margin:0 auto; border:1px solid black; '></figure>
+</html>
