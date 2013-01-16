@@ -32,7 +32,23 @@ static inline const uint8_t * SCImageGetPixel(const vImage_Buffer *data, size_t 
   return (offset <= ((data->rowBytes * data->height) - bytesPerPixel)) ? (data->data + offset) : NULL;
 }
 
+/**
+ * Display a range of pixels
+ */
+static inline void SCImageDisplayPixels(const vImage_Buffer *data, size_t bytesPerPixel, size_t x, size_t y, size_t count) {
+  const uint8_t *row;
+  if((row = SCImageGetPixel(data, bytesPerPixel, x, y)) != NULL){
+    fprintf(stderr, "%ld @ %4ld, %4ld: ", count, x, y);
+    for(int i = 0; i < count * bytesPerPixel; i++){
+      fprintf(stderr, "%02x", *row++);
+      if((i + 1) % bytesPerPixel == 0) fputc(' ', stderr);
+    }
+    fputc('\n', stderr);
+  }
+}
+
 BOOL SCImagePixelsEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, size_t threshold, size_t x, size_t y);
+BOOL SCImageStripesEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, size_t threshold, size_t x, size_t y, size_t blocksize);
 BOOL SCImageBlocksEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, size_t threshold, size_t xblock, size_t yblock, size_t blocksize);
 BOOL SCImageCopyOutSequentialBlock(const vImage_Buffer *data, uint8_t *block, size_t bytesPerPixel, size_t xblock, size_t yblock, size_t blocksize);
 BOOL SCImageCopyInSequentialBlock(const uint8_t *block, vImage_Buffer *data, size_t bytesPerPixel, size_t xblock, size_t yblock, size_t blocksize);

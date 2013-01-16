@@ -37,11 +37,25 @@ BOOL SCImagePixelsEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, 
   if(a == b) return TRUE; // same memory, must be the same
   if(a == NULL || b == NULL) return FALSE;
   size_t misses = 0;
-  //for(int i = 0; i < bytesPerPixel; i++){ if(abs(a[i] - b[i]) > threshold) return FALSE; }
-  for(int i = 0; i < bytesPerPixel; i++){
-    if(a[i] != b[i]){ if(++misses > threshold) return FALSE; }
-  }
+  for(int i = 0; i < bytesPerPixel; i++){ if(a[i] != b[i] && ++misses > threshold) return FALSE; }
   return TRUE; // we've processed the pixel and all's well
+}
+
+/**
+ * Compare a block row of pixel between two images
+ */
+BOOL SCImageStripesEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, size_t threshold, size_t x, size_t y, size_t blocksize) {
+  assert(data1 != NULL);
+  assert(data2 != NULL);
+  const uint8_t *a = SCImageGetPixel(data1, bytesPerPixel, x, y);
+  const uint8_t *b = SCImageGetPixel(data2, bytesPerPixel, x, y);
+  if(a == b) return TRUE; // same memory, must be the same
+  if(a == NULL || b == NULL) return FALSE;
+  size_t misses = 0;
+  for(int i = 0; i < (bytesPerPixel * blocksize); i++){
+    if((*a++ != *b++) && ++misses > threshold){ return FALSE; }
+  }
+  return TRUE;
 }
 
 /**
@@ -49,11 +63,8 @@ BOOL SCImagePixelsEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, 
  */
 BOOL SCImageBlocksEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, size_t threshold, size_t xblock, size_t yblock, size_t blocksize) {
   for(int y = 0; y < blocksize; y++){
-    for(int x = 0; x < blocksize; x++){
-      if(!SCImagePixelsEqual(data1, data2, bytesPerPixel, threshold, (xblock * blocksize) + x, (yblock * blocksize) + y)){
-        // pixels don't match, so blocks don't match, return false
-        return FALSE;
-      }
+    if(!SCImageStripesEqual(data1, data2, bytesPerPixel, threshold, (xblock * blocksize), (yblock * blocksize) + y, blocksize)){
+      return FALSE;
     }
   }
   return TRUE;
