@@ -42,4 +42,6 @@
  */
 #define kSCCodecBlockPixelDiscrepancyThresholdKey @"SCCodecBlockPixelDiscrepancyThreshold"
 
+BOOL SCCodecSettingsIsValid(NSDictionary *settings, NSError **error);
+
 

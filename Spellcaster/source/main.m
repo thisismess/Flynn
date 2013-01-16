@@ -33,13 +33,22 @@
 #import "SCLog.h"
 
 void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSDictionary *settings);
+void SCSpellUsage(FILE *stream);
 
+/**
+ * Main
+ */
 int main(int argc, const char * argv[]) {
   @autoreleasepool {
     NSMutableDictionary *options = [[NSMutableDictionary alloc] init];
     NSString *outputDirectory = nil;
     NSString *prefix = nil;
     NSString *name = nil;
+    NSError *error = nil;
+    
+    [options setObject:[NSNumber numberWithInt:8] forKey:kSCCodecBlockSizeKey];
+    [options setObject:[NSNumber numberWithInt:1624] forKey:kSCCodecImageSizeKey];
+    [options setObject:(NSString *)kUTTypeJPEG forKey:kSCCodecImageFormatKey];
     
     static struct option longopts[] = {
       { "name",             required_argument,  NULL,         'n' },  // name of the animation
@@ -85,20 +94,24 @@ int main(int argc, const char * argv[]) {
           break;
           
         default:
+          SCSpellUsage(stderr);
           exit(0);
           
       }
     }
     
-    /*
-    if((options.imageLength % options.blockLength) != 0){
-      SCLog(@"Encoded images must have dimensions that are a multiple of the block size (%ldx%ld)", options.blockLength, options.blockLength);
+    if(!SCCodecSettingsIsValid(options, &error)){
+      SCLog(@"Invalid options: %@", [error localizedDescription]);
       exit(-1);
     }
-    */
     
     argv += optind;
     argc -= optind;
+    
+    if(argc < 1){
+      SCSpellUsage(stderr);
+      exit(0);
+    }
     
     for(int i = 0; i < argc; i++){
       NSString *inputDirectory = [[NSString alloc] initWithUTF8String:argv[i]];
@@ -218,5 +231,26 @@ error:
   [comparator release];
   [sequence release];
   [manifest release];
+}
+
+/**
+ * Display usage information
+ */
+void SCSpellUsage(FILE *stream) {
+  fputs(
+    "Spellcaster - A block differential animation encoder\n"
+    "Copyright 2013 Mess\n"
+    "\n"
+    "Usage: spellcaster [options] <file1> [... <fileN>]\n"
+    "\n"
+    "Options:\n"
+    " -n --name <name>              Specify a namespace for the animation (default: 'spellcaster')\n"
+    " -o --output <path>            Specify the directory under which the encoded animation is output\n"
+    " -b --block-size <size>        Specify the encoding block size (default: 8)\n"
+    " -t --block-threshold <count>  Specify a threshold for block discrepencies between frames (default: 0)\n"
+    " -I --image-size <size>        Specify the encoded stream image size (default: 1624)\n"
+    " -v --verbose                  Be more verbose\n"
+    "\n"
+  , stderr);
 }
 

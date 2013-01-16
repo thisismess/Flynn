@@ -30,4 +30,5 @@ typedef enum {
   kSCStatusNotImplemented = -2
 } SCStatus;
 
+#define NSERROR(d, c, m...) [NSError errorWithDomain:(d) code:(c) userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:m], NSLocalizedDescriptionKey, nil]]
 
