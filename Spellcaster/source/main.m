@@ -33,7 +33,15 @@
 #import "SCCodec.h"
 #import "SCLog.h"
 
-void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSDictionary *settings);
+enum {
+  kSCOptionNone     = 0,
+  kSCOptionVerbose  = 1 << 0,
+  kSCOptionDebug    = 1 << 1
+};
+
+typedef uint32_t SCOptions;
+
+void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSDictionary *settings, SCOptions options);
 void SCSpellUsage(FILE *stream);
 
 /**
@@ -41,15 +49,16 @@ void SCSpellUsage(FILE *stream);
  */
 int main(int argc, const char * argv[]) {
   @autoreleasepool {
-    NSMutableDictionary *options = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *settings = [[NSMutableDictionary alloc] init];
+    SCOptions options = FALSE;
     NSString *outputDirectory = nil;
     NSString *prefix = nil;
     NSString *name = nil;
     NSError *error = nil;
     
-    [options setObject:[NSNumber numberWithInt:8] forKey:kSCCodecBlockSizeKey];
-    [options setObject:[NSNumber numberWithInt:1624] forKey:kSCCodecImageSizeKey];
-    [options setObject:(NSString *)kUTTypeJPEG forKey:kSCCodecImageFormatKey];
+    [settings setObject:[NSNumber numberWithInt:8] forKey:kSCCodecBlockSizeKey];
+    [settings setObject:[NSNumber numberWithInt:1624] forKey:kSCCodecImageSizeKey];
+    [settings setObject:(NSString *)kUTTypeJPEG forKey:kSCCodecImageFormatKey];
     
     static struct option longopts[] = {
       { "name",             required_argument,  NULL,         'n' },  // name of the animation
@@ -58,12 +67,13 @@ int main(int argc, const char * argv[]) {
       { "block-threshold",  required_argument,  NULL,         't' },  // block pixel discrepency threshold
       { "block-size",       required_argument,  NULL,         'b' },  // block size
       { "image-size",       required_argument,  NULL,         'I' },  // maximum image size
+      { "debug",            no_argument,        NULL,         'D' },  // debug mode
       { "verbose",          no_argument,        NULL,         'v' },  // be more verbose
       { NULL,               0,                  NULL,          0  }
     };
     
     int flag;
-    while((flag = getopt_long(argc, (char **)argv, "n:p:o:b:I:t:v", longopts, NULL)) != -1){
+    while((flag = getopt_long(argc, (char **)argv, "n:p:o:b:I:t:vD", longopts, NULL)) != -1){
       switch(flag){
         
         case 'n':
@@ -79,19 +89,23 @@ int main(int argc, const char * argv[]) {
           break;
           
         case 'b':
-          [options setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kSCCodecBlockSizeKey];
+          [settings setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kSCCodecBlockSizeKey];
           break;
           
         case 'I':
-          [options setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kSCCodecImageSizeKey];
+          [settings setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kSCCodecImageSizeKey];
           break;
           
         case 't':
-          [options setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kSCCodecBlockPixelDiscrepancyThresholdKey];
+          [settings setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kSCCodecBlockPixelDiscrepancyThresholdKey];
+          break;
+          
+        case 'D':
+          options |= kSCOptionDebug;
           break;
           
         case 'v':
-          __SCSetLogLevel(kSCLogLevelVerbose);
+          options |= kSCOptionVerbose; __SCSetLogLevel(kSCLogLevelVerbose);
           break;
           
         default:
@@ -101,7 +115,7 @@ int main(int argc, const char * argv[]) {
       }
     }
     
-    if(!SCCodecSettingsIsValid(options, &error)){
+    if(!SCCodecSettingsIsValid(settings, &error)){
       SCLog(@"Invalid options: %@", [error localizedDescription]);
       exit(-1);
     }
@@ -116,11 +130,11 @@ int main(int argc, const char * argv[]) {
     
     for(int i = 0; i < argc; i++){
       NSString *inputDirectory = [[NSString alloc] initWithUTF8String:argv[i]];
-      SCSpellExport(inputDirectory, (outputDirectory != nil) ? outputDirectory : [outputDirectory stringByAppendingPathComponent:@"spellcaster"], options);
+      SCSpellExport(inputDirectory, (outputDirectory != nil) ? outputDirectory : [outputDirectory stringByAppendingPathComponent:@"spellcaster"], settings, options);
       [inputDirectory release];
     }
     
-    [options release];
+    [settings release];
   }
   return 0;
 }
@@ -128,7 +142,7 @@ int main(int argc, const char * argv[]) {
 /**
  * Export
  */
-void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSDictionary *settings) {
+void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSDictionary *settings, SCOptions options) {
   size_t blockLength = 8;
   size_t imageLength = 1624;
   
@@ -144,12 +158,17 @@ void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSDictio
     goto error;
   }
   
-  if((keyframe = [sequence copyNextFrameImageWithError:&error]) != NULL){
-    comparator = [[SCImageComparator alloc] initWithKeyframeImage:keyframe blockLength:blockLength];
-    encoder = [[SCDebugBlockEncoder alloc] initWithDirectoryPath:outputDirectory prefix:@"spellcaster_" imageLength:imageLength blockLength:blockLength bytesPerPixel:CGImageGetBitsPerPixel(keyframe) / CGImageGetBitsPerComponent(keyframe)];
-  }else{
+  if((keyframe = [sequence copyNextFrameImageWithError:&error]) == NULL){
     SCLog(@"Could not read keyframe image: %@", [error localizedDescription]);
     goto error;
+  }
+  
+  comparator = [[SCImageComparator alloc] initWithKeyframeImage:keyframe blockLength:blockLength];
+  
+  if((options & kSCOptionDebug) == kSCOptionDebug){
+    encoder = [[SCDebugBlockEncoder alloc] initWithDirectoryPath:outputDirectory prefix:@"spellcaster_" imageLength:imageLength blockLength:blockLength bytesPerPixel:CGImageGetBitsPerPixel(keyframe) / CGImageGetBitsPerComponent(keyframe)];
+  }else{
+    encoder = [[SCSequentialBlockEncoder alloc] initWithDirectoryPath:outputDirectory prefix:@"spellcaster_" imageLength:imageLength blockLength:blockLength bytesPerPixel:CGImageGetBitsPerPixel(keyframe) / CGImageGetBitsPerComponent(keyframe)];
   }
   
   if(![encoder open:&error]){

@@ -189,6 +189,7 @@
         debug.clearRect(0, 0, ele.source.width, ele.source.height);
         debug.drawImage(ele.source, 0, 0, ele.source.width, ele.source.height);
         ele.actual_canvas.getContext("2d").clearRect(0, 0, ele.keyframe_width, ele.keyframe_height);
+        
         var frame = ele.frames[ele.current_frame];
         for(i = 0; i <= frame.length - 5; i += 5){
           ele.update_frame({'position':base64DecodeValue(frame, i, 3), 'count':base64DecodeValue(frame, i + 3, 2)});
