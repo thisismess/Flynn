@@ -42,7 +42,7 @@
         for(i = 0; i < count; i++){
           // this should eventually be optimized to copy the largest contiguous rectangle possible instead of individual blocks, but for the moment we'll keep it simple
           var sourceBlockFrame = this.frameForBlockAtPosition(this._blockOffset++, /* use the source canvas width here */ 400, /* use the source canvas height here */ 400);
-          var destBlockFrame   = this.frameForBlockAtPosition(position, /* use the destination canvas width here */ 400, /* use the destination canvas height here */ 400);
+          var destBlockFrame   = this.frameForBlockAtPosition(position + i, /* use the destination canvas width here */ 400, /* use the destination canvas height here */ 400);
           console.log("COPY FROM: ("+ sourceBlockFrame.x +", "+ sourceBlockFrame.y +", "+ sourceBlockFrame.width +", "+ sourceBlockFrame.height +")");
           console.log("COPY TO  : ("+ destBlockFrame.x +", "+ destBlockFrame.y +", "+ destBlockFrame.width +", "+ destBlockFrame.height +")");
         }
@@ -62,7 +62,6 @@
     var kSettings = { blockLength: 8 };
     var kManifest = {"frames":["AAAAZAAyAZABkAZACWAZADIAZAD6AZAEsAZAFeAZAGQAZAHCAZAH0AZAImAZAJYAZ","AAMAaAA+AaABwAaACiAaADUAaAEGAaAE4AaAFqAaAGcAaAHOAaAIAAaAIyAaAJkAa","AAZAZABLAZAB9AZACvAZADhAZAETAZAFFAZAF3AZAGpAZAHbAZAINAZAI/AZAJxAZ","AAlANABXANACJANAC7ANADtANAEfANAFRANAGDANAG1ANAHnANAIZANAJLANAJ9ANAKvANALhANAMTANANFANAN3ANAOpANAPbANAQNANAQ/ANARxANASjANATVAN","AJxAZAKjAZALVAZAMHAZAM5AZANrAZAOdAZAPPAZAQBAZAQzAZARlAZASXAZATJAZ","AJkAaAKWAaALIAaAL6AaAMsAaANeAaAOQAaAPCAaAP0AaAQmAaARYAaASKAaAS8Aa","AJYAZAKKAZAK8AZALuAZAMgAZANSAZAOEAZAO2AZAPoAZAQaAZARMAZAR+AZASwAZ","AJYANAKKANAK8ANALuANAMgANANSANAOEANAO2ANAPoANAQaANARMANAR+ANASwANATiANAUUANAVGANAV4ANAWqANAXcANAYOANAZAANAZyANAakANAbWANAcIANAc6AN","ATiAZAUUAZAVGAZAV4AZAWqAZAXcAZAYOAZAZAAZAZyAZAakAZAbWAZAcIAZAc6AZ","ATuAaAUgAaAVSAaAWEAaAW2AaAXoAaAYaAaAZMAaAZ+AaAawAaAbiAaAcUAaAdGAa","AT7AZAUtAZAVfAZAWRAZAXDAZAX1AZAYnAZAZZAZAaLAZAa9AZAbvAZAchAZAdTAZ","AUHANAU5ANAVrANAWdANAXPANAYBANAYzANAZlANAaXANAbJANAb7ANActANAdfANAeRANAfDANAf1ANAgnANAhZANAiLANAi9ANAjvANAkhANAlTANAmFANAm3AN","AdTAZAeFAZAe3AZAfpAZAgbAZAhNAZAh/AZAixAZAjjAZAkVAZAlHAZAl5AZAmrAZ","AdGAaAd4AaAeqAaAfcAaAgOAaAhAAaAhyAaAikAaAjWAaAkIAaAk6AaAlsAaAmeAa","Ac6AZAdsAZAeeAZAfQAZAgCAZAg0AZAhmAZAiYAZAjKAZAj8AZAkuAZAlgAZAmSAZ"],"blockSize":8,"frameCount":15,"imagesRequired":1,"version":2};
     var spell = new SCSpell(kSettings);
-    console.log(spell);
     spell.updateFrame(null, null, kManifest['frames'][0]);
     
 	</script>
