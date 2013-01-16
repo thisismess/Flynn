@@ -73,6 +73,16 @@
       ele.manifest_file   = $(ele).attr('data-manifest');
       ele.image_directory = $(ele).attr('data-frame-directory');
       
+      /**
+       * Obtain the name of a frame with the specified index
+       */
+      ele.streamImageNameForIndex = function(prefix, index, type) {
+        index += 1; // base 1
+        if(index < 10)   return prefix +"_00"+ index +"."+ type;
+        if(index < 100)  return prefix +"_0"+ index +"."+ type;
+        else             return prefix +"_"+ index +"."+ type;
+      }
+      
       ele.setup_canvas = function()
       {
         ele.canvas = $('<canvas></canvas>').appendTo(ele).attr({'width':parseInt($(ele).width(), 10), 'height':parseInt($(ele).height(), 10)});
@@ -106,7 +116,7 @@
         if (ele.image_directory === undefined || ele.image_directory === null) throw("No image directory set.");
         for(var i = 0; i < ele.manifest.imagesRequired; i++)
         {
-          var src = ele.image_directory + 'spellcaster_00' + (i+1) + '.png';
+          var src = ele.image_directory + ele.streamImageNameForIndex('spellcaster', i, 'png');
           $(new Image()).attr('src', src).load(function(){
             ele.images.push(this);
             if(ele.images.length >= ele.manifest.imagesRequired && ele.options.autoplay === true) ele.start();
