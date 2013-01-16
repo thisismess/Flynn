@@ -47,6 +47,7 @@
       // Set all counters to 0
       ele.current_frame = 0;
       ele.keyframe_width = 0;
+      ele.keyframe_height = 0;
       ele.current_block = 0;
       ele.current_sequence = 0;
       ele.current_source = 0;
@@ -120,6 +121,7 @@
           var context = ele.actual_canvas.getContext("2d");
           context.drawImage(this, 0, 0, this.width, this.height);
           ele.keyframe_width = this.width;
+          ele.keyframe_height = this.height;
           ele.source = ele.images[ele.current_source];
           // debug
           ele.setup_debug_canvas();
@@ -156,7 +158,6 @@
           var srcOrigin = ele.originForPosition(ele.source_position, srcWidth);
           var dstOrigin = ele.originForPosition(position, ele.keyframe_width);
           var strip = Math.min(count, (ele.source.width - srcOrigin.x) / ele.block_size);
-          context.clearRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
           
           // debug
           //context.fillStyle = "rgba("+ (progress * 0xff) +", "+ ((1.0 - progress) * 0xff) +", 0, 1)";
@@ -187,7 +188,7 @@
         var debug = ele.actual_debug.getContext("2d");
         debug.clearRect(0, 0, ele.source.width, ele.source.height);
         debug.drawImage(ele.source, 0, 0, ele.source.width, ele.source.height);
-        
+        ele.actual_canvas.getContext("2d").clearRect(0, 0, ele.keyframe_width, ele.keyframe_height);
         var frame = ele.frames[ele.current_frame];
         for(i = 0; i <= frame.length - 5; i += 5){
           ele.update_frame({'position':base64DecodeValue(frame, i, 3), 'count':base64DecodeValue(frame, i + 3, 2)});
