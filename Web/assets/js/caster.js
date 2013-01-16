@@ -54,6 +54,7 @@
       ele.current_source_img = 0;
       ele.canvas = null;
       ele.actual_canvas = null;
+      ele.actual_debug = null;
       ele.frames = [];
       ele.pixels = [];
       ele.images = [];
@@ -80,6 +81,7 @@
       ele.setup_debug_canvas = function()
       {
         ele.debug = $('<canvas class="debug"></canvas>').appendTo(ele).attr({'width':ele.source.width, 'height':ele.source.height});
+        ele.actual_debug = ele.debug[0];
       };
       
       ele.load_manifest = function()
@@ -106,7 +108,7 @@
           var src = ele.image_directory + 'spellcaster_00' + (i+1) + '.png';
           $(new Image()).attr('src', src).load(function(){
             ele.images.push(this);
-            if (ele.images.length >= ele.manifest.imagesRequired && ele.options.autoplay === true) ele.start();
+            if(ele.images.length >= ele.manifest.imagesRequired && ele.options.autoplay === true) ele.start();
           });
         }
       };
@@ -115,11 +117,14 @@
       {
         var src = ele.image_directory + 'spellcaster_keyframe.png';
         $(new Image()).attr('src', src).load(function(){
-          //ele.canvas.drawImage({ source: this, x:0, y:0, width:this.width, height:this.height, fromCenter:false });
-          ele.actual_canvas.getContext("2d").drawImage(this, 0, 0, this.width, this.height);
+          var context = ele.actual_canvas.getContext("2d");
+          context.drawImage(this, 0, 0, this.width, this.height);
           ele.keyframe_width = this.width;
           ele.source = ele.images[ele.current_source];
+          // debug
           ele.setup_debug_canvas();
+          ele.actual_debug.getContext("2d").drawImage(ele.source, 0, 0, ele.source.width, ele.source.height);
+          // 
           ele.play();
         });
       };
@@ -134,7 +139,7 @@
         
       };
       
-      ele.note_this = 0;
+      ele.frame_count = 0;
       
       ele.update_frame = function(sequence)
       {
@@ -142,21 +147,31 @@
         var count = sequence.count;
         var srcWidth = ele.source.width;
         var context = ele.actual_canvas.getContext("2d");
+        var debug = ele.actual_debug.getContext("2d");
+        
+        // debug
+        var progress = (ele.frame_count % 5) / 5;
         
         while(count > 0){
           var srcOrigin = ele.originForPosition(ele.source_position, srcWidth);
           var dstOrigin = ele.originForPosition(position, ele.keyframe_width);
           var strip = Math.min(count, (ele.source.width - srcOrigin.x) / ele.block_size);
           context.clearRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
-          //context.fillStyle = "blue";
-          //context.fillRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
+          
+          // debug
+          context.fillStyle = "rgba("+ (progress * 0xff) +", "+ ((1.0 - progress) * 0xff) +", 0, 1)";
+          context.fillRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
+          context.lineStyle = "black";
+          context.strokeRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
+          // note the source region
+          debug.fillStyle = "rgba(0, 255, 0, 0.25)";
+          debug.fillRect(srcOrigin.x, srcOrigin.y, strip * ele.block_size, ele.block_size);
+          //
+          
           context.drawImage(ele.source, srcOrigin.x, srcOrigin.y, strip * ele.block_size, ele.block_size, dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
           ele.source_position += strip;
           position += strip;
           count -= strip;
-          // DEBUG
-          //ele.source_position += count;
-          //break;
         }
         
       };
@@ -167,19 +182,26 @@
         return { x: (position % wblocks) * ele.block_size, y: Math.floor(position / wblocks) * ele.block_size };
       };
       
-      ele.next_frame = function()
-      {
+      ele.next_frame = function() {
+        
+        var debug = ele.actual_debug.getContext("2d");
+        debug.clearRect(0, 0, ele.source.width, ele.source.height);
+        debug.drawImage(ele.source, 0, 0, ele.source.width, ele.source.height);
+        
         var frame = ele.frames[ele.current_frame];
-        // Copy that floppy
-        for(i = 0; i <= frame.length - 5; i += 5)
-        {
+        for(i = 0; i <= frame.length - 5; i += 5){
           ele.update_frame({'position':base64DecodeValue(frame, i, 3), 'count':base64DecodeValue(frame, i + 3, 2)});
         }
-        // Advance to the next frame. It's fun!
-        ele.delay = 1000/ele.options.fps;
-        if (++ele.current_frame < ele.frames.length) ele.timeout = window.setTimeout(ele.next_frame, ele.delay);
+        
+        ele.frame_count++; // note the frame
+        ele.delay = 1000 / ele.options.fps;
+        
+        if(++ele.current_frame < ele.frames.length){
+          ele.timeout = window.setTimeout(ele.next_frame, ele.delay);
+        }
+        
       };
-
+      
       if (ele.options.autoplay) ele.setup_canvas();
       if (ele.options.autoplay) ele.load_manifest();
       
