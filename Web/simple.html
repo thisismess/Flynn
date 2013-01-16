@@ -54,7 +54,7 @@
       };
       
       /**
-       * Copy blocks from the source canvas  to the destination canvas
+       * Copy blocks from the source canvas to the destination canvas
        * 
        * @param destCanvas the destination canvas, this is the animation frame we are updating
        * @param sourceCanvas the source canvas, this is the canvas that contains all the block stream diff images
@@ -69,7 +69,7 @@
           var destBlockFrame   = this.frameForBlockAtPosition(position + i, /* use the destination canvas width here */ 400, /* use the destination canvas height here */ 400);
           console.log("COPY FROM: ("+ sourceBlockFrame.x +", "+ sourceBlockFrame.y +", "+ sourceBlockFrame.width +", "+ sourceBlockFrame.height +")");
           console.log("COPY TO  : ("+ destBlockFrame.x +", "+ destBlockFrame.y +", "+ destBlockFrame.width +", "+ destBlockFrame.height +")");
-          // !!! actually copy the rectange from sourceCanvase at sourceBlockFrame to destCanvas at destBlockFrame
+          // !!! actually copy the rectange from sourceCanva at sourceBlockFrame to destCanvas at destBlockFrame
         }
       };
       
