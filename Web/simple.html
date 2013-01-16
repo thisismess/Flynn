@@ -27,16 +27,40 @@
         return c;
       };
       
+      /**
+       * Determine the origin coordinates of a block in an image. Note that this does not account
+       * for a block stream that is broken across multiple images.
+       * 
+       * @param position the block position
+       * @param width the width of the image
+       * @param height the height of the image
+       */
       this.originForBlockAtPosition = function(position, width, height) {
         var wblocks = width / this._settings.blockLength;
         return { x: position % wblocks, y: Math.floor(position / wblocks) };
       };
       
+      /**
+       * Determine the frame rectangle of a block in an image. Note that this does not account
+       * for a block stream that is broken across multiple images.
+       * 
+       * @param position the block position
+       * @param width the width of the image
+       * @param height the height of the image
+       */
       this.frameForBlockAtPosition = function(position, width, height) {
         var origin = this.originForBlockAtPosition(position, width, height);
         return { x: origin.x, y: origin.y, width: this._settings.blockLength, height: this._settings.blockLength };
       };
       
+      /**
+       * Copy blocks from the source canvas  to the destination canvas
+       * 
+       * @param destCanvas the destination canvas, this is the animation frame we are updating
+       * @param sourceCanvas the source canvas, this is the canvas that contains all the block stream diff images
+       * @param position the block position to update
+       * @param count the block count to update
+       */
       this.copyImageBlocks = function(destCanvas, sourceCanvas, position, count) {
         var i;
         for(i = 0; i < count; i++){
@@ -45,9 +69,17 @@
           var destBlockFrame   = this.frameForBlockAtPosition(position + i, /* use the destination canvas width here */ 400, /* use the destination canvas height here */ 400);
           console.log("COPY FROM: ("+ sourceBlockFrame.x +", "+ sourceBlockFrame.y +", "+ sourceBlockFrame.width +", "+ sourceBlockFrame.height +")");
           console.log("COPY TO  : ("+ destBlockFrame.x +", "+ destBlockFrame.y +", "+ destBlockFrame.width +", "+ destBlockFrame.height +")");
+          // !!! actually copy the rectange from sourceCanvase at sourceBlockFrame to destCanvas at destBlockFrame
         }
       };
       
+      /**
+       * Update a frame.
+       * 
+       * @param destCanvas the destination canvas, this is the animation frame we are updating
+       * @param sourceCanvas the source canvas, this is the canvas that contains all the block stream diff images
+       * @param frame the manifest frame data
+       */
       this.updateFrame = function(destCanvas, sourceCanvas, frame) {
         var i;
         for(i = 0; i <= frame.length - 5; i += 5){
