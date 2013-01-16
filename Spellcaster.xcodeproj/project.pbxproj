@@ -25,6 +25,8 @@
 		D3D7D1E716A5183D0071DE5D /* SCLog.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D7D1E616A5183D0071DE5D /* SCLog.m */; };
 		D3D7D1EB16A5EEF00071DE5D /* SCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D7D1EA16A5EEF00071DE5D /* SCUtility.m */; };
 		D3D7D22916A70B380071DE5D /* SCCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D7D22816A70B380071DE5D /* SCCodec.m */; };
+		D3D7D22D16A73C740071DE5D /* SCSequentialBlockEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D7D22C16A73C740071DE5D /* SCSequentialBlockEncoder.m */; };
+		D3D7D23016A740110071DE5D /* SCDebugBlockEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D7D22F16A740110071DE5D /* SCDebugBlockEncoder.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -73,6 +75,10 @@
 		D3D7D1E916A5EEF00071DE5D /* SCUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCUtility.h; sourceTree = "<group>"; };
 		D3D7D1EA16A5EEF00071DE5D /* SCUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCUtility.m; sourceTree = "<group>"; };
 		D3D7D22816A70B380071DE5D /* SCCodec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCCodec.m; sourceTree = "<group>"; };
+		D3D7D22B16A73C740071DE5D /* SCSequentialBlockEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCSequentialBlockEncoder.h; sourceTree = "<group>"; };
+		D3D7D22C16A73C740071DE5D /* SCSequentialBlockEncoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCSequentialBlockEncoder.m; sourceTree = "<group>"; };
+		D3D7D22E16A740110071DE5D /* SCDebugBlockEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCDebugBlockEncoder.h; sourceTree = "<group>"; };
+		D3D7D22F16A740110071DE5D /* SCDebugBlockEncoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCDebugBlockEncoder.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +157,7 @@
 		D323156116A3E6FB0071D96D /* spellcaster */ = {
 			isa = PBXGroup;
 			children = (
+				D3D7D22A16A73C740071DE5D /* encoder */,
 				D323157816A4873F0071D96D /* sequence */,
 				D323157416A482E80071D96D /* SCError.h */,
 				D3D7D1E516A5183C0071DE5D /* SCLog.h */,
@@ -201,6 +208,17 @@
 				D323157A16A4873F0071D96D /* SCImageSequence.m */,
 			);
 			path = sequence;
+			sourceTree = "<group>";
+		};
+		D3D7D22A16A73C740071DE5D /* encoder */ = {
+			isa = PBXGroup;
+			children = (
+				D3D7D22B16A73C740071DE5D /* SCSequentialBlockEncoder.h */,
+				D3D7D22C16A73C740071DE5D /* SCSequentialBlockEncoder.m */,
+				D3D7D22E16A740110071DE5D /* SCDebugBlockEncoder.h */,
+				D3D7D22F16A740110071DE5D /* SCDebugBlockEncoder.m */,
+			);
+			path = encoder;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -266,6 +284,8 @@
 				D3D7D1E716A5183D0071DE5D /* SCLog.m in Sources */,
 				D3D7D1EB16A5EEF00071DE5D /* SCUtility.m in Sources */,
 				D3D7D22916A70B380071DE5D /* SCCodec.m in Sources */,
+				D3D7D22D16A73C740071DE5D /* SCSequentialBlockEncoder.m in Sources */,
+				D3D7D23016A740110071DE5D /* SCDebugBlockEncoder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -27,7 +27,8 @@
 #import "SCManifest.h"
 #import "SCImageSequence.h"
 #import "SCImageComparator.h"
-#import "SCBlockEncoder.h"
+#import "SCSequentialBlockEncoder.h"
+#import "SCDebugBlockEncoder.h"
 #import "SCUtility.h"
 #import "SCCodec.h"
 #import "SCLog.h"
@@ -145,7 +146,7 @@ void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSDictio
   
   if((keyframe = [sequence copyNextFrameImageWithError:&error]) != NULL){
     comparator = [[SCImageComparator alloc] initWithKeyframeImage:keyframe blockLength:blockLength];
-    encoder = [[SCBlockEncoder alloc] initWithDirectoryPath:outputDirectory prefix:@"spellcaster_" imageLength:imageLength blockLength:blockLength bytesPerPixel:CGImageGetBitsPerPixel(keyframe) / CGImageGetBitsPerComponent(keyframe)];
+    encoder = [[SCDebugBlockEncoder alloc] initWithDirectoryPath:outputDirectory prefix:@"spellcaster_" imageLength:imageLength blockLength:blockLength bytesPerPixel:CGImageGetBitsPerPixel(keyframe) / CGImageGetBitsPerComponent(keyframe)];
   }else{
     SCLog(@"Could not read keyframe image: %@", [error localizedDescription]);
     goto error;

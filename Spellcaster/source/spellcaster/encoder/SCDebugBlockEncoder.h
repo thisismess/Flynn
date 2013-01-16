@@ -22,41 +22,14 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import <ImageIO/ImageIO.h>
-
-#import "SCRange.h"
+#import "SCBlockEncoder.h"
 
 /**
- * A block encoder. Encoders accumulate update blocks until there are enough
- * to render an image at which time an image is composited, written to disk,
- * and the process starts over.
+ * A debugging block encoder.
  * 
  * @author Brian William Wolter
  */
-@interface SCBlockEncoder : NSObject {
-  
-  NSString  * _directory;
-  NSString  * _prefix;
-  NSUInteger  _blockLength;
-  NSUInteger  _imageLength;
-  NSUInteger  _bytesPerPixel;
-  NSUInteger  _encodedImages;
-  
-}
-
--(id)initWithDirectoryPath:(NSString *)directory prefix:(NSString *)prefix imageLength:(NSUInteger)imageLength blockLength:(NSUInteger)blockLength bytesPerPixel:(NSUInteger)bytesPerPixel;
-
--(BOOL)open:(NSError **)error;
--(BOOL)close:(NSError **)error;
-
--(BOOL)encodeBlocks:(NSArray *)blocks forImage:(CGImageRef)image error:(NSError **)error;
-
-@property (readonly) NSString * directory;
-@property (readonly) NSString * prefix;
-@property (readonly) NSUInteger imageLength;
-@property (readonly) NSUInteger blockLength;
-@property (readonly) NSUInteger bytesPerPixel;
-@property (readonly) NSUInteger encodedImages;
+@interface SCDebugBlockEncoder : SCBlockEncoder
 
 @end
 
