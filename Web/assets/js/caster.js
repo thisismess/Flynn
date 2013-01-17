@@ -150,7 +150,8 @@
       };
       
       ele.play = function() {
-        ele.timeout = window.setTimeout(ele.next_frame, (ele.options.fps / 1000.0));
+        ele.delay = 1.0 / ele.options.fps * 1000.0;
+        ele.timeout = window.setTimeout(ele.next_frame, ele.delay);
       };
       
       ele.update_frame = function(sequence) {
@@ -195,13 +196,14 @@
       
       ele.next_frame = function() {
         
+        // obtain the next frame
         var frame = ele.frames[ele.current_frame];
+        // for each copy operation in the frame, process the update blocks
         for(i = 0; i <= frame.length - 5; i += 5){
           ele.update_frame({'position':base64DecodeValue(frame, i, 3), 'count':base64DecodeValue(frame, i + 3, 2)});
         }
         
-        ele.delay = 1000 / ele.options.fps;
-        
+        // increment our frame count and set the timeout for the next frame
         if(++ele.current_frame < ele.frames.length){
           ele.timeout = window.setTimeout(ele.next_frame, ele.delay);
         }
