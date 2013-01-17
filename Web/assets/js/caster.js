@@ -48,11 +48,8 @@
       ele.current_frame = 0;
       ele.keyframe_width = 0;
       ele.keyframe_height = 0;
-      ele.current_block = 0;
       ele.current_sequence = 0;
       ele.current_source = 0;
-      ele.current_source_row = 0;
-      ele.current_source_img = 0;
       ele.canvas = null;
       ele.actual_canvas = null;
       ele.actual_debug = null;
@@ -68,7 +65,7 @@
       ele.started = new Date();
       ele.delay = Math.max((ele.options.fps/1000) - (new Date() - ele.started), 10);
       
-      // X/Y storage
+      // source info storage
       ele.source_position = 0;
       
       // Files we care about
@@ -147,10 +144,6 @@
           ele.keyframe_width = this.width;
           ele.keyframe_height = this.height;
           ele.source = ele.images[ele.current_source];
-          // debug
-          // ele.setup_debug_canvas();
-          // ele.actual_debug.getContext("2d").drawImage(ele.source, 0, 0, ele.source.width, ele.source.height);
-          // 
           ele.play();
         });
       };
@@ -165,24 +158,34 @@
         
       };
       
-      ele.frame_count = 0;
-      
       ele.update_frame = function(sequence)
       {
         var position = sequence.position;
         var count = sequence.count;
         var srcWidth = ele.source.width;
         var context = ele.actual_canvas.getContext("2d");
+        var srcBlockCount = (ele.source.width * ele.source.width) / ele.block_size / ele.block_size;
         
         while(count > 0){
+          
+          // compute our update geometry
           var srcOrigin = ele.originForPosition(ele.source_position, srcWidth);
           var dstOrigin = ele.originForPosition(position, ele.keyframe_width);
           var strip = Math.min(count, (ele.source.width - srcOrigin.x) / ele.block_size);
+          
+          // clear and update the block strip
           context.clearRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
           context.drawImage(ele.source, srcOrigin.x, srcOrigin.y, strip * ele.block_size, ele.block_size, dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
-          ele.source_position += strip;
-          position += strip;
-          count -= strip;
+          
+          // increment the destintation position and count
+          position += strip; count -= strip;
+          
+          // if we've copied the last block in the image, swap to the next one
+          if((ele.source_position += strip) >= srcBlockCount){
+            ele.current_source++;
+            ele.source = (ele.current_source < ele.images.length) ? ele.images[ele.current_source] : null;
+          }
+          
         }
         
       };
@@ -195,19 +198,12 @@
       
       ele.next_frame = function() {
         
-        //var debug = ele.actual_debug.getContext("2d");
-        //debug.clearRect(0, 0, ele.source.width, ele.source.height);
-        //debug.drawImage(ele.source, 0, 0, ele.source.width, ele.source.height);
-        ////ele.actual_canvas.getContext("2d").clearRect(0, 0, ele.keyframe_width, ele.keyframe_height);
-        
         var frame = ele.frames[ele.current_frame];
         for(i = 0; i <= frame.length - 5; i += 5){
           ele.update_frame({'position':base64DecodeValue(frame, i, 3), 'count':base64DecodeValue(frame, i + 3, 2)});
         }
         
-        ele.frame_count++; // note the frame
         ele.delay = 1000 / ele.options.fps;
-        //abort();
         
         if(++ele.current_frame < ele.frames.length){
           ele.timeout = window.setTimeout(ele.next_frame, ele.delay);
