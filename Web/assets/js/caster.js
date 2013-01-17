@@ -67,6 +67,7 @@
       
       // source info storage
       ele.source_position = 0;
+      ele.source_offset   = 0;
       
       // Files we care about
       ele.manifest 		= null;
@@ -148,28 +149,21 @@
         });
       };
       
-      ele.play = function()
-      {
-        ele.timeout = window.setTimeout(ele.next_frame, (ele.options.fps/1000));
+      ele.play = function() {
+        ele.timeout = window.setTimeout(ele.next_frame, (ele.options.fps / 1000.0));
       };
       
-      ele.parse_frame = function(frame)
-      {
-        
-      };
-      
-      ele.update_frame = function(sequence)
-      {
+      ele.update_frame = function(sequence) {
         var position = sequence.position;
         var count = sequence.count;
         var srcWidth = ele.source.width;
         var context = ele.actual_canvas.getContext("2d");
-        var srcBlockCount = (ele.source.width * ele.source.width) / ele.block_size / ele.block_size;
+        var srcUpperBound = ele.source_offset + (ele.source.width * ele.source.width / ele.block_size / ele.block_size);
         
         while(count > 0){
           
           // compute our update geometry
-          var srcOrigin = ele.originForPosition(ele.source_position, srcWidth);
+          var srcOrigin = ele.originForPosition(ele.source_position - ele.source_offset, srcWidth);
           var dstOrigin = ele.originForPosition(position, ele.keyframe_width);
           var strip = Math.min(count, (ele.source.width - srcOrigin.x) / ele.block_size);
           
@@ -178,20 +172,24 @@
           context.drawImage(ele.source, srcOrigin.x, srcOrigin.y, strip * ele.block_size, ele.block_size, dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
           
           // increment the destintation position and count
-          position += strip; count -= strip;
+          position += strip;
+          count -= strip;
           
           // if we've copied the last block in the image, swap to the next one
-          if((ele.source_position += strip) >= srcBlockCount){
+          if((ele.source_position += strip) >= srcUpperBound){
             ele.current_source++;
-            ele.source = (ele.current_source < ele.images.length) ? ele.images[ele.current_source] : null;
+            ele.source = ele.images[ele.current_source];
+            ele.source_offset = srcUpperBound;
+            srcUpperBound = ele.source_offset + (ele.source.width * ele.source.width / ele.block_size / ele.block_size);
+            srcWidth = ele.source.width;
+            console.log("NEXT: "+ ele.current_source);
           }
           
         }
         
       };
       
-      ele.originForPosition = function(position, width)
-      {
+      ele.originForPosition = function(position, width) {
         var wblocks = width / ele.block_size;
         return { x: (position % wblocks) * ele.block_size, y: Math.floor(position / wblocks) * ele.block_size };
       };
