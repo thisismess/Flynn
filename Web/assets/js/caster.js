@@ -175,16 +175,6 @@
           var strip = Math.min(count, (ele.source.width - srcOrigin.x) / ele.block_size);
           context.clearRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
           
-          // debug
-          //context.fillStyle = "rgba("+ (progress * 0xff) +", "+ ((1.0 - progress) * 0xff) +", 0, 1)";
-          //context.fillRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
-          context.lineStyle = "black";
-          context.strokeRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
-          // note the source region
-          debug.fillStyle = "rgba(0, 255, 0, 0.25)";
-          debug.fillRect(srcOrigin.x, srcOrigin.y, strip * ele.block_size, ele.block_size);
-          //
-          
           context.drawImage(ele.source, srcOrigin.x, srcOrigin.y, strip * ele.block_size, ele.block_size, dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
           ele.source_position += strip;
           position += strip;
