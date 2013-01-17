@@ -2,17 +2,6 @@
   "CodeKitInfo" : "This is a CodeKit project configuration file. It is designed to sync project settings across multiple machines. Modifying the contents of this file can be a poor life decision if you don't know what you're doing. This file is not useful unless accompanied by the project that created it in CodeKit. For more information, see: http:\/\/incident57.com\/codekit",
   "creatorBuild" : "8248",
   "files" : {
-    "\/img\/spellcaster\/spellcaster_keyframe.png" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/img\/spellcaster\/spellcaster_keyframe.png",
-      "processed" : 0,
-      "outputAbbreviatedPath" : "\/img\/spellcaster\/spellcaster_keyframe.png",
-      "initialSize" : 329412,
-      "fileType" : 8192
-    },
     "\/img\/test-animation-2\/spellcaster\/spellcaster_001.png" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 0,
@@ -22,6 +11,17 @@
       "processed" : 0,
       "outputAbbreviatedPath" : "\/img\/test-animation-2\/spellcaster\/spellcaster_001.png",
       "initialSize" : 1205,
+      "fileType" : 8192
+    },
+    "\/img\/spellcaster\/spellcaster_keyframe.png" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 0,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/img\/spellcaster\/spellcaster_keyframe.png",
+      "processed" : 0,
+      "outputAbbreviatedPath" : "\/img\/spellcaster\/spellcaster_keyframe.png",
+      "initialSize" : 329412,
       "fileType" : 8192
     },
     "\/img\/diamond\/frames\/005.png" : {
@@ -123,16 +123,16 @@
       "initialSize" : 779646,
       "fileType" : 8192
     },
-    "\/js\/lib\/log.js" : {
+    "\/img\/test-animation-2\/s06.png" : {
       "ignoreWasSetByUser" : 0,
-      "ignore" : 1,
+      "ignore" : 0,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/lib\/log.js",
-      "outputStyle" : 1,
-      "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/lib\/log-ck.js",
-      "fileType" : 64
+      "inputAbbreviatedPath" : "\/img\/test-animation-2\/s06.png",
+      "processed" : 0,
+      "outputAbbreviatedPath" : "\/img\/test-animation-2\/s06.png",
+      "initialSize" : 344,
+      "fileType" : 8192
     },
     "\/img\/diamond\/frames\/006.png" : {
       "ignoreWasSetByUser" : 0,
@@ -145,26 +145,15 @@
       "initialSize" : 2327,
       "fileType" : 8192
     },
-    "\/img\/test-animation-2\/s06.png" : {
+    "\/js\/lib\/log.js" : {
       "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
+      "ignore" : 1,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/img\/test-animation-2\/s06.png",
-      "processed" : 0,
-      "outputAbbreviatedPath" : "\/img\/test-animation-2\/s06.png",
-      "initialSize" : 344,
-      "fileType" : 8192
-    },
-    "\/js\/ac_base.js" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/ac_base.js",
+      "inputAbbreviatedPath" : "\/js\/lib\/log.js",
       "outputStyle" : 1,
       "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/ac_base-ck.js",
+      "outputAbbreviatedPath" : "\/js\/lib\/log-ck.js",
       "fileType" : 64
     },
     "\/img\/test-animation-2\/s05.png" : {
@@ -178,16 +167,27 @@
       "initialSize" : 337,
       "fileType" : 8192
     },
-    "\/js\/prototype.js" : {
+    "\/js\/ac_base.js" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 0,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/prototype.js",
+      "inputAbbreviatedPath" : "\/js\/ac_base.js",
       "outputStyle" : 1,
       "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/prototype-ck.js",
+      "outputAbbreviatedPath" : "\/js\/ac_base-ck.js",
       "fileType" : 64
+    },
+    "\/img\/test-animation\/test-animation_keyframe.png" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 0,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/img\/test-animation\/test-animation_keyframe.png",
+      "processed" : 0,
+      "outputAbbreviatedPath" : "\/img\/test-animation\/test-animation_keyframe.png",
+      "initialSize" : 335,
+      "fileType" : 8192
     },
     "\/img\/test-animation\/test-animation_001.png" : {
       "ignoreWasSetByUser" : 0,
@@ -233,17 +233,6 @@
       "initialSize" : 338,
       "fileType" : 8192
     },
-    "\/img\/spellcaster\/frame-endframe.png" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/img\/spellcaster\/frame-endframe.png",
-      "processed" : 0,
-      "outputAbbreviatedPath" : "\/img\/spellcaster\/frame-endframe.png",
-      "initialSize" : 779646,
-      "fileType" : 8192
-    },
     "\/js\/scriptaculous.js" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 0,
@@ -254,6 +243,17 @@
       "syntaxCheckerStyle" : 1,
       "outputAbbreviatedPath" : "\/js\/scriptaculous-ck.js",
       "fileType" : 64
+    },
+    "\/img\/spellcaster\/frame-endframe.png" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 0,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/img\/spellcaster\/frame-endframe.png",
+      "processed" : 0,
+      "outputAbbreviatedPath" : "\/img\/spellcaster\/frame-endframe.png",
+      "initialSize" : 779646,
+      "fileType" : 8192
     },
     "\/js\/event_mixins.js" : {
       "ignoreWasSetByUser" : 0,
@@ -266,17 +266,6 @@
       "outputAbbreviatedPath" : "\/js\/event_mixins-ck.js",
       "fileType" : 64
     },
-    "\/js\/testcase.js" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/testcase.js",
-      "outputStyle" : 1,
-      "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/testcase-ck.js",
-      "fileType" : 64
-    },
     "\/img\/test-animation-2\/s03.png" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 0,
@@ -287,6 +276,17 @@
       "outputAbbreviatedPath" : "\/img\/test-animation-2\/s03.png",
       "initialSize" : 339,
       "fileType" : 8192
+    },
+    "\/js\/testcase.js" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 0,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/js\/testcase.js",
+      "outputStyle" : 1,
+      "syntaxCheckerStyle" : 1,
+      "outputAbbreviatedPath" : "\/js\/testcase-ck.js",
+      "fileType" : 64
     },
     "\/img\/test-animation\/test-animation_endframe.png" : {
       "ignoreWasSetByUser" : 0,
@@ -343,16 +343,16 @@
       "outputAbbreviatedPath" : "\/js\/lib\/jcanvas.13.01.14-ck.js",
       "fileType" : 64
     },
-    "\/img\/test-animation\/test-animation_keyframe.png" : {
+    "\/js\/prototype.js" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 0,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/img\/test-animation\/test-animation_keyframe.png",
-      "processed" : 0,
-      "outputAbbreviatedPath" : "\/img\/test-animation\/test-animation_keyframe.png",
-      "initialSize" : 335,
-      "fileType" : 8192
+      "inputAbbreviatedPath" : "\/js\/prototype.js",
+      "outputStyle" : 1,
+      "syntaxCheckerStyle" : 1,
+      "outputAbbreviatedPath" : "\/js\/prototype-ck.js",
+      "fileType" : 64
     },
     "\/js\/ac_flow.js" : {
       "ignoreWasSetByUser" : 0,
@@ -475,17 +475,6 @@
       "initialSize" : 3935,
       "fileType" : 8192
     },
-    "\/js\/apple_core.js" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/apple_core.js",
-      "outputStyle" : 1,
-      "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/apple_core-ck.js",
-      "fileType" : 64
-    },
     "\/img\/spellcaster\/spellcaster_001.png" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 0,
@@ -496,6 +485,17 @@
       "outputAbbreviatedPath" : "\/img\/spellcaster\/spellcaster_001.png",
       "initialSize" : 3533331,
       "fileType" : 8192
+    },
+    "\/js\/apple_core.js" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 0,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/js\/apple_core.js",
+      "outputStyle" : 1,
+      "syntaxCheckerStyle" : 1,
+      "outputAbbreviatedPath" : "\/js\/apple_core-ck.js",
+      "fileType" : 64
     },
     "\/img\/diamond\/spellcaster_keyframe.png" : {
       "ignoreWasSetByUser" : 0,
