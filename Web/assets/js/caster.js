@@ -56,10 +56,13 @@
       ele.canvas = null;
       ele.actual_canvas = null;
       ele.actual_debug = null;
+      
       ele.frames = [];
-      ele.pixels = [];
       ele.images = [];
+      ele.image_count = null;
+      ele.images_loaded = 0;
       ele.debug  = false;
+      
       ele.timeout = null;
       ele.source = null;
       ele.started = new Date();
@@ -113,6 +116,9 @@
         if (ele.manifest === null) throw("No manifest loaded");
         ele.frames = ele.manifest.frames;
         ele.block_size = ele.manifest.blockSize;
+        ele.image_count = ele.manifest.imagesRequired;
+        ele.images_loaded = 0;
+        ele.images = new Array(ele.image_count);
         ele.load_frames();
       };
       
@@ -123,8 +129,11 @@
         {
           var src = ele.image_directory + ele.streamImageNameForIndex('spellcaster', i, 'png');
           $(new Image()).attr('src', src).load(function(){
-            ele.images.push(this);
-            if(ele.images.length >= ele.manifest.imagesRequired && ele.options.autoplay === true) ele.start();
+            var sour = $(this).attr('src');
+            var frame = parseInt(sour.split('/').slice(-1)[0].split('.').slice(0)[0].split('_').slice(-1)[0], 10) - 1;
+            ele.images[frame] = this;
+            ele.images_loaded++;
+            if(ele.images_loaded >= ele.manifest.imagesRequired && ele.options.autoplay === true) ele.start();
           });
         }
       };
@@ -139,8 +148,8 @@
           ele.keyframe_height = this.height;
           ele.source = ele.images[ele.current_source];
           // debug
-          ele.setup_debug_canvas();
-          ele.actual_debug.getContext("2d").drawImage(ele.source, 0, 0, ele.source.width, ele.source.height);
+          // ele.setup_debug_canvas();
+          // ele.actual_debug.getContext("2d").drawImage(ele.source, 0, 0, ele.source.width, ele.source.height);
           // 
           ele.play();
         });
@@ -164,7 +173,7 @@
         var count = sequence.count;
         var srcWidth = ele.source.width;
         var context = ele.actual_canvas.getContext("2d");
-        var debug = ele.actual_debug.getContext("2d");
+        //var debug = ele.actual_debug.getContext("2d");
         
         // debug
         var progress = (ele.frame_count % 5) / 5;
@@ -178,12 +187,12 @@
           // debug
           //context.fillStyle = "rgba("+ (progress * 0xff) +", "+ ((1.0 - progress) * 0xff) +", 0, 1)";
           //context.fillRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
-          context.lineStyle = "black";
-          context.strokeRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
-          // note the source region
-          debug.fillStyle = "rgba(0, 255, 0, 0.25)";
-          debug.fillRect(srcOrigin.x, srcOrigin.y, strip * ele.block_size, ele.block_size);
-          //
+          //context.lineStyle = "black";
+          //context.strokeRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
+          //// note the source region
+          //debug.fillStyle = "rgba(0, 255, 0, 0.25)";
+          //debug.fillRect(srcOrigin.x, srcOrigin.y, strip * ele.block_size, ele.block_size);
+          ////
           
           context.drawImage(ele.source, srcOrigin.x, srcOrigin.y, strip * ele.block_size, ele.block_size, dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
           ele.source_position += strip;
@@ -201,10 +210,10 @@
       
       ele.next_frame = function() {
         
-        var debug = ele.actual_debug.getContext("2d");
-        debug.clearRect(0, 0, ele.source.width, ele.source.height);
-        debug.drawImage(ele.source, 0, 0, ele.source.width, ele.source.height);
-        //ele.actual_canvas.getContext("2d").clearRect(0, 0, ele.keyframe_width, ele.keyframe_height);
+        //var debug = ele.actual_debug.getContext("2d");
+        //debug.clearRect(0, 0, ele.source.width, ele.source.height);
+        //debug.drawImage(ele.source, 0, 0, ele.source.width, ele.source.height);
+        ////ele.actual_canvas.getContext("2d").clearRect(0, 0, ele.keyframe_width, ele.keyframe_height);
         
         var frame = ele.frames[ele.current_frame];
         for(i = 0; i <= frame.length - 5; i += 5){
