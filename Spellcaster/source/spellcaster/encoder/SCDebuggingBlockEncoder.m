@@ -22,29 +22,19 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCDebugBlockEncoder.h"
+#import "SCDebuggingBlockEncoder.h"
 #import "SCUtility.h"
 #import "SCImage.h"
 #import "SCError.h"
 #import "SCLog.h"
 
-@implementation SCDebugBlockEncoder
+@implementation SCDebuggingBlockEncoder
 
 /**
  * Clean up
  */
 -(void)dealloc {
   [super dealloc];
-}
-
-/**
- * Initialize with an output directory and file prefix
- */
--(id)initWithDirectoryPath:(NSString *)directory prefix:(NSString *)prefix imageLength:(NSUInteger)imageLength blockLength:(NSUInteger)blockLength bytesPerPixel:(NSUInteger)bytesPerPixel {
-  if((self = [super initWithDirectoryPath:directory prefix:prefix imageLength:imageLength blockLength:blockLength bytesPerPixel:bytesPerPixel]) != nil){
-    // ...
-  }
-  return self;
 }
 
 /**
@@ -162,7 +152,9 @@
   }
   
   // setup our output path
-  NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"spellcaster_%03zd.png", _encodedImages + 1]];
+  NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_%03zd.png", self.namespace, _encodedImages + 1]];
+  // note it
+  SCVerbose(@"exporting %ldx%ld diff image: %@", width, height, blocks, outputPath);
   
   // write our diff frame out
   if(!SCImageWritePNGToPath(outputImage, outputPath, &inner)){

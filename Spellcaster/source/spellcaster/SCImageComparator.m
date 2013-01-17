@@ -25,10 +25,12 @@
 #import "SCImageComparator.h"
 #import "SCUtility.h"
 #import "SCImage.h"
+#import "SCCodec.h"
 #import "SCError.h"
 
 @implementation SCImageComparator
 
+@synthesize codecSettings = _codecSettings;
 @synthesize currentImage = _currentImage;
 @synthesize blockLength = _blockLength;
 @synthesize bytesPerPixel = _bytesPerPixel;
@@ -39,22 +41,39 @@
  */
 -(void)dealloc {
   if(_currentImage) CFRelease(_currentImage);
+  [_codecSettings release];
   [super dealloc];
 }
 
 /**
  * Initialize with a keyframe
  */
--(id)initWithKeyframeImage:(CGImageRef)keyframe blockLength:(NSUInteger)blockLength {
+-(id)initWithKeyframeImage:(CGImageRef)keyframe codecSettings:(NSDictionary *)codecSettings error:(NSError **)error {
   if((self = [super init]) != nil){
-    _blockLength = blockLength;
+    NSNumber *number;
+    
+    _codecSettings = [codecSettings retain];
+    
+    if((number = [codecSettings objectForKey:kSCCodecBlockSizeKey]) == nil){
+      if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Codec settings does not define a block size (%@)", kSCCodecBlockSizeKey);
+      goto error;
+    }
+    
+    if((_blockLength = [number integerValue]) < 1){
+      if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Codec settings defines an invalid block size (%ldx%ld)", _blockLength, _blockLength);
+      goto error;
+    }
+    
     if(keyframe != NULL){
       _currentImage = CGImageRetain(keyframe);
       _bytesPerPixel = CGImageGetBitsPerPixel(keyframe) / CGImageGetBitsPerComponent(keyframe);
       _bitmapInfo = CGImageGetBitmapInfo(keyframe);
     }
+    
   }
   return self;
+error:
+  [self release]; return nil;
 }
 
 /**

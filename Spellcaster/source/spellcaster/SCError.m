@@ -22,33 +22,27 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-/**
- * The codec version. This should be an NSNumber.
- */
-#define kSCCodecVersionKey @"SCCodecVersion"
+#import "SCError.h"
 
 /**
- * The block size to use for encoding. This should be an NSNumber.
+ * Display an error "backtrace"
  */
-#define kSCCodecBlockSizeKey @"SCCodecBlockSize"
-
-/**
- * The maximum image size to use for encoding. This should be an NSNumber.
- */
-#define kSCCodecImageSizeKey @"SCCodecImageSize"
-
-/**
- * The format encoded images should be produced in. This should be a UTI string, only JPEG and PNG are supported.
- */
-#define kSCCodecImageFormatKey @"SCCodecImageFormat"
-
-/**
- * The maximum number of pixel discrepencies between two blocks before a block is updated. This should be an NSNumber.
- */
-#define kSCCodecBlockPixelDiscrepancyThresholdKey @"SCCodecBlockPixelDiscrepancyThreshold"
-
-/**
- * Validate settings
- */
-BOOL SCCodecSettingsValid(NSDictionary *settings, NSError **error);
+void SCErrorDisplayBacktrace(NSError *error) {
+  
+  // display the error message
+  fputs([[NSString stringWithFormat:@"    because: %@\n", [error localizedDescription]] UTF8String], stderr);
+  
+  // if the error has a related file, display it
+  NSString *path;
+  if((path = [[error userInfo] objectForKey:NSFilePathErrorKey]) != nil){
+    fputs([[NSString stringWithFormat:@"       file: %@\n", path] UTF8String], stderr);
+  }
+  
+  // if the error has a cause, recurse
+  NSError *cause;
+  if((cause = [[error userInfo] objectForKey:NSUnderlyingErrorKey]) != nil){
+    SCErrorDisplayBacktrace(cause);
+  }
+  
+}
 

@@ -22,17 +22,27 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCImageSequence.h"
+#import "SCImageFrameSequence.h"
 #import "SCError.h"
 
-@implementation SCImageSequence
+@implementation SCImageFrameSequence
 
 @synthesize imagePaths = _imagePaths;
 
 /**
- * Obtain image paths for the provided directory and prefix
+ * Obtain the set of supported images extensions
  */
-+(NSArray *)imagePathsForDirectoryPath:(NSString *)directory prefix:(NSString *)prefix error:(NSError **)error {
++(NSSet *)supportedImageExtensions {
+  static NSSet *__shared = nil;
+  if(__shared == nil) __shared = [[NSSet alloc] initWithObjects:@"png", @"jpg", @"jpeg", nil];
+  return __shared;
+}
+
+/**
+ * Obtain image paths for the provided directory
+ */
++(NSArray *)imagePathsForDirectoryPath:(NSString *)directory error:(NSError **)error {
+  NSMutableArray *imagePaths = [NSMutableArray array];
   NSError *inner = nil;
   BOOL isdir = FALSE;
   
@@ -47,15 +57,11 @@
     return nil;
   }
   
-  NSMutableArray *imagePaths = [NSMutableArray array];
-  
   for(NSString *filename in contents){
-    NSString *extension = [filename pathExtension];
-    if([extension caseInsensitiveCompare:@"png"] == NSOrderedSame || [extension caseInsensitiveCompare:@"jpg"] == NSOrderedSame || [extension caseInsensitiveCompare:@"jpeg"] == NSOrderedSame){
-      if([filename length] > ([prefix length]  + 1 + [extension length] + 1)){
-        if([filename compare:prefix options:NSCaseInsensitiveSearch range:NSMakeRange(0, [prefix length])] == NSOrderedSame){
-          [imagePaths addObject:[directory stringByAppendingPathComponent:filename]];
-        }
+    NSString *extension;
+    if((extension = [[filename pathExtension] lowercaseString]) != nil && [extension length] > 0){
+      if([[[self class] supportedImageExtensions] containsObject:extension]){
+        [imagePaths addObject:[directory stringByAppendingPathComponent:filename]];
       }
     }
   }
@@ -74,10 +80,10 @@
 /**
  * Initialize with a directory and frame image filename prefix
  */
--(id)initWithDirectoryPath:(NSString *)directory prefix:(NSString *)prefix {
+-(id)initWithImagesInDirectory:(NSString *)directory error:(NSError **)error {
   NSArray *paths;
-  if((paths = [[self class] imagePathsForDirectoryPath:directory prefix:prefix error:nil]) != nil){
-    return [self initWithImagePaths:paths];
+  if((paths = [[self class] imagePathsForDirectoryPath:directory error:error]) != nil){
+    return [self initWithImagesAtPaths:paths error:error];
   }else{
     [self release]; return nil;
   }
@@ -86,11 +92,16 @@
 /**
  * Initialize with a sequence of image paths
  */
--(id)initWithImagePaths:(NSArray *)paths {
+-(id)initWithImagesAtPaths:(NSArray *)paths error:(NSError **)error {
   if((self = [super init]) != nil){
-    _imagePaths = [paths retain];
+    if((_imagePaths = [paths retain]) == nil || [_imagePaths count] < 1){
+      if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"No images in sequence");
+      goto error;
+    }
   }
   return self;
+error:
+  [self release]; return nil;
 }
 
 /**

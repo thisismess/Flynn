@@ -32,16 +32,19 @@
  */
 @interface SCManifest : NSObject
 
+-(id)initWithCodecSettings:(NSDictionary *)codecSettings error:(NSError **)error;
+
 -(BOOL)startFrame;
 -(BOOL)encodeCopyBlocks:(SCRange *)range;
 -(BOOL)encodeCopyBlocksAtPosition:(size_t)position count:(size_t)blocks;
 
 -(NSString *)externalRepresentation;
 
-@property (readwrite, assign) NSUInteger version;
-@property (readwrite, assign) NSUInteger blockLength;
-@property (readwrite, assign) NSUInteger encodedImages;
-@property (readonly)          NSArray  * frames;
+@property (readonly) NSDictionary * codecSettings;
+@property (readonly) NSUInteger     version;
+@property (readonly) NSUInteger     blockLength;
+@property (readonly) NSUInteger     encodedImages;
+@property (readonly) NSArray      * frames;
 
 @end
 

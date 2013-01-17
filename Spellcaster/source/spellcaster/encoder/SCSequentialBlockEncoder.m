@@ -41,9 +41,9 @@
 /**
  * Initialize with an output directory and file prefix
  */
--(id)initWithDirectoryPath:(NSString *)directory prefix:(NSString *)prefix imageLength:(NSUInteger)imageLength blockLength:(NSUInteger)blockLength bytesPerPixel:(NSUInteger)bytesPerPixel {
-  if((self = [super initWithDirectoryPath:directory prefix:prefix imageLength:imageLength blockLength:blockLength bytesPerPixel:bytesPerPixel]) != nil){
-    _length = imageLength * imageLength * bytesPerPixel;
+-(id)initWithKeyframeImage:(CGImageRef)keyframe outputDirectory:(NSString *)directory namespace:(NSString *)namespace codecSettings:(NSDictionary *)codecSettings error:(NSError **)error {
+  if((self = [super initWithKeyframeImage:keyframe outputDirectory:directory namespace:namespace codecSettings:codecSettings error:error]) != nil){
+    _length = self.imageLength * self.imageLength * self.bytesPerPixel;
     _blockBuffer = malloc(_length);
     _imageBuffer = malloc(_length);
   }
@@ -63,10 +63,10 @@
   // setup our output directory
   if((exists = [[NSFileManager defaultManager] fileExistsAtPath:_directory isDirectory:&isdir]) && !isdir){
     if(error) *error = NSERROR_WITH_FILE(kSCSpellcasterErrorDomain, kSCStatusError, _directory, @"File at path exists but does not represent a directory");
-    goto error;
+    return FALSE;
   }else if(!exists && ![[NSFileManager defaultManager] createDirectoryAtPath:_directory withIntermediateDirectories:TRUE attributes:nil error:&inner]){
     if(error) *error = NSERROR_WITH_FILE(kSCSpellcasterErrorDomain, kSCStatusError, _directory, @"Could not create export directory");
-    goto error;
+    return FALSE;
   }
   
   return TRUE;
@@ -208,7 +208,7 @@ error:
   }
   
   // setup our output path
-  NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"spellcaster_%03zd.png", _encodedImages + 1]];
+  NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_%03zd.png", self.namespace, _encodedImages + 1]];
   // note it
   SCVerbose(@"exporting %ldx%ld for %ld blocks: %@", width, height, blocks, outputPath);
   

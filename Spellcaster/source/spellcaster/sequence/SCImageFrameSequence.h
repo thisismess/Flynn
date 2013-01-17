@@ -29,16 +29,16 @@
  * 
  * @author Brian William Wolter
  */
-@interface SCImageSequence : SCFrameSequence {
+@interface SCImageFrameSequence : SCFrameSequence {
   
   NSUInteger _currentFrame;
   
 }
 
-+(NSArray *)imagePathsForDirectoryPath:(NSString *)directory prefix:(NSString *)prefix error:(NSError **)error;
++(NSArray *)imagePathsForDirectoryPath:(NSString *)directory error:(NSError **)error;
 
--(id)initWithDirectoryPath:(NSString *)directory prefix:(NSString *)prefix;
--(id)initWithImagePaths:(NSArray *)paths;
+-(id)initWithImagesInDirectory:(NSString *)directory error:(NSError **)error;
+-(id)initWithImagesAtPaths:(NSArray *)paths error:(NSError **)error;
 
 @property (readonly) NSArray * imagePaths;
 

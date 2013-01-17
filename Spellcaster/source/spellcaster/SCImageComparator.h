@@ -32,14 +32,15 @@
  */
 @interface SCImageComparator : NSObject
 
--(id)initWithKeyframeImage:(CGImageRef)keyframe blockLength:(NSUInteger)blockLength;
+-(id)initWithKeyframeImage:(CGImageRef)keyframe codecSettings:(NSDictionary *)codecSettings error:(NSError **)error;
 
 -(NSArray *)updateBlocksForImage:(CGImageRef)image error:(NSError **)error;
 
-@property (readonly) CGImageRef   currentImage;
-@property (readonly) NSUInteger   blockLength;
-@property (readonly) NSUInteger   bytesPerPixel;
-@property (readonly) CGBitmapInfo bitmapInfo;
+@property (readonly) NSDictionary * codecSettings;
+@property (readonly) CGImageRef     currentImage;
+@property (readonly) NSUInteger     blockLength;
+@property (readonly) NSUInteger     bytesPerPixel;
+@property (readonly) CGBitmapInfo   bitmapInfo;
 
 @end
 

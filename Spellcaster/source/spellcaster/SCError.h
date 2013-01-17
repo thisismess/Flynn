@@ -39,3 +39,5 @@ typedef enum {
 #define NSERROR_WITH_CAUSE(d, c, r, m...) \
   [NSError errorWithDomain:(d) code:(c) userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:m], NSLocalizedDescriptionKey, (r), NSUnderlyingErrorKey, nil]]
 
+void SCErrorDisplayBacktrace(NSError *error);
+

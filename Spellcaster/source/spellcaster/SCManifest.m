@@ -23,12 +23,15 @@
 // 
 
 #import "SCManifest.h"
+#import "SCCodec.h"
+#import "SCError.h"
 #import "JSONKit.h"
 
 static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 @implementation SCManifest
 
+@synthesize codecSettings = _codecSettings;
 @synthesize version = _version;
 @synthesize blockLength = _blockLength;
 @synthesize encodedImages = _encodedImages;
@@ -38,6 +41,7 @@ static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
  * Clean up
  */
 -(void)dealloc {
+  [_codecSettings release];
   [_frames release];
   [super dealloc];
 }
@@ -45,11 +49,31 @@ static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 /**
  * Initialize an empty manifest
  */
--(id)init {
+-(id)initWithCodecSettings:(NSDictionary *)codecSettings error:(NSError **)error {
   if((self = [super init]) != nil){
+    NSNumber *number;
+    
+    _codecSettings = [codecSettings retain];
     _frames = [[NSMutableArray alloc] init];
+    
+    if((number = [codecSettings objectForKey:kSCCodecVersionKey]) != nil){
+      _version = [number integerValue];
+    }else{
+      if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Codec settings does not define a version (%@)", kSCCodecVersionKey);
+      goto error;
+    }
+    
+    if((number = [codecSettings objectForKey:kSCCodecBlockSizeKey]) != nil){
+      _blockLength = [number integerValue];
+    }else{
+      if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Codec settings does not define a block size (%@)", kSCCodecBlockSizeKey);
+      goto error;
+    }
+    
   }
   return self;
+error:
+  [self release]; return nil;
 }
 
 /**
@@ -110,7 +134,7 @@ static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
  */
 -(NSString *)externalRepresentation {
   NSMutableDictionary *external = [NSMutableDictionary dictionary];
-  [external setObject:[NSNumber numberWithInteger:2] forKey:@"version"];
+  [external setObject:[NSNumber numberWithInteger:self.version] forKey:@"version"];
   [external setObject:[NSNumber numberWithInteger:self.blockLength] forKey:@"blockSize"];
   [external setObject:[NSNumber numberWithInteger:self.encodedImages] forKey:@"imagesRequired"];
   [external setObject:[NSNumber numberWithInteger:[self.frames count]] forKey:@"frameCount"];

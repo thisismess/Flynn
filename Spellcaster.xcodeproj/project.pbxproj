@@ -15,18 +15,19 @@
 		D323156F16A3F1CE0071D96D /* SCRange.m in Sources */ = {isa = PBXBuildFile; fileRef = D323156D16A3F1CD0071D96D /* SCRange.m */; };
 		D323157116A3F4220071D96D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D323157016A3F4220071D96D /* CoreGraphics.framework */; };
 		D323157316A3F42A0071D96D /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D323157216A3F42A0071D96D /* ImageIO.framework */; };
-		D323157B16A4873F0071D96D /* SCImageSequence.m in Sources */ = {isa = PBXBuildFile; fileRef = D323157A16A4873F0071D96D /* SCImageSequence.m */; };
 		D323157E16A4968A0071D96D /* SCImage.m in Sources */ = {isa = PBXBuildFile; fileRef = D323157D16A4968A0071D96D /* SCImage.m */; };
 		D323158116A497BA0071D96D /* SCFrameSequence.m in Sources */ = {isa = PBXBuildFile; fileRef = D323158016A497BA0071D96D /* SCFrameSequence.m */; };
 		D323158416A4980C0071D96D /* SCImageComparator.m in Sources */ = {isa = PBXBuildFile; fileRef = D323158316A4980B0071D96D /* SCImageComparator.m */; };
 		D323158716A4A4560071D96D /* SCBlockEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = D323158616A4A4560071D96D /* SCBlockEncoder.m */; };
 		D323158916A4A6AA0071D96D /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D323158816A4A6AA0071D96D /* Accelerate.framework */; };
 		D323158D16A4C7BE0071D96D /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D323158C16A4C7BE0071D96D /* CoreServices.framework */; };
+		D3A573FF16A7B541003C4C3A /* SCDebuggingBlockEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A573FE16A7B541003C4C3A /* SCDebuggingBlockEncoder.m */; };
+		D3A5740216A7C500003C4C3A /* SCImageFrameSequence.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A5740116A7C500003C4C3A /* SCImageFrameSequence.m */; };
+		D3A5740416A7C751003C4C3A /* SCError.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A5740316A7C751003C4C3A /* SCError.m */; };
 		D3D7D1E716A5183D0071DE5D /* SCLog.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D7D1E616A5183D0071DE5D /* SCLog.m */; };
 		D3D7D1EB16A5EEF00071DE5D /* SCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D7D1EA16A5EEF00071DE5D /* SCUtility.m */; };
 		D3D7D22916A70B380071DE5D /* SCCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D7D22816A70B380071DE5D /* SCCodec.m */; };
 		D3D7D22D16A73C740071DE5D /* SCSequentialBlockEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D7D22C16A73C740071DE5D /* SCSequentialBlockEncoder.m */; };
-		D3D7D23016A740110071DE5D /* SCDebugBlockEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D7D22F16A740110071DE5D /* SCDebugBlockEncoder.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -57,8 +58,6 @@
 		D323157016A3F4220071D96D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		D323157216A3F42A0071D96D /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		D323157416A482E80071D96D /* SCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCError.h; sourceTree = "<group>"; };
-		D323157916A4873F0071D96D /* SCImageSequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCImageSequence.h; sourceTree = "<group>"; };
-		D323157A16A4873F0071D96D /* SCImageSequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCImageSequence.m; sourceTree = "<group>"; };
 		D323157C16A496890071D96D /* SCImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCImage.h; sourceTree = "<group>"; };
 		D323157D16A4968A0071D96D /* SCImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCImage.m; sourceTree = "<group>"; };
 		D323157F16A497BA0071D96D /* SCFrameSequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCFrameSequence.h; sourceTree = "<group>"; };
@@ -69,6 +68,11 @@
 		D323158616A4A4560071D96D /* SCBlockEncoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCBlockEncoder.m; sourceTree = "<group>"; };
 		D323158816A4A6AA0071D96D /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		D323158C16A4C7BE0071D96D /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		D3A573FD16A7B541003C4C3A /* SCDebuggingBlockEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCDebuggingBlockEncoder.h; sourceTree = "<group>"; };
+		D3A573FE16A7B541003C4C3A /* SCDebuggingBlockEncoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCDebuggingBlockEncoder.m; sourceTree = "<group>"; };
+		D3A5740016A7C500003C4C3A /* SCImageFrameSequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCImageFrameSequence.h; sourceTree = "<group>"; };
+		D3A5740116A7C500003C4C3A /* SCImageFrameSequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCImageFrameSequence.m; sourceTree = "<group>"; };
+		D3A5740316A7C751003C4C3A /* SCError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCError.m; sourceTree = "<group>"; };
 		D3D7D1E516A5183C0071DE5D /* SCLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCLog.h; sourceTree = "<group>"; };
 		D3D7D1E616A5183D0071DE5D /* SCLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCLog.m; sourceTree = "<group>"; };
 		D3D7D1E816A51C550071DE5D /* SCCodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCCodec.h; sourceTree = "<group>"; };
@@ -77,8 +81,6 @@
 		D3D7D22816A70B380071DE5D /* SCCodec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCCodec.m; sourceTree = "<group>"; };
 		D3D7D22B16A73C740071DE5D /* SCSequentialBlockEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCSequentialBlockEncoder.h; sourceTree = "<group>"; };
 		D3D7D22C16A73C740071DE5D /* SCSequentialBlockEncoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCSequentialBlockEncoder.m; sourceTree = "<group>"; };
-		D3D7D22E16A740110071DE5D /* SCDebugBlockEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCDebugBlockEncoder.h; sourceTree = "<group>"; };
-		D3D7D22F16A740110071DE5D /* SCDebugBlockEncoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCDebugBlockEncoder.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,6 +162,7 @@
 				D3D7D22A16A73C740071DE5D /* encoder */,
 				D323157816A4873F0071D96D /* sequence */,
 				D323157416A482E80071D96D /* SCError.h */,
+				D3A5740316A7C751003C4C3A /* SCError.m */,
 				D3D7D1E516A5183C0071DE5D /* SCLog.h */,
 				D3D7D1E616A5183D0071DE5D /* SCLog.m */,
 				D3D7D1E816A51C550071DE5D /* SCCodec.h */,
@@ -204,8 +207,8 @@
 		D323157816A4873F0071D96D /* sequence */ = {
 			isa = PBXGroup;
 			children = (
-				D323157916A4873F0071D96D /* SCImageSequence.h */,
-				D323157A16A4873F0071D96D /* SCImageSequence.m */,
+				D3A5740016A7C500003C4C3A /* SCImageFrameSequence.h */,
+				D3A5740116A7C500003C4C3A /* SCImageFrameSequence.m */,
 			);
 			path = sequence;
 			sourceTree = "<group>";
@@ -215,8 +218,8 @@
 			children = (
 				D3D7D22B16A73C740071DE5D /* SCSequentialBlockEncoder.h */,
 				D3D7D22C16A73C740071DE5D /* SCSequentialBlockEncoder.m */,
-				D3D7D22E16A740110071DE5D /* SCDebugBlockEncoder.h */,
-				D3D7D22F16A740110071DE5D /* SCDebugBlockEncoder.m */,
+				D3A573FD16A7B541003C4C3A /* SCDebuggingBlockEncoder.h */,
+				D3A573FE16A7B541003C4C3A /* SCDebuggingBlockEncoder.m */,
 			);
 			path = encoder;
 			sourceTree = "<group>";
@@ -276,7 +279,6 @@
 				D323156416A3E6FB0071D96D /* SCManifest.m in Sources */,
 				D323156916A3EAE50071D96D /* JSONKit.m in Sources */,
 				D323156F16A3F1CE0071D96D /* SCRange.m in Sources */,
-				D323157B16A4873F0071D96D /* SCImageSequence.m in Sources */,
 				D323157E16A4968A0071D96D /* SCImage.m in Sources */,
 				D323158116A497BA0071D96D /* SCFrameSequence.m in Sources */,
 				D323158416A4980C0071D96D /* SCImageComparator.m in Sources */,
@@ -285,7 +287,9 @@
 				D3D7D1EB16A5EEF00071DE5D /* SCUtility.m in Sources */,
 				D3D7D22916A70B380071DE5D /* SCCodec.m in Sources */,
 				D3D7D22D16A73C740071DE5D /* SCSequentialBlockEncoder.m in Sources */,
-				D3D7D23016A740110071DE5D /* SCDebugBlockEncoder.m in Sources */,
+				D3A573FF16A7B541003C4C3A /* SCDebuggingBlockEncoder.m in Sources */,
+				D3A5740216A7C500003C4C3A /* SCImageFrameSequence.m in Sources */,
+				D3A5740416A7C751003C4C3A /* SCError.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

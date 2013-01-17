@@ -25,12 +25,13 @@
 #import <getopt.h>
 
 #import "SCManifest.h"
-#import "SCImageSequence.h"
+#import "SCImageFrameSequence.h"
 #import "SCImageComparator.h"
 #import "SCSequentialBlockEncoder.h"
-#import "SCDebugBlockEncoder.h"
+#import "SCDebuggingBlockEncoder.h"
 #import "SCUtility.h"
 #import "SCCodec.h"
+#import "SCError.h"
 #import "SCLog.h"
 
 enum {
@@ -41,7 +42,7 @@ enum {
 
 typedef uint32_t SCOptions;
 
-void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSDictionary *settings, SCOptions options);
+void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options);
 void SCSpellUsage(FILE *stream);
 
 /**
@@ -50,19 +51,22 @@ void SCSpellUsage(FILE *stream);
 int main(int argc, const char * argv[]) {
   @autoreleasepool {
     NSMutableDictionary *settings = [[NSMutableDictionary alloc] init];
-    SCOptions options = FALSE;
+    NSString *namespace = @"spellcaster";
     NSString *outputDirectory = nil;
-    NSString *prefix = nil;
-    NSString *name = nil;
+    SCOptions options = FALSE;
     NSError *error = nil;
     
+    // the default codec version (2, the only version)
+    [settings setObject:[NSNumber numberWithInt:2] forKey:kSCCodecVersionKey];
+    // the default encoding block size (8x8, the same as JPEG macro blocks)
     [settings setObject:[NSNumber numberWithInt:8] forKey:kSCCodecBlockSizeKey];
+    // the default stream image maximum dimension (1624, due to iOS image size constraints)
     [settings setObject:[NSNumber numberWithInt:1624] forKey:kSCCodecImageSizeKey];
+    // the default stream image format (JPEG, much better compression)
     [settings setObject:(NSString *)kUTTypeJPEG forKey:kSCCodecImageFormatKey];
     
     static struct option longopts[] = {
       { "name",             required_argument,  NULL,         'n' },  // name of the animation
-      { "prefix",           required_argument,  NULL,         'p' },  // input frame prefix
       { "output",           required_argument,  NULL,         'o' },  // base path for output
       { "block-threshold",  required_argument,  NULL,         't' },  // block pixel discrepency threshold
       { "block-size",       required_argument,  NULL,         'b' },  // block size
@@ -73,15 +77,11 @@ int main(int argc, const char * argv[]) {
     };
     
     int flag;
-    while((flag = getopt_long(argc, (char **)argv, "n:p:o:b:I:t:vD", longopts, NULL)) != -1){
+    while((flag = getopt_long(argc, (char **)argv, "n:o:b:I:t:vD", longopts, NULL)) != -1){
       switch(flag){
         
         case 'n':
-          name = [NSString stringWithUTF8String:optarg];
-          break;
-          
-        case 'p':
-          prefix = [NSString stringWithUTF8String:optarg];
+          namespace = [NSString stringWithUTF8String:optarg];
           break;
           
         case 'o':
@@ -115,8 +115,9 @@ int main(int argc, const char * argv[]) {
       }
     }
     
-    if(!SCCodecSettingsIsValid(settings, &error)){
-      SCLog(@"Invalid options: %@", [error localizedDescription]);
+    if(!SCCodecSettingsValid(settings, &error)){
+      SCLog(@"Codec settings are invalid");
+      SCErrorDisplayBacktrace(error);
       exit(-1);
     }
     
@@ -130,7 +131,7 @@ int main(int argc, const char * argv[]) {
     
     for(int i = 0; i < argc; i++){
       NSString *inputDirectory = [[NSString alloc] initWithUTF8String:argv[i]];
-      SCSpellExport(inputDirectory, (outputDirectory != nil) ? outputDirectory : [outputDirectory stringByAppendingPathComponent:@"spellcaster"], settings, options);
+      SCSpellExport(inputDirectory, (outputDirectory != nil) ? outputDirectory : [inputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_output", namespace]], namespace, settings, options);
       [inputDirectory release];
     }
     
@@ -142,54 +143,81 @@ int main(int argc, const char * argv[]) {
 /**
  * Export
  */
-void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSDictionary *settings, SCOptions options) {
-  size_t blockLength = 8;
-  size_t imageLength = 1624;
+void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options) {
   
-  SCManifest *manifest = [[SCManifest alloc] init];
-  SCImageSequence *sequence = [[SCImageSequence alloc] initWithDirectoryPath:inputDirectory prefix:@""];
+  SCFrameSequence *sequence = nil;
   SCImageComparator *comparator = nil;
   SCBlockEncoder *encoder = nil;
-  NSError *error = nil;
+  SCManifest *manifest = nil;
   CGImageRef keyframe = NULL, image;
+  NSError *error = nil;
+  
+  if((sequence = [[SCImageFrameSequence alloc] initWithImagesInDirectory:inputDirectory error:&error]) == nil){
+    SCLog(@"Could not create image sequence");
+    SCErrorDisplayBacktrace(error);
+    goto error;
+  }
+  
+  if((manifest = [[SCManifest alloc] initWithCodecSettings:settings error:&error]) == nil){
+    SCLog(@"Could not create manifest");
+    SCErrorDisplayBacktrace(error);
+    goto error;
+  }
   
   if(![sequence open:&error]){
-    SCLog(@"Could not open frame sequence: %@", [error localizedDescription]);
+    SCLog(@"Could not open frame sequence");
+    SCErrorDisplayBacktrace(error);
     goto error;
   }
   
   if((keyframe = [sequence copyNextFrameImageWithError:&error]) == NULL){
-    SCLog(@"Could not read keyframe image: %@", [error localizedDescription]);
+    SCLog(@"Could not read keyframe image");
+    SCErrorDisplayBacktrace(error);
     goto error;
   }
   
-  comparator = [[SCImageComparator alloc] initWithKeyframeImage:keyframe blockLength:blockLength];
+  if((comparator = [[SCImageComparator alloc] initWithKeyframeImage:keyframe codecSettings:settings error:&error]) == nil){
+    SCLog(@"Could not create image comparator");
+    SCErrorDisplayBacktrace(error);
+    goto error;
+  }
   
   if((options & kSCOptionDebug) == kSCOptionDebug){
-    encoder = [[SCDebugBlockEncoder alloc] initWithDirectoryPath:outputDirectory prefix:@"spellcaster_" imageLength:imageLength blockLength:blockLength bytesPerPixel:CGImageGetBitsPerPixel(keyframe) / CGImageGetBitsPerComponent(keyframe)];
+    if((encoder = [[SCDebuggingBlockEncoder alloc] initWithKeyframeImage:keyframe outputDirectory:outputDirectory namespace:namespace codecSettings:settings error:&error]) == nil){
+      SCLog(@"Could not create debugging block encoder");
+      SCErrorDisplayBacktrace(error);
+      goto error;
+    }
   }else{
-    encoder = [[SCSequentialBlockEncoder alloc] initWithDirectoryPath:outputDirectory prefix:@"spellcaster_" imageLength:imageLength blockLength:blockLength bytesPerPixel:CGImageGetBitsPerPixel(keyframe) / CGImageGetBitsPerComponent(keyframe)];
+    if((encoder = [[SCSequentialBlockEncoder alloc] initWithKeyframeImage:keyframe outputDirectory:outputDirectory namespace:namespace codecSettings:settings error:&error]) == nil){
+      SCLog(@"Could not create sequential block encoder");
+      SCErrorDisplayBacktrace(error);
+      goto error;
+    }
   }
   
   if(![encoder open:&error]){
-    SCLog(@"Could not open block encoder: %@", [error localizedDescription]);
+    SCLog(@"Could not open block encoder");
+    SCErrorDisplayBacktrace(error);
     goto error;
   }
   
   size_t frames = 0;
   while((image = [sequence copyNextFrameImageWithError:&error]) != NULL){
-    size_t diffblocks = 0, totalblocks = (CGImageGetWidth(image) / blockLength) * (CGImageGetHeight(image) / blockLength);
+    size_t diffblocks = 0, totalblocks = (CGImageGetWidth(image) / encoder.blockLength) * (CGImageGetHeight(image) / encoder.blockLength);
     BOOL more = TRUE;
     
     NSArray *blocks;
     if((blocks = [comparator updateBlocksForImage:image error:&error]) == nil){
-      SCLog(@"Could not determine update blocks from frame image: %@", [error localizedDescription]);
+      SCLog(@"Could not determine update blocks from frame image");
+      SCErrorDisplayBacktrace(error);
       more = FALSE; error = nil;
       goto done;
     }
     
     if(![encoder encodeBlocks:blocks forImage:image error:&error]){
-      SCLog(@"Could not encode update blocks from frame image: %@", [error localizedDescription]);
+      SCLog(@"Could not encode update blocks from frame image");
+      SCErrorDisplayBacktrace(error);
       more = FALSE; error = nil;
       goto done;
     }
@@ -217,31 +245,32 @@ void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSDictio
   }
   
   if(error != nil){
-    SCLog(@"Could not process frame image: %@", [error localizedDescription]);
+    SCLog(@"Could not process frame image");
+    SCErrorDisplayBacktrace(error);
     goto error;
   }
   
   if(![encoder close:&error]){
-    SCLog(@"Could not close block encoder: %@", [error localizedDescription]);
+    SCLog(@"Could not close block encoder");
+    SCErrorDisplayBacktrace(error);
     goto error;
   }
   
   if(![sequence close:&error]){
-    SCLog(@"Could not close frame sequence: %@", [error localizedDescription]);
+    SCLog(@"Could not close frame sequence");
+    SCErrorDisplayBacktrace(error);
     goto error;
   }
   
-  if(!SCImageWritePNGToPath(keyframe, [outputDirectory stringByAppendingPathComponent:@"spellcaster_keyframe.png"], &error)){
-    SCLog(@"Could not write keyframe: %@", [error localizedDescription]);
+  if(!SCImageWritePNGToPath(keyframe, [outputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_keyframe.png", namespace]], &error)){
+    SCLog(@"Could not write keyframe");
+    SCErrorDisplayBacktrace(error);
     goto error;
   }
   
-  manifest.version = 2;
-  manifest.blockLength = blockLength;
-  manifest.encodedImages = encoder.encodedImages;
-  
-  if(![[manifest externalRepresentation] writeToFile:[outputDirectory stringByAppendingPathComponent:@"spellcaster_manifest.json"]  atomically:TRUE encoding:NSUTF8StringEncoding error:&error]){
-    SCLog(@"Could not write manifest file: %@", [error localizedDescription]);
+  if(![[manifest externalRepresentation] writeToFile:[outputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_manifest.json", namespace]]  atomically:TRUE encoding:NSUTF8StringEncoding error:&error]){
+    SCLog(@"Could not write manifest file");
+    SCErrorDisplayBacktrace(error);
     goto error;
   }
   
@@ -249,8 +278,8 @@ error:
   if(keyframe) CFRelease(keyframe);
   [encoder release];
   [comparator release];
-  [sequence release];
   [manifest release];
+  [sequence release];
 }
 
 /**

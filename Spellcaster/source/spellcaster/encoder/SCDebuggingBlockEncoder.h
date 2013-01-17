@@ -29,7 +29,7 @@
  * 
  * @author Brian William Wolter
  */
-@interface SCDebugBlockEncoder : SCBlockEncoder
+@interface SCDebuggingBlockEncoder : SCBlockEncoder
 
 @end
 

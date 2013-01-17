@@ -36,7 +36,7 @@
 @interface SCBlockEncoder : NSObject {
   
   NSString  * _directory;
-  NSString  * _prefix;
+  NSString  * _namespace;
   NSUInteger  _blockLength;
   NSUInteger  _imageLength;
   NSUInteger  _bytesPerPixel;
@@ -44,19 +44,20 @@
   
 }
 
--(id)initWithDirectoryPath:(NSString *)directory prefix:(NSString *)prefix imageLength:(NSUInteger)imageLength blockLength:(NSUInteger)blockLength bytesPerPixel:(NSUInteger)bytesPerPixel;
+-(id)initWithKeyframeImage:(CGImageRef)keyframe outputDirectory:(NSString *)directory namespace:(NSString *)namespace codecSettings:(NSDictionary *)codecSettings error:(NSError **)error;
 
 -(BOOL)open:(NSError **)error;
 -(BOOL)close:(NSError **)error;
 
 -(BOOL)encodeBlocks:(NSArray *)blocks forImage:(CGImageRef)image error:(NSError **)error;
 
-@property (readonly) NSString * directory;
-@property (readonly) NSString * prefix;
-@property (readonly) NSUInteger imageLength;
-@property (readonly) NSUInteger blockLength;
-@property (readonly) NSUInteger bytesPerPixel;
-@property (readonly) NSUInteger encodedImages;
+@property (readonly) NSDictionary * codecSettings;
+@property (readonly) NSString     * directory;
+@property (readonly) NSString     * namespace;
+@property (readonly) NSUInteger     imageLength;
+@property (readonly) NSUInteger     blockLength;
+@property (readonly) NSUInteger     bytesPerPixel;
+@property (readonly) NSUInteger     encodedImages;
 
 @end
 

@@ -24,13 +24,15 @@
 
 #import "SCBlockEncoder.h"
 #import "SCImage.h"
+#import "SCCodec.h"
 #import "SCError.h"
 #import "SCLog.h"
 
 @implementation SCBlockEncoder
 
+@synthesize codecSettings = _codecSettings;
 @synthesize directory = _directory;
-@synthesize prefix = _prefix;
+@synthesize namespace = _namespace;
 @synthesize imageLength = _imageLength;
 @synthesize blockLength = _blockLength;
 @synthesize bytesPerPixel = _bytesPerPixel;
@@ -40,23 +42,48 @@
  * Clean up
  */
 -(void)dealloc {
+  [_codecSettings release];
   [_directory release];
-  [_prefix release];
+  [_namespace release];
   [super dealloc];
 }
 
 /**
- * Initialize with an output directory and file prefix
+ * Initialize with an output directory
  */
--(id)initWithDirectoryPath:(NSString *)directory prefix:(NSString *)prefix imageLength:(NSUInteger)imageLength blockLength:(NSUInteger)blockLength bytesPerPixel:(NSUInteger)bytesPerPixel {
+-(id)initWithKeyframeImage:(CGImageRef)keyframe outputDirectory:(NSString *)directory namespace:(NSString *)namespace codecSettings:(NSDictionary *)codecSettings error:(NSError **)error {
   if((self = [super init]) != nil){
+    NSNumber *number;
+    
     _directory = [directory copy];
-    _prefix = [prefix copy];
-    _blockLength = blockLength;
-    _imageLength = imageLength;
-    _bytesPerPixel = bytesPerPixel;
+    _namespace = [namespace copy];
+    _codecSettings = [codecSettings retain];
+    
+    if(keyframe != NULL){
+      _bytesPerPixel = CGImageGetBitsPerPixel(keyframe) / CGImageGetBitsPerComponent(keyframe);
+    }else{
+      if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Keyframe is null");
+      goto error;
+    }
+    
+    if((number = [codecSettings objectForKey:kSCCodecBlockSizeKey]) != nil){
+      _blockLength = [number integerValue];
+    }else{
+      if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Codec settings does not define a block size (%@)", kSCCodecBlockSizeKey);
+      goto error;
+    }
+    
+    if((number = [codecSettings objectForKey:kSCCodecImageSizeKey]) != nil){
+      _imageLength = [number integerValue];
+    }else{
+      if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Codec settings does not define a stream image maximum size (%@)", kSCCodecImageSizeKey);
+      goto error;
+    }
+    
   }
   return self;
+error:
+  [self release]; return nil;
 }
 
 /**
