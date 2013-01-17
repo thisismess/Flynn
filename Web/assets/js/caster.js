@@ -39,7 +39,7 @@
       // Defaults
       ele.options = $.extend({
         'fps': 24,
-        'loop': false,
+        'loop': true,
         'continous': false,
         'autoplay': true,
       }, options);
@@ -194,6 +194,15 @@
         return { x: (position % wblocks) * ele.block_size, y: Math.floor(position / wblocks) * ele.block_size };
       };
       
+      ele.loop = function() {
+        ele.actual_canvas.getContext("2d").clearRect(0, 0, ele.actual_canvas.width, ele.actual_canvas.height);
+        ele.current_source = 0;
+        ele.source = ele.images[ele.current_source];
+        ele.source_position = 0;
+        ele.source_offset = 0;
+        ele.current_frame = 0;
+      }
+      
       ele.next_frame = function() {
         
         // obtain the next frame
@@ -204,8 +213,10 @@
         }
         
         // increment our frame count and set the timeout for the next frame
-        if(++ele.current_frame < ele.frames.length){
+        var hasframes;
+        if((hasframes = (++ele.current_frame < ele.frames.length)) || ele.options.loop){
           ele.timeout = window.setTimeout(ele.next_frame, ele.delay);
+          if(!hasframes) ele.loop();
         }
         
       };
