@@ -268,7 +268,7 @@ void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSString
     goto error;
   }
   
-  if(![[manifest externalRepresentation] writeToFile:[outputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_manifest.json", namespace]]  atomically:TRUE encoding:NSUTF8StringEncoding error:&error]){
+  if(![[manifest externalRepresentationWithImageCount:encoder.encodedImages] writeToFile:[outputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_manifest.json", namespace]]  atomically:TRUE encoding:NSUTF8StringEncoding error:&error]){
     SCLog(@"Could not write manifest file");
     SCErrorDisplayBacktrace(error);
     goto error;

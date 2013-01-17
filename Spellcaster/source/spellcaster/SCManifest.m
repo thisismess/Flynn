@@ -34,7 +34,6 @@ static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 @synthesize codecSettings = _codecSettings;
 @synthesize version = _version;
 @synthesize blockLength = _blockLength;
-@synthesize encodedImages = _encodedImages;
 @synthesize frames = _frames;
 
 /**
@@ -132,11 +131,11 @@ error:
 /**
  * Obtain this manifest encoded in its external representation
  */
--(NSString *)externalRepresentation {
+-(NSString *)externalRepresentationWithImageCount:(NSUInteger)imageCount {
   NSMutableDictionary *external = [NSMutableDictionary dictionary];
   [external setObject:[NSNumber numberWithInteger:self.version] forKey:@"version"];
   [external setObject:[NSNumber numberWithInteger:self.blockLength] forKey:@"blockSize"];
-  [external setObject:[NSNumber numberWithInteger:self.encodedImages] forKey:@"imagesRequired"];
+  [external setObject:[NSNumber numberWithInteger:imageCount] forKey:@"imagesRequired"];
   [external setObject:[NSNumber numberWithInteger:[self.frames count]] forKey:@"frameCount"];
   [external setObject:self.frames forKey:@"frames"];
   return [external JSONString];

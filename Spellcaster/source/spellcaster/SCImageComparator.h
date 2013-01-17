@@ -39,6 +39,7 @@
 @property (readonly) NSDictionary * codecSettings;
 @property (readonly) CGImageRef     currentImage;
 @property (readonly) NSUInteger     blockLength;
+@property (readonly) NSUInteger     blockThreshold;
 @property (readonly) NSUInteger     bytesPerPixel;
 @property (readonly) CGBitmapInfo   bitmapInfo;
 

@@ -33,6 +33,7 @@
 @synthesize codecSettings = _codecSettings;
 @synthesize currentImage = _currentImage;
 @synthesize blockLength = _blockLength;
+@synthesize blockThreshold = _blockThreshold;
 @synthesize bytesPerPixel = _bytesPerPixel;
 @synthesize bitmapInfo = _bitmapInfo;
 
@@ -54,14 +55,17 @@
     
     _codecSettings = [codecSettings retain];
     
-    if((number = [codecSettings objectForKey:kSCCodecBlockSizeKey]) == nil){
+    if((number = [codecSettings objectForKey:kSCCodecBlockSizeKey]) != nil){
+      _blockLength = [number integerValue];
+    }else{
       if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Codec settings does not define a block size (%@)", kSCCodecBlockSizeKey);
       goto error;
     }
     
-    if((_blockLength = [number integerValue]) < 1){
-      if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Codec settings defines an invalid block size (%ldx%ld)", _blockLength, _blockLength);
-      goto error;
+    if((number = [codecSettings objectForKey:kSCCodecBlockPixelDiscrepancyThresholdKey]) != nil){
+      _blockThreshold = [number integerValue];
+    }else{
+      _blockThreshold = 0;
     }
     
     if(keyframe != NULL){
@@ -132,7 +136,7 @@ error:
     
     for(y = 0; y < hblocks; y++){
       for(x = 0; x < wblocks; x++){
-        if(!SCImageBlocksEqual(&currentBuffer, &updateBuffer, bytesPerPixel, 1, x, y, _blockLength)){
+        if(!SCImageBlocksEqual(&currentBuffer, &updateBuffer, bytesPerPixel, _blockThreshold, x, y, _blockLength)){
           if(position < 0) position = (y * wblocks) + x;
           count++; // increment the run count
         }else if(position >= 0){

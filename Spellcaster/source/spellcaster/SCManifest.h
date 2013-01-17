@@ -38,12 +38,11 @@
 -(BOOL)encodeCopyBlocks:(SCRange *)range;
 -(BOOL)encodeCopyBlocksAtPosition:(size_t)position count:(size_t)blocks;
 
--(NSString *)externalRepresentation;
+-(NSString *)externalRepresentationWithImageCount:(NSUInteger)imageCount;
 
 @property (readonly) NSDictionary * codecSettings;
 @property (readonly) NSUInteger     version;
 @property (readonly) NSUInteger     blockLength;
-@property (readonly) NSUInteger     encodedImages;
 @property (readonly) NSArray      * frames;
 
 @end
