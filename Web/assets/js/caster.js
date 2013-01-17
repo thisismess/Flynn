@@ -179,10 +179,9 @@
           if((ele.source_position += strip) >= srcUpperBound){
             ele.current_source++;
             ele.source = ele.images[ele.current_source];
-            ele.source_offset = srcUpperBound;
+            ele.source_offset = srcUpperBound - 1;
             srcUpperBound = ele.source_offset + (ele.source.width * ele.source.width / ele.block_size / ele.block_size);
             srcWidth = ele.source.width;
-            console.log("NEXT: "+ ele.current_source);
           }
           
         }
