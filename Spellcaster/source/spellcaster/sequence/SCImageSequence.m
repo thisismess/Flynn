@@ -37,13 +37,13 @@
   BOOL isdir = FALSE;
   
   if(![[NSFileManager defaultManager] fileExistsAtPath:directory isDirectory:&isdir] || !isdir){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"No such path or path does not represent a directory: %@", directory], NSLocalizedDescriptionKey, nil]];
+    if(error) *error = NSERROR_WITH_FILE(kSCSpellcasterErrorDomain, kSCStatusError, directory, @"No such path or path does not represent a directory");
     return nil;
   }
   
   NSArray *contents;
   if((contents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directory error:&inner]) == nil){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Could not list directory directory: %@", [inner localizedDescription]], NSLocalizedDescriptionKey, nil]];
+    if(error) *error = NSERROR_WITH_FILE(kSCSpellcasterErrorDomain, kSCStatusError, directory, @"Could not list directory directory");
     return nil;
   }
   
@@ -124,17 +124,17 @@
   }
   
   if((path = [_imagePaths objectAtIndex:_currentFrame]) == nil || [path length] < 1){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusNotImplemented userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Invalid path for frame at index %ld", _currentFrame], NSLocalizedDescriptionKey, nil]];
+    if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Invalid path for frame at index %ld", _currentFrame);
     goto error;
   }
   
   if((extension = [path pathExtension]) == nil || [extension length] < 1){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusNotImplemented userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame at path has no extension, cannot determine image type: %@", path], NSLocalizedDescriptionKey, nil]];
+    if(error) *error = NSERROR_WITH_FILE(kSCSpellcasterErrorDomain, kSCStatusError, path, @"Frame at path has no extension, cannot determine image type");
     goto error;
   }
   
   if((dataProvider = CGDataProviderCreateWithURL((CFURLRef)[NSURL fileURLWithPath:path])) == NULL){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusNotImplemented userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Could not create data provider for frame at path: %@", path], NSLocalizedDescriptionKey, nil]];
+    if(error) *error = NSERROR_WITH_FILE(kSCSpellcasterErrorDomain, kSCStatusError, path, @"Could not create data provider for frame");
     goto error;
   }
   
@@ -145,7 +145,7 @@
   }
   
   if(image == NULL){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusNotImplemented userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Unsupported image type for frame at path: %@", path], NSLocalizedDescriptionKey, nil]];
+    if(error) *error = NSERROR_WITH_FILE(kSCSpellcasterErrorDomain, kSCStatusError, path, @"Unsupported image type for frame");
     goto error;
   }
   

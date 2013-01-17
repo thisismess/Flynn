@@ -62,11 +62,11 @@
   
   // setup our output directory
   if((exists = [[NSFileManager defaultManager] fileExistsAtPath:_directory isDirectory:&isdir]) && !isdir){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"File at path exists but does not represent a directory: %@", _directory], NSLocalizedDescriptionKey, nil]];
-    return FALSE;
+    if(error) *error = NSERROR_WITH_FILE(kSCSpellcasterErrorDomain, kSCStatusError, _directory, @"File at path exists but does not represent a directory");
+    goto error;
   }else if(!exists && ![[NSFileManager defaultManager] createDirectoryAtPath:_directory withIntermediateDirectories:TRUE attributes:nil error:&inner]){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Could not create export directory: %@", [inner localizedDescription]], NSLocalizedDescriptionKey, nil]];
-    return FALSE;
+    if(error) *error = NSERROR_WITH_FILE(kSCSpellcasterErrorDomain, kSCStatusError, _directory, @"Could not create export directory");
+    goto error;
   }
   
   return TRUE;
@@ -89,7 +89,7 @@
   
   // make sure the image is valid
   if(image == NULL){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Frame image must not be null", NSLocalizedDescriptionKey, nil]];
+    if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Frame image is null");
     goto error;
   }
   

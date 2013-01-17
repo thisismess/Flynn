@@ -73,6 +73,10 @@
       ele.manifest_file   = $(ele).attr('data-manifest');
       ele.image_directory = $(ele).attr('data-frame-directory');
       
+      // Scale factor
+      ele.scale = $(ele).attr('scale')
+      if(ele.scale != null) ele.scale = parseInt(ele.scale);
+      
       /**
        * Obtain the name of a frame with the specified index
        */
@@ -87,6 +91,7 @@
       {
         ele.canvas = $('<canvas></canvas>').appendTo(ele).attr({'width':parseInt($(ele).width(), 10), 'height':parseInt($(ele).height(), 10)});
         ele.actual_canvas = ele.canvas[0];
+        if(ele.scale != null) ele.actual_canvas.getContext("2d").scale(ele.scale, ele.scale);
       };
       
       ele.setup_debug_canvas = function()
