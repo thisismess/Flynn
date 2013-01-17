@@ -71,8 +71,10 @@
       
       // Files we care about
       ele.manifest 		= null;
-      ele.manifest_file   = $(ele).attr('data-manifest');
-      ele.image_directory = $(ele).attr('data-frame-directory');
+      ele.animation_base = $(ele).attr('base');
+      ele.animation_name = $(ele).attr('name');
+      ele.manifest_file = ele.animation_base +"/"+ ele.animation_name +"_manifest.json";
+      ele.image_directory = ele.animation_base;
       
       // Scale factor
       ele.scale = $(ele).attr('scale')
@@ -92,7 +94,7 @@
       {
         ele.canvas = $('<canvas></canvas>').appendTo(ele).attr({'width':parseInt($(ele).width(), 10), 'height':parseInt($(ele).height(), 10)});
         ele.actual_canvas = ele.canvas[0];
-        if(ele.scale != null) ele.actual_canvas.getContext("2d").scale(ele.scale, ele.scale);
+        if(ele.scale != null && ele.scale != 1) ele.actual_canvas.getContext("2d").scale(ele.scale, ele.scale);
       };
       
       ele.setup_debug_canvas = function()
@@ -125,7 +127,7 @@
         if (ele.image_directory === undefined || ele.image_directory === null) throw("No image directory set.");
         for(var i = 0; i < ele.manifest.imagesRequired; i++)
         {
-          var src = ele.image_directory + ele.streamImageNameForIndex('spellcaster', i, 'png');
+          var src = ele.image_directory +'/'+ ele.streamImageNameForIndex(ele.animation_name, i, 'png');
           $(new Image()).attr('src', src).load(function(){
             var sour = $(this).attr('src');
             var frame = parseInt(sour.split('/').slice(-1)[0].split('.').slice(0)[0].split('_').slice(-1)[0], 10) - 1;
@@ -138,7 +140,7 @@
       
       ele.start = function()
       {
-        var src = ele.image_directory + 'spellcaster_keyframe.png';
+        var src = ele.image_directory +'/'+ ele.animation_name +'_keyframe.png';
         $(new Image()).attr('src', src).load(function(){
           var context = ele.actual_canvas.getContext("2d");
           context.drawImage(this, 0, 0, this.width, this.height);
