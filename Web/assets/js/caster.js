@@ -170,10 +170,11 @@
           var srcOrigin = ele.originForPosition(ele.source_position - ele.source_offset, srcWidth);
           var dstOrigin = ele.originForPosition(position, ele.keyframe_width);
           var strip = Math.min(count, (ele.source.width - srcOrigin.x) / ele.block_size);
+          var dstFrame = { x: Math.round(dstOrigin.x * ele.scale), y: Math.round(dstOrigin.y * ele.scale), width: Math.round(ele.scale * strip * ele.block_size), height: Math.round(ele.scale * ele.block_size) };
           
           // clear and update the block strip
-          context.clearRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
-          context.drawImage(ele.source, srcOrigin.x, srcOrigin.y, strip * ele.block_size, ele.block_size, Math.round(dstOrigin.x * ele.scale), Math.round(dstOrigin.y * ele.scale), Math.round(ele.scale * strip * ele.block_size), Math.round(ele.scale * ele.block_size));
+          context.clearRect(dstFrame.x, dstFrame.y, dstFrame.width, dstFrame.height);
+          context.drawImage(ele.source, srcOrigin.x, srcOrigin.y, strip * ele.block_size, ele.block_size, dstFrame.x, dstFrame.y, dstFrame.width, dstFrame.height);
           
           // increment the destintation position and count
           position += strip;
