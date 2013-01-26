@@ -78,7 +78,7 @@
       
       // Scale factor
       ele.scale = $(ele).attr('scale')
-      if(ele.scale != null) ele.scale = parseInt(ele.scale);
+      ele.scale = (ele.scale != null) ? parseInt(ele.scale) : 1;
       
       /**
        * Obtain the name of a frame with the specified index
@@ -94,7 +94,8 @@
       {
         ele.canvas = $('<canvas></canvas>').appendTo(ele).attr({'width':parseInt($(ele).width(), 10), 'height':parseInt($(ele).height(), 10)});
         ele.actual_canvas = ele.canvas[0];
-        if(ele.scale != null && ele.scale != 1) ele.actual_canvas.getContext("2d").scale(ele.scale, ele.scale);
+        // MAYBE THIS HAS PROBLEMS ON IE, FF WIN?
+        //if(ele.scale != null && ele.scale != 1) ele.actual_canvas.getContext("2d").scale(ele.scale, ele.scale);
       };
       
       ele.setup_debug_canvas = function()
@@ -169,10 +170,11 @@
           var srcOrigin = ele.originForPosition(ele.source_position - ele.source_offset, srcWidth);
           var dstOrigin = ele.originForPosition(position, ele.keyframe_width);
           var strip = Math.min(count, (ele.source.width - srcOrigin.x) / ele.block_size);
+          var dstFrame = { x: Math.round(dstOrigin.x * ele.scale), y: Math.round(dstOrigin.y * ele.scale), width: Math.round(ele.scale * strip * ele.block_size), height: Math.round(ele.scale * ele.block_size) };
           
           // clear and update the block strip
-          context.clearRect(dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
-          context.drawImage(ele.source, srcOrigin.x, srcOrigin.y, strip * ele.block_size, ele.block_size, dstOrigin.x, dstOrigin.y, strip * ele.block_size, ele.block_size);
+          context.clearRect(dstFrame.x, dstFrame.y, dstFrame.width, dstFrame.height);
+          context.drawImage(ele.source, srcOrigin.x, srcOrigin.y, strip * ele.block_size, ele.block_size, dstFrame.x, dstFrame.y, dstFrame.width, dstFrame.height);
           
           // increment the destintation position and count
           position += strip;
