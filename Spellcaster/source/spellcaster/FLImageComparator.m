@@ -22,13 +22,13 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCImageComparator.h"
-#import "SCUtility.h"
-#import "SCImage.h"
-#import "SCCodec.h"
-#import "SCError.h"
+#import "FLImageComparator.h"
+#import "FLUtility.h"
+#import "FLImage.h"
+#import "FLCodec.h"
+#import "FLError.h"
 
-@implementation SCImageComparator
+@implementation FLImageComparator
 
 @synthesize codecSettings = _codecSettings;
 @synthesize currentImage = _currentImage;
@@ -55,14 +55,14 @@
     
     _codecSettings = [codecSettings retain];
     
-    if((number = [codecSettings objectForKey:kSCCodecBlockSizeKey]) != nil){
+    if((number = [codecSettings objectForKey:kFLCodecBlockSizeKey]) != nil){
       _blockLength = [number integerValue];
     }else{
-      if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Codec settings does not define a block size (%@)", kSCCodecBlockSizeKey);
+      if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"Codec settings does not define a block size (%@)", kFLCodecBlockSizeKey);
       goto error;
     }
     
-    if((number = [codecSettings objectForKey:kSCCodecBlockPixelDiscrepancyThresholdKey]) != nil){
+    if((number = [codecSettings objectForKey:kFLCodecBlockPixelDiscrepancyThresholdKey]) != nil){
       _blockThreshold = [number integerValue];
     }else{
       _blockThreshold = 0;
@@ -99,13 +99,13 @@ error:
     
     // make sure the next image matches the dimensions of the current image
     if(CGImageGetWidth(_currentImage) != width || CGImageGetWidth(_currentImage) != width){
-      if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame images in an animation must be exactly the same size (%zdx%zd)", CGImageGetWidth(_currentImage), CGImageGetHeight(_currentImage)], NSLocalizedDescriptionKey, nil]];
+      if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame images in an animation must be exactly the same size (%zdx%zd)", CGImageGetWidth(_currentImage), CGImageGetHeight(_currentImage)], NSLocalizedDescriptionKey, nil]];
       return nil;
     }
     
     // make sure the image is has dimensions in multiples of blocks
     if((width % _blockLength) != 0 || (height & _blockLength) != 0){
-      if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame image must have dimensions in multiples of blocks (%ldx%ld)", _blockLength, _blockLength], NSLocalizedDescriptionKey, nil]];
+      if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame image must have dimensions in multiples of blocks (%ldx%ld)", _blockLength, _blockLength], NSLocalizedDescriptionKey, nil]];
       return nil;
     }
     
@@ -136,11 +136,11 @@ error:
     
     for(y = 0; y < hblocks; y++){
       for(x = 0; x < wblocks; x++){
-        if(!SCImageBlocksEqual(&currentBuffer, &updateBuffer, bytesPerPixel, _blockThreshold, x, y, _blockLength)){
+        if(!FLImageBlocksEqual(&currentBuffer, &updateBuffer, bytesPerPixel, _blockThreshold, x, y, _blockLength)){
           if(position < 0) position = (y * wblocks) + x;
           count++; // increment the run count
         }else if(position >= 0){
-          [ranges addObject:[SCRange rangeWithPosition:position count:count]];
+          [ranges addObject:[FLRange rangeWithPosition:position count:count]];
           position = -1; count = 0; // clear the run position and count
         }
       }
@@ -148,7 +148,7 @@ error:
     
     // handle the last row
     if(position >= 0){
-      [ranges addObject:[SCRange rangeWithPosition:position count:count]];
+      [ranges addObject:[FLRange rangeWithPosition:position count:count]];
     }
     
     [currData release];

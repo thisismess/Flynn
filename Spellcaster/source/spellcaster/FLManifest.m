@@ -22,14 +22,14 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCManifest.h"
-#import "SCCodec.h"
-#import "SCError.h"
+#import "FLManifest.h"
+#import "FLCodec.h"
+#import "FLError.h"
 #import "JSONKit.h"
 
 static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-@implementation SCManifest
+@implementation FLManifest
 
 @synthesize codecSettings = _codecSettings;
 @synthesize version = _version;
@@ -55,17 +55,17 @@ static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
     _codecSettings = [codecSettings retain];
     _frames = [[NSMutableArray alloc] init];
     
-    if((number = [codecSettings objectForKey:kSCCodecVersionKey]) != nil){
+    if((number = [codecSettings objectForKey:kFLCodecVersionKey]) != nil){
       _version = [number integerValue];
     }else{
-      if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Codec settings does not define a version (%@)", kSCCodecVersionKey);
+      if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"Codec settings does not define a version (%@)", kFLCodecVersionKey);
       goto error;
     }
     
-    if((number = [codecSettings objectForKey:kSCCodecBlockSizeKey]) != nil){
+    if((number = [codecSettings objectForKey:kFLCodecBlockSizeKey]) != nil){
       _blockLength = [number integerValue];
     }else{
-      if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Codec settings does not define a block size (%@)", kSCCodecBlockSizeKey);
+      if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"Codec settings does not define a block size (%@)", kFLCodecBlockSizeKey);
       goto error;
     }
     
@@ -100,7 +100,7 @@ error:
 /**
  * Encode a command
  */
--(BOOL)encodeCopyBlocks:(SCRange *)range {
+-(BOOL)encodeCopyBlocks:(FLRange *)range {
   return [self encodeCopyBlocksAtPosition:range.position count:range.count];
 }
 

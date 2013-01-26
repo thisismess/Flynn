@@ -22,33 +22,37 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-/**
- * The codec version. This should be an NSNumber.
- */
-#define kSCCodecVersionKey @"SCCodecVersion"
+#import "FLRange.h"
+
+@implementation FLRange
+
+@synthesize position = _position;
+@synthesize count = _count;
 
 /**
- * The block size to use for encoding. This should be an NSNumber.
+ * Create with a position and offset
  */
-#define kSCCodecBlockSizeKey @"SCCodecBlockSize"
++(FLRange *)rangeWithPosition:(size_t)position count:(size_t)count {
+  return [[[FLRange alloc] initWithPosition:position count:count] autorelease];
+}
 
 /**
- * The maximum image size to use for encoding. This should be an NSNumber.
+ * Initialize with a position and offset
  */
-#define kSCCodecImageSizeKey @"SCCodecImageSize"
+-(id)initWithPosition:(size_t)position count:(size_t)count {
+  if((self = [super init]) != nil){
+    _position = position;
+    _count = count;
+  }
+  return self;
+}
 
 /**
- * The format encoded images should be produced in. This should be a UTI string, only JPEG and PNG are supported.
+ * String description
  */
-#define kSCCodecImageFormatKey @"SCCodecImageFormat"
+-(NSString *)description {
+  return [NSString stringWithFormat:@"<%ld +%ld>", _position, _count];
+}
 
-/**
- * The maximum number of pixel discrepencies between two blocks before a block is updated. This should be an NSNumber.
- */
-#define kSCCodecBlockPixelDiscrepancyThresholdKey @"SCCodecBlockPixelDiscrepancyThreshold"
-
-/**
- * Validate settings
- */
-BOOL SCCodecSettingsValid(NSDictionary *settings, NSError **error);
+@end
 

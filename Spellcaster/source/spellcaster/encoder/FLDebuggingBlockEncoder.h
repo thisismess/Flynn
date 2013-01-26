@@ -22,14 +22,14 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCBlockEncoder.h"
+#import "FLBlockEncoder.h"
 
 /**
  * A debugging block encoder.
  * 
  * @author Brian William Wolter
  */
-@interface SCDebuggingBlockEncoder : SCBlockEncoder
+@interface FLDebuggingBlockEncoder : FLBlockEncoder
 
 @end
 

@@ -22,27 +22,25 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCError.h"
+#import "FLFrameSequence.h"
 
 /**
- * Display an error "backtrace"
+ * A frame sequence which produces frames from a set of images.
+ * 
+ * @author Brian William Wolter
  */
-void SCErrorDisplayBacktrace(NSError *error) {
+@interface FLImageFrameSequence : FLFrameSequence {
   
-  // display the error message
-  fputs([[NSString stringWithFormat:@"    because: %@\n", [error localizedDescription]] UTF8String], stderr);
-  
-  // if the error has a related file, display it
-  NSString *path;
-  if((path = [[error userInfo] objectForKey:NSFilePathErrorKey]) != nil){
-    fputs([[NSString stringWithFormat:@"       file: %@\n", path] UTF8String], stderr);
-  }
-  
-  // if the error has a cause, recurse
-  NSError *cause;
-  if((cause = [[error userInfo] objectForKey:NSUnderlyingErrorKey]) != nil){
-    SCErrorDisplayBacktrace(cause);
-  }
+  NSUInteger _currentFrame;
   
 }
+
++(NSArray *)imagePathsForDirectoryPath:(NSString *)directory error:(NSError **)error;
+
+-(id)initWithImagesInDirectory:(NSString *)directory error:(NSError **)error;
+-(id)initWithImagesAtPaths:(NSArray *)paths error:(NSError **)error;
+
+@property (readonly) NSArray * imagePaths;
+
+@end
 

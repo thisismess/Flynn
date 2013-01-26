@@ -22,37 +22,26 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCRange.h"
-
-@implementation SCRange
-
-@synthesize position = _position;
-@synthesize count = _count;
+#import "FLRange.h"
 
 /**
- * Create with a position and offset
+ * An image comparator. Comparators determine which blocks need to be updated
+ * between two sequential frames in an animation.
+ * 
+ * @author Brian William Wolter
  */
-+(SCRange *)rangeWithPosition:(size_t)position count:(size_t)count {
-  return [[[SCRange alloc] initWithPosition:position count:count] autorelease];
-}
+@interface FLImageComparator : NSObject
 
-/**
- * Initialize with a position and offset
- */
--(id)initWithPosition:(size_t)position count:(size_t)count {
-  if((self = [super init]) != nil){
-    _position = position;
-    _count = count;
-  }
-  return self;
-}
+-(id)initWithKeyframeImage:(CGImageRef)keyframe codecSettings:(NSDictionary *)codecSettings error:(NSError **)error;
 
-/**
- * String description
- */
--(NSString *)description {
-  return [NSString stringWithFormat:@"<%ld +%ld>", _position, _count];
-}
+-(NSArray *)updateBlocksForImage:(CGImageRef)image error:(NSError **)error;
+
+@property (readonly) NSDictionary * codecSettings;
+@property (readonly) CGImageRef     currentImage;
+@property (readonly) NSUInteger     blockLength;
+@property (readonly) NSUInteger     blockThreshold;
+@property (readonly) NSUInteger     bytesPerPixel;
+@property (readonly) CGBitmapInfo   bitmapInfo;
 
 @end
 

@@ -22,21 +22,33 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCBlockEncoder.h"
+/**
+ * The codec version. This should be an NSNumber.
+ */
+#define kFLCodecVersionKey @"FLCodecVersion"
 
 /**
- * A sequential block encoder.
- * 
- * @author Brian William Wolter
+ * The block size to use for encoding. This should be an NSNumber.
  */
-@interface SCSequentialBlockEncoder : SCBlockEncoder {
-  
-  uint8_t * _blockBuffer;
-  uint8_t * _imageBuffer;
-  size_t    _length;
-  size_t    _offset;
-  
-}
+#define kFLCodecBlockSizeKey @"FLCodecBlockSize"
 
-@end
+/**
+ * The maximum image size to use for encoding. This should be an NSNumber.
+ */
+#define kFLCodecImageSizeKey @"FLCodecImageSize"
+
+/**
+ * The format encoded images should be produced in. This should be a UTI string, only JPEG and PNG are supported.
+ */
+#define kFLCodecImageFormatKey @"FLCodecImageFormat"
+
+/**
+ * The maximum number of pixel discrepencies between two blocks before a block is updated. This should be an NSNumber.
+ */
+#define kFLCodecBlockPixelDiscrepancyThresholdKey @"FLCodecBlockPixelDiscrepancyThreshold"
+
+/**
+ * Validate settings
+ */
+BOOL FLCodecSettingsValid(NSDictionary *settings, NSError **error);
 

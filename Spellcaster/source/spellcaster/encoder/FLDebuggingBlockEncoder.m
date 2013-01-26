@@ -22,13 +22,13 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCDebuggingBlockEncoder.h"
-#import "SCUtility.h"
-#import "SCImage.h"
-#import "SCError.h"
-#import "SCLog.h"
+#import "FLDebuggingBlockEncoder.h"
+#import "FLUtility.h"
+#import "FLImage.h"
+#import "FLError.h"
+#import "FLLog.h"
 
-@implementation SCDebuggingBlockEncoder
+@implementation FLDebuggingBlockEncoder
 
 /**
  * Clean up
@@ -46,10 +46,10 @@
   
   // setup our output directory
   if((exists = [[NSFileManager defaultManager] fileExistsAtPath:_directory isDirectory:&isdir]) && !isdir){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"File at path exists but does not represent a directory: %@", _directory], NSLocalizedDescriptionKey, nil]];
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"File at path exists but does not represent a directory: %@", _directory], NSLocalizedDescriptionKey, nil]];
     return FALSE;
   }else if(!exists && ![[NSFileManager defaultManager] createDirectoryAtPath:_directory withIntermediateDirectories:TRUE attributes:nil error:&inner]){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Could not create export directory: %@", [inner localizedDescription]], NSLocalizedDescriptionKey, nil]];
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Could not create export directory: %@", [inner localizedDescription]], NSLocalizedDescriptionKey, nil]];
     return FALSE;
   }
   
@@ -79,7 +79,7 @@
   
   // make sure the image is valid
   if(image == NULL){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Frame image must not be null", NSLocalizedDescriptionKey, nil]];
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Frame image must not be null", NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
@@ -93,13 +93,13 @@
   
   // make sure the image has the correct number of bytes per pixel
   if(bytesPerPixel != self.bytesPerPixel){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame image must use a pixel format with %ld bytes per pixel", self.bytesPerPixel], NSLocalizedDescriptionKey, nil]];
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame image must use a pixel format with %ld bytes per pixel", self.bytesPerPixel], NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
   // make sure the image is has dimensions in multiples of blocks
   if((width % _blockLength) != 0 || (height % _blockLength) != 0){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame image must have dimensions in multiples of blocks (%ldx%ld)", _blockLength, _blockLength], NSLocalizedDescriptionKey, nil]];
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame image must have dimensions in multiples of blocks (%ldx%ld)", _blockLength, _blockLength], NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
@@ -126,14 +126,14 @@
   buffer.rowBytes = bytesPerRow;
   
   // copy in blocks
-  for(SCRange *block in blocks){
+  for(FLRange *block in blocks){
     for(size_t i = 0; i < block.count; i++){
       size_t position = block.position + i;
       size_t xblock = position % wblocks;
       size_t yblock = position / wblocks;
       for(int y = 0; y < _blockLength; y++){
         for(int x = 0; x < _blockLength; x++){
-          uint8_t *pixel = (uint8_t *)SCImageGetPixel(&buffer, _bytesPerPixel, (xblock * _blockLength) + x, (yblock * _blockLength) + y);
+          uint8_t *pixel = (uint8_t *)FLImageGetPixel(&buffer, _bytesPerPixel, (xblock * _blockLength) + x, (yblock * _blockLength) + y);
           memset(pixel, 0x7f, bytesPerPixel);
         }
       }
@@ -147,18 +147,18 @@
   
   // create our output image
   if((outputImage = CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorspace, CGImageGetBitmapInfo(image), outputDataProvider, NULL, FALSE, kCGRenderingIntentDefault)) == NULL){
-    if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Could not create frame image: %@", [inner localizedDescription]);
+    if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"Could not create frame image: %@", [inner localizedDescription]);
     goto error;
   }
   
   // setup our output path
   NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_%03zd.png", self.namespace, _encodedImages + 1]];
   // note it
-  SCVerbose(@"exporting %ldx%ld diff image: %@", width, height, blocks, outputPath);
+  FLVerbose(@"exporting %ldx%ld diff image: %@", width, height, blocks, outputPath);
   
   // write our diff frame out
-  if(!SCImageWritePNGToPath(outputImage, outputPath, &inner)){
-    if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Could not write frame image: %@", [inner localizedDescription]);
+  if(!FLImageWritePNGToPath(outputImage, outputPath, &inner)){
+    if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"Could not write frame image: %@", [inner localizedDescription]);
     goto error;
   }
   

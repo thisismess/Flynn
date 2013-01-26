@@ -22,25 +22,18 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCFrameSequence.h"
-
 /**
- * A frame sequence which produces frames from a set of images.
+ * A frame sequence. This is an abstract base for frame sequences, which produce
+ * individual frame images from some underlying media.
  * 
  * @author Brian William Wolter
  */
-@interface SCImageFrameSequence : SCFrameSequence {
-  
-  NSUInteger _currentFrame;
-  
-}
+@interface FLFrameSequence : NSObject
 
-+(NSArray *)imagePathsForDirectoryPath:(NSString *)directory error:(NSError **)error;
+-(BOOL)open:(NSError **)error;
+-(BOOL)close:(NSError **)error;
 
--(id)initWithImagesInDirectory:(NSString *)directory error:(NSError **)error;
--(id)initWithImagesAtPaths:(NSArray *)paths error:(NSError **)error;
-
-@property (readonly) NSArray * imagePaths;
+-(CGImageRef)copyNextFrameImageWithError:(NSError **)error;
 
 @end
 

@@ -22,19 +22,19 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCUtility.h"
-#import "SCError.h"
+#import "FLUtility.h"
+#import "FLError.h"
 
 /**
  * Write an image to disk
  */
-BOOL SCImageWriteToPath(CGImageRef image, NSString *format, NSString *path, NSError **error) {
+BOOL FLImageWriteToPath(CGImageRef image, NSString *format, NSString *path, NSError **error) {
   CGImageDestinationRef imageDestination = NULL;
   BOOL status = FALSE;
   
   // create a destination for our image
   if((imageDestination = CGImageDestinationCreateWithURL((CFURLRef)[NSURL fileURLWithPath:path], kUTTypePNG, 1, nil)) == NULL){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image destination", NSLocalizedDescriptionKey, nil]];
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image destination", NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
@@ -43,7 +43,7 @@ BOOL SCImageWriteToPath(CGImageRef image, NSString *format, NSString *path, NSEr
   
   // finalize our image destination
   if(!CGImageDestinationFinalize(imageDestination)){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not finalize image destination", NSLocalizedDescriptionKey, nil]];
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not finalize image destination", NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
@@ -57,21 +57,21 @@ error:
 /**
  * Write a PNG image to disk
  */
-BOOL SCImageWritePNGToPath(CGImageRef image, NSString *path, NSError **error) {
-  return SCImageWriteToPath(image, (NSString *)kUTTypePNG, path, error);
+BOOL FLImageWritePNGToPath(CGImageRef image, NSString *path, NSError **error) {
+  return FLImageWriteToPath(image, (NSString *)kUTTypePNG, path, error);
 }
 
 /**
  * Write a JPEG image to disk
  */
-BOOL SCImageWriteJPEGToPath(CGImageRef image, NSString *path, NSError **error) {
-  return SCImageWriteToPath(image, (NSString *)kUTTypeJPEG, path, error);
+BOOL FLImageWriteJPEGToPath(CGImageRef image, NSString *path, NSError **error) {
+  return FLImageWriteToPath(image, (NSString *)kUTTypeJPEG, path, error);
 }
 
 /**
  * Display attributes for an image
  */
-void SCImageShowAttributes(CGImageRef image) {
+void FLImageShowAttributes(CGImageRef image) {
   if(image != nil){
     size_t bpp = CGImageGetBitsPerPixel(image) / 8;
     fprintf(stderr, "%p - ", image);

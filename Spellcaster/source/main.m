@@ -24,15 +24,15 @@
 
 #import <getopt.h>
 
-#import "SCManifest.h"
-#import "SCImageFrameSequence.h"
-#import "SCImageComparator.h"
-#import "SCSequentialBlockEncoder.h"
-#import "SCDebuggingBlockEncoder.h"
-#import "SCUtility.h"
-#import "SCCodec.h"
-#import "SCError.h"
-#import "SCLog.h"
+#import "FLManifest.h"
+#import "FLImageFrameSequence.h"
+#import "FLImageComparator.h"
+#import "FLSequentialBlockEncoder.h"
+#import "FLDebuggingBlockEncoder.h"
+#import "FLUtility.h"
+#import "FLCodec.h"
+#import "FLError.h"
+#import "FLLog.h"
 
 enum {
   kSCOptionNone     = 0,
@@ -42,8 +42,8 @@ enum {
 
 typedef uint32_t SCOptions;
 
-void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options);
-void SCSpellUsage(FILE *stream);
+void FLFlynnExport(NSString *inputDirectory, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options);
+void FLFlynnUsage(FILE *stream);
 
 /**
  * Main
@@ -51,19 +51,19 @@ void SCSpellUsage(FILE *stream);
 int main(int argc, const char * argv[]) {
   @autoreleasepool {
     NSMutableDictionary *settings = [[NSMutableDictionary alloc] init];
-    NSString *namespace = @"spellcaster";
+    NSString *namespace = @"flynn";
     NSString *outputDirectory = nil;
     SCOptions options = FALSE;
     NSError *error = nil;
     
     // the default codec version (2, the only version)
-    [settings setObject:[NSNumber numberWithInt:2] forKey:kSCCodecVersionKey];
+    [settings setObject:[NSNumber numberWithInt:2] forKey:kFLCodecVersionKey];
     // the default encoding block size (8x8, the same as JPEG macro blocks)
-    [settings setObject:[NSNumber numberWithInt:8] forKey:kSCCodecBlockSizeKey];
+    [settings setObject:[NSNumber numberWithInt:8] forKey:kFLCodecBlockSizeKey];
     // the default stream image maximum dimension (1624, due to iOS image size constraints)
-    [settings setObject:[NSNumber numberWithInt:1624] forKey:kSCCodecImageSizeKey];
+    [settings setObject:[NSNumber numberWithInt:1624] forKey:kFLCodecImageSizeKey];
     // the default stream image format (JPEG, much better compression)
-    [settings setObject:(NSString *)kUTTypeJPEG forKey:kSCCodecImageFormatKey];
+    [settings setObject:(NSString *)kUTTypeJPEG forKey:kFLCodecImageFormatKey];
     
     static struct option longopts[] = {
       { "name",             required_argument,  NULL,         'n' },  // name of the animation
@@ -89,15 +89,15 @@ int main(int argc, const char * argv[]) {
           break;
           
         case 'b':
-          [settings setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kSCCodecBlockSizeKey];
+          [settings setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kFLCodecBlockSizeKey];
           break;
           
         case 'I':
-          [settings setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kSCCodecImageSizeKey];
+          [settings setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kFLCodecImageSizeKey];
           break;
           
         case 't':
-          [settings setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kSCCodecBlockPixelDiscrepancyThresholdKey];
+          [settings setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kFLCodecBlockPixelDiscrepancyThresholdKey];
           break;
           
         case 'D':
@@ -105,19 +105,19 @@ int main(int argc, const char * argv[]) {
           break;
           
         case 'v':
-          options |= kSCOptionVerbose; __SCSetLogLevel(kSCLogLevelVerbose);
+          options |= kSCOptionVerbose; __FLSetLogLevel(kFLLogLevelVerbose);
           break;
           
         default:
-          SCSpellUsage(stderr);
+          FLFlynnUsage(stderr);
           exit(0);
           
       }
     }
     
-    if(!SCCodecSettingsValid(settings, &error)){
-      SCLog(@"Codec settings are invalid");
-      SCErrorDisplayBacktrace(error);
+    if(!FLCodecSettingsValid(settings, &error)){
+      FLLog(@"Codec settings are invalid");
+      FLErrorDisplayBacktrace(error);
       exit(-1);
     }
     
@@ -125,13 +125,13 @@ int main(int argc, const char * argv[]) {
     argc -= optind;
     
     if(argc < 1){
-      SCSpellUsage(stderr);
+      FLFlynnUsage(stderr);
       exit(0);
     }
     
     for(int i = 0; i < argc; i++){
       NSString *inputDirectory = [[NSString alloc] initWithUTF8String:argv[i]];
-      SCSpellExport(inputDirectory, (outputDirectory != nil) ? outputDirectory : [inputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_output", namespace]], namespace, settings, options);
+      FLFlynnExport(inputDirectory, (outputDirectory != nil) ? outputDirectory : [inputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_output", namespace]], namespace, settings, options);
       [inputDirectory release];
     }
     
@@ -143,62 +143,62 @@ int main(int argc, const char * argv[]) {
 /**
  * Export
  */
-void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options) {
+void FLFlynnExport(NSString *inputDirectory, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options) {
   
-  SCFrameSequence *sequence = nil;
-  SCImageComparator *comparator = nil;
-  SCBlockEncoder *encoder = nil;
-  SCManifest *manifest = nil;
+  FLFrameSequence *sequence = nil;
+  FLImageComparator *comparator = nil;
+  FLBlockEncoder *encoder = nil;
+  FLManifest *manifest = nil;
   CGImageRef keyframe = NULL, image;
   NSError *error = nil;
   
-  if((sequence = [[SCImageFrameSequence alloc] initWithImagesInDirectory:inputDirectory error:&error]) == nil){
-    SCLog(@"Could not create image sequence");
-    SCErrorDisplayBacktrace(error);
+  if((sequence = [[FLImageFrameSequence alloc] initWithImagesInDirectory:inputDirectory error:&error]) == nil){
+    FLLog(@"Could not create image sequence");
+    FLErrorDisplayBacktrace(error);
     goto error;
   }
   
-  if((manifest = [[SCManifest alloc] initWithCodecSettings:settings error:&error]) == nil){
-    SCLog(@"Could not create manifest");
-    SCErrorDisplayBacktrace(error);
+  if((manifest = [[FLManifest alloc] initWithCodecSettings:settings error:&error]) == nil){
+    FLLog(@"Could not create manifest");
+    FLErrorDisplayBacktrace(error);
     goto error;
   }
   
   if(![sequence open:&error]){
-    SCLog(@"Could not open frame sequence");
-    SCErrorDisplayBacktrace(error);
+    FLLog(@"Could not open frame sequence");
+    FLErrorDisplayBacktrace(error);
     goto error;
   }
   
   if((keyframe = [sequence copyNextFrameImageWithError:&error]) == NULL){
-    SCLog(@"Could not read keyframe image");
-    SCErrorDisplayBacktrace(error);
+    FLLog(@"Could not read keyframe image");
+    FLErrorDisplayBacktrace(error);
     goto error;
   }
   
-  if((comparator = [[SCImageComparator alloc] initWithKeyframeImage:keyframe codecSettings:settings error:&error]) == nil){
-    SCLog(@"Could not create image comparator");
-    SCErrorDisplayBacktrace(error);
+  if((comparator = [[FLImageComparator alloc] initWithKeyframeImage:keyframe codecSettings:settings error:&error]) == nil){
+    FLLog(@"Could not create image comparator");
+    FLErrorDisplayBacktrace(error);
     goto error;
   }
   
   if((options & kSCOptionDebug) == kSCOptionDebug){
-    if((encoder = [[SCDebuggingBlockEncoder alloc] initWithKeyframeImage:keyframe outputDirectory:outputDirectory namespace:namespace codecSettings:settings error:&error]) == nil){
-      SCLog(@"Could not create debugging block encoder");
-      SCErrorDisplayBacktrace(error);
+    if((encoder = [[FLDebuggingBlockEncoder alloc] initWithKeyframeImage:keyframe outputDirectory:outputDirectory namespace:namespace codecSettings:settings error:&error]) == nil){
+      FLLog(@"Could not create debugging block encoder");
+      FLErrorDisplayBacktrace(error);
       goto error;
     }
   }else{
-    if((encoder = [[SCSequentialBlockEncoder alloc] initWithKeyframeImage:keyframe outputDirectory:outputDirectory namespace:namespace codecSettings:settings error:&error]) == nil){
-      SCLog(@"Could not create sequential block encoder");
-      SCErrorDisplayBacktrace(error);
+    if((encoder = [[FLSequentialBlockEncoder alloc] initWithKeyframeImage:keyframe outputDirectory:outputDirectory namespace:namespace codecSettings:settings error:&error]) == nil){
+      FLLog(@"Could not create sequential block encoder");
+      FLErrorDisplayBacktrace(error);
       goto error;
     }
   }
   
   if(![encoder open:&error]){
-    SCLog(@"Could not open block encoder");
-    SCErrorDisplayBacktrace(error);
+    FLLog(@"Could not open block encoder");
+    FLErrorDisplayBacktrace(error);
     goto error;
   }
   
@@ -209,35 +209,35 @@ void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSString
     
     NSArray *blocks;
     if((blocks = [comparator updateBlocksForImage:image error:&error]) == nil){
-      SCLog(@"Could not determine update blocks from frame image");
-      SCErrorDisplayBacktrace(error);
+      FLLog(@"Could not determine update blocks from frame image");
+      FLErrorDisplayBacktrace(error);
       more = FALSE; error = nil;
       goto done;
     }
     
     if(![encoder encodeBlocks:blocks forImage:image error:&error]){
-      SCLog(@"Could not encode update blocks from frame image");
-      SCErrorDisplayBacktrace(error);
+      FLLog(@"Could not encode update blocks from frame image");
+      FLErrorDisplayBacktrace(error);
       more = FALSE; error = nil;
       goto done;
     }
     
     if(![manifest startFrame]){
-      SCLog(@"Could not start a manifest frame");
+      FLLog(@"Could not start a manifest frame");
       more = FALSE; error = nil;
       goto done;
     }
     
-    for(SCRange *range in blocks){
+    for(FLRange *range in blocks){
       diffblocks += range.count;
       if(![manifest encodeCopyBlocks:range]){
-        SCLog(@"Could not encode copy-block command");
+        FLLog(@"Could not encode copy-block command");
         more = FALSE; error = nil;
         goto done;
       }
     }
     
-    SCVerbose(@"%04ld: updated %ld of %ld blocks in %ld ranges (%.1f%%)", frames++, diffblocks, totalblocks, [blocks count], ((double)diffblocks / (double)totalblocks) * 100.0);
+    FLVerbose(@"%04ld: updated %ld of %ld blocks in %ld ranges (%.1f%%)", frames++, diffblocks, totalblocks, [blocks count], ((double)diffblocks / (double)totalblocks) * 100.0);
     
     done:
     CGImageRelease(image);
@@ -245,32 +245,32 @@ void SCSpellExport(NSString *inputDirectory, NSString *outputDirectory, NSString
   }
   
   if(error != nil){
-    SCLog(@"Could not process frame image");
-    SCErrorDisplayBacktrace(error);
+    FLLog(@"Could not process frame image");
+    FLErrorDisplayBacktrace(error);
     goto error;
   }
   
   if(![encoder close:&error]){
-    SCLog(@"Could not close block encoder");
-    SCErrorDisplayBacktrace(error);
+    FLLog(@"Could not close block encoder");
+    FLErrorDisplayBacktrace(error);
     goto error;
   }
   
   if(![sequence close:&error]){
-    SCLog(@"Could not close frame sequence");
-    SCErrorDisplayBacktrace(error);
+    FLLog(@"Could not close frame sequence");
+    FLErrorDisplayBacktrace(error);
     goto error;
   }
   
-  if(!SCImageWritePNGToPath(keyframe, [outputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_keyframe.png", namespace]], &error)){
-    SCLog(@"Could not write keyframe");
-    SCErrorDisplayBacktrace(error);
+  if(!FLImageWritePNGToPath(keyframe, [outputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_keyframe.png", namespace]], &error)){
+    FLLog(@"Could not write keyframe");
+    FLErrorDisplayBacktrace(error);
     goto error;
   }
   
   if(![[manifest externalRepresentationWithImageCount:encoder.encodedImages] writeToFile:[outputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_manifest.json", namespace]]  atomically:TRUE encoding:NSUTF8StringEncoding error:&error]){
-    SCLog(@"Could not write manifest file");
-    SCErrorDisplayBacktrace(error);
+    FLLog(@"Could not write manifest file");
+    FLErrorDisplayBacktrace(error);
     goto error;
   }
   
@@ -285,15 +285,15 @@ error:
 /**
  * Display usage information
  */
-void SCSpellUsage(FILE *stream) {
+void FLFlynnUsage(FILE *stream) {
   fputs(
-    "Spellcaster - A block differential animation encoder\n"
+    "Flynn - A block differential animation encoder\n"
     "Copyright 2013 Mess\n"
     "\n"
-    "Usage: spellcaster [options] <file1> [... <fileN>]\n"
+    "Usage: flynn [options] <file1> [... <fileN>]\n"
     "\n"
     "Options:\n"
-    " -n --name <name>              Specify a namespace for the animation (default: 'spellcaster')\n"
+    " -n --name <name>              Specify a namespace for the animation (default: 'flynn')\n"
     " -o --output <path>            Specify the directory under which the encoded animation is output\n"
     " -b --block-size <size>        Specify the encoding block size (default: 8)\n"
     " -t --block-threshold <count>  Specify a threshold for block discrepencies between frames (default: 0)\n"

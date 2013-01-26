@@ -22,15 +22,21 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-typedef enum {
-  kSCLogLevelInfo,
-  kSCLogLevelVerbose
-} SCLogLevel;
+#import "FLBlockEncoder.h"
 
-#define SCLog(a...)     __SCLog(kSCLogLevelInfo, ##a)
-#define SCVerbose(a...) __SCLog(kSCLogLevelVerbose, ##a)
+/**
+ * A sequential block encoder.
+ * 
+ * @author Brian William Wolter
+ */
+@interface FLSequentialBlockEncoder : FLBlockEncoder {
+  
+  uint8_t * _blockBuffer;
+  uint8_t * _imageBuffer;
+  size_t    _length;
+  size_t    _offset;
+  
+}
 
-SCLogLevel __SCGetLogLevel(void);
-void __SCSetLogLevel(SCLogLevel level);
-void __SCLog(int level, NSString *format, ...);
+@end
 

@@ -22,22 +22,11 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#define kSCSpellcasterErrorDomain @"SCSpellcasterErrorDomain"
+#import <ImageIO/ImageIO.h>
 
-typedef enum {
-  kSCStatusOk             =  0,
-  kSCStatusError          = -1,
-  kSCStatusNotImplemented = -2
-} SCStatus;
+BOOL FLImageWriteToPath(CGImageRef image, NSString *format, NSString *path, NSError **error);
+BOOL FLImageWritePNGToPath(CGImageRef image, NSString *path, NSError **error);
+BOOL FLImageWriteJPEGToPath(CGImageRef image, NSString *path, NSError **error);
 
-#define NSERROR(d, c, m...) \
-  [NSError errorWithDomain:(d) code:(c) userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:m], NSLocalizedDescriptionKey, nil]]
-
-#define NSERROR_WITH_FILE(d, c, p, m...) \
-  [NSError errorWithDomain:(d) code:(c) userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:m], NSLocalizedDescriptionKey, (p), NSFilePathErrorKey, nil]]
-
-#define NSERROR_WITH_CAUSE(d, c, r, m...) \
-  [NSError errorWithDomain:(d) code:(c) userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:m], NSLocalizedDescriptionKey, (r), NSUnderlyingErrorKey, nil]]
-
-void SCErrorDisplayBacktrace(NSError *error);
+void FLImageShowAttributes(CGImageRef image);
 

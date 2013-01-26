@@ -22,10 +22,10 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCImageFrameSequence.h"
-#import "SCError.h"
+#import "FLImageFrameSequence.h"
+#import "FLError.h"
 
-@implementation SCImageFrameSequence
+@implementation FLImageFrameSequence
 
 @synthesize imagePaths = _imagePaths;
 
@@ -47,13 +47,13 @@
   BOOL isdir = FALSE;
   
   if(![[NSFileManager defaultManager] fileExistsAtPath:directory isDirectory:&isdir] || !isdir){
-    if(error) *error = NSERROR_WITH_FILE(kSCSpellcasterErrorDomain, kSCStatusError, directory, @"No such path or path does not represent a directory");
+    if(error) *error = NSERROR_WITH_FILE(kFLFlynnErrorDomain, kFLStatusError, directory, @"No such path or path does not represent a directory");
     return nil;
   }
   
   NSArray *contents;
   if((contents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directory error:&inner]) == nil){
-    if(error) *error = NSERROR_WITH_FILE(kSCSpellcasterErrorDomain, kSCStatusError, directory, @"Could not list directory directory");
+    if(error) *error = NSERROR_WITH_FILE(kFLFlynnErrorDomain, kFLStatusError, directory, @"Could not list directory directory");
     return nil;
   }
   
@@ -95,7 +95,7 @@
 -(id)initWithImagesAtPaths:(NSArray *)paths error:(NSError **)error {
   if((self = [super init]) != nil){
     if((_imagePaths = [paths retain]) == nil || [_imagePaths count] < 1){
-      if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"No images in sequence");
+      if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"No images in sequence");
       goto error;
     }
   }
@@ -135,17 +135,17 @@ error:
   }
   
   if((path = [_imagePaths objectAtIndex:_currentFrame]) == nil || [path length] < 1){
-    if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Invalid path for frame at index %ld", _currentFrame);
+    if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"Invalid path for frame at index %ld", _currentFrame);
     goto error;
   }
   
   if((extension = [path pathExtension]) == nil || [extension length] < 1){
-    if(error) *error = NSERROR_WITH_FILE(kSCSpellcasterErrorDomain, kSCStatusError, path, @"Frame at path has no extension, cannot determine image type");
+    if(error) *error = NSERROR_WITH_FILE(kFLFlynnErrorDomain, kFLStatusError, path, @"Frame at path has no extension, cannot determine image type");
     goto error;
   }
   
   if((dataProvider = CGDataProviderCreateWithURL((CFURLRef)[NSURL fileURLWithPath:path])) == NULL){
-    if(error) *error = NSERROR_WITH_FILE(kSCSpellcasterErrorDomain, kSCStatusError, path, @"Could not create data provider for frame");
+    if(error) *error = NSERROR_WITH_FILE(kFLFlynnErrorDomain, kFLStatusError, path, @"Could not create data provider for frame");
     goto error;
   }
   
@@ -156,7 +156,7 @@ error:
   }
   
   if(image == NULL){
-    if(error) *error = NSERROR_WITH_FILE(kSCSpellcasterErrorDomain, kSCStatusError, path, @"Unsupported image type for frame");
+    if(error) *error = NSERROR_WITH_FILE(kFLFlynnErrorDomain, kFLStatusError, path, @"Unsupported image type for frame");
     goto error;
   }
   

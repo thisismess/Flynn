@@ -22,42 +22,27 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import <ImageIO/ImageIO.h>
-
-#import "SCRange.h"
+#import "FLError.h"
 
 /**
- * A block encoder. Encoders accumulate update blocks until there are enough
- * to render an image at which time an image is composited, written to disk,
- * and the process starts over.
- * 
- * @author Brian William Wolter
+ * Display an error "backtrace"
  */
-@interface SCBlockEncoder : NSObject {
+void FLErrorDisplayBacktrace(NSError *error) {
   
-  NSString  * _directory;
-  NSString  * _namespace;
-  NSUInteger  _blockLength;
-  NSUInteger  _imageLength;
-  NSUInteger  _bytesPerPixel;
-  NSUInteger  _encodedImages;
+  // display the error message
+  fputs([[NSString stringWithFormat:@"    because: %@\n", [error localizedDescription]] UTF8String], stderr);
+  
+  // if the error has a related file, display it
+  NSString *path;
+  if((path = [[error userInfo] objectForKey:NSFilePathErrorKey]) != nil){
+    fputs([[NSString stringWithFormat:@"       file: %@\n", path] UTF8String], stderr);
+  }
+  
+  // if the error has a cause, recurse
+  NSError *cause;
+  if((cause = [[error userInfo] objectForKey:NSUnderlyingErrorKey]) != nil){
+    FLErrorDisplayBacktrace(cause);
+  }
   
 }
-
--(id)initWithKeyframeImage:(CGImageRef)keyframe outputDirectory:(NSString *)directory namespace:(NSString *)namespace codecSettings:(NSDictionary *)codecSettings error:(NSError **)error;
-
--(BOOL)open:(NSError **)error;
--(BOOL)close:(NSError **)error;
-
--(BOOL)encodeBlocks:(NSArray *)blocks forImage:(CGImageRef)image error:(NSError **)error;
-
-@property (readonly) NSDictionary * codecSettings;
-@property (readonly) NSString     * directory;
-@property (readonly) NSString     * namespace;
-@property (readonly) NSUInteger     imageLength;
-@property (readonly) NSUInteger     blockLength;
-@property (readonly) NSUInteger     bytesPerPixel;
-@property (readonly) NSUInteger     encodedImages;
-
-@end
 

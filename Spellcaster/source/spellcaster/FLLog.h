@@ -22,36 +22,15 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCLog.h"
+typedef enum {
+  kFLLogLevelInfo,
+  kFLLogLevelVerbose
+} FLLogLevel;
 
-static SCLogLevel __SCLogLevel = kSCLogLevelInfo;
+#define FLLog(a...)     __FLLog(kFLLogLevelInfo, ##a)
+#define FLVerbose(a...) __FLLog(kFLLogLevelVerbose, ##a)
 
-/**
- * Obtain the application wide log level
- */
-SCLogLevel __SCGetLogLevel(void) {
-  return __SCLogLevel;
-}
-
-/**
- * Obtain the application wide log level
- */
-void __SCSetLogLevel(SCLogLevel level) {
-  __SCLogLevel = level;
-}
-
-/**
- * Log a message
- */
-void __SCLog(int level, NSString *format, ...) {
-  if(level <= __SCLogLevel){
-    va_list ap;
-    va_start(ap, format);
-    fputs([[[NSProcessInfo processInfo] processName] UTF8String], stderr);
-    fputs(": ", stderr);
-    fputs([[[[NSString alloc] initWithFormat:format arguments:ap] autorelease] UTF8String], stderr);
-    fputc('\n', stderr);
-    va_end(ap);
-  }
-}
+FLLogLevel __FLGetLogLevel(void);
+void __FLSetLogLevel(FLLogLevel level);
+void __FLLog(int level, NSString *format, ...);
 

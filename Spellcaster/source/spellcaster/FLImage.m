@@ -22,18 +22,18 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCImage.h"
+#import "FLImage.h"
 
-static const size_t kSCImageBytesPerPixel_ARGB8888 = 4;
+static const size_t kFLImageBytesPerPixel_ARGB8888 = 4;
 
 /**
  * Compare a pixel between two images
  */
-BOOL SCImagePixelsEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, size_t threshold, size_t x, size_t y) {
+BOOL FLImagePixelsEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, size_t threshold, size_t x, size_t y) {
   assert(data1 != NULL);
   assert(data2 != NULL);
-  const uint8_t *a = SCImageGetPixel(data1, bytesPerPixel, x, y);
-  const uint8_t *b = SCImageGetPixel(data2, bytesPerPixel, x, y);
+  const uint8_t *a = FLImageGetPixel(data1, bytesPerPixel, x, y);
+  const uint8_t *b = FLImageGetPixel(data2, bytesPerPixel, x, y);
   if(a == b) return TRUE; // same memory, must be the same
   if(a == NULL || b == NULL) return FALSE;
   size_t misses = 0;
@@ -44,11 +44,11 @@ BOOL SCImagePixelsEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, 
 /**
  * Compare a block row of pixel between two images
  */
-BOOL SCImageStripesEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, size_t threshold, size_t x, size_t y, size_t blocksize) {
+BOOL FLImageStripesEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, size_t threshold, size_t x, size_t y, size_t blocksize) {
   assert(data1 != NULL);
   assert(data2 != NULL);
-  const uint8_t *a = SCImageGetPixel(data1, bytesPerPixel, x, y);
-  const uint8_t *b = SCImageGetPixel(data2, bytesPerPixel, x, y);
+  const uint8_t *a = FLImageGetPixel(data1, bytesPerPixel, x, y);
+  const uint8_t *b = FLImageGetPixel(data2, bytesPerPixel, x, y);
   if(a == b) return TRUE; // same memory, must be the same
   if(a == NULL || b == NULL) return FALSE;
   size_t misses = 0;
@@ -61,9 +61,9 @@ BOOL SCImageStripesEqual(const vImage_Buffer *data1, const vImage_Buffer *data2,
 /**
  * Compare a block of pixel between two images
  */
-BOOL SCImageBlocksEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, size_t threshold, size_t xblock, size_t yblock, size_t blocksize) {
+BOOL FLImageBlocksEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t bytesPerPixel, size_t threshold, size_t xblock, size_t yblock, size_t blocksize) {
   for(int y = 0; y < blocksize; y++){
-    if(!SCImageStripesEqual(data1, data2, bytesPerPixel, threshold, (xblock * blocksize), (yblock * blocksize) + y, blocksize)){
+    if(!FLImageStripesEqual(data1, data2, bytesPerPixel, threshold, (xblock * blocksize), (yblock * blocksize) + y, blocksize)){
       return FALSE;
     }
   }
@@ -75,13 +75,13 @@ BOOL SCImageBlocksEqual(const vImage_Buffer *data1, const vImage_Buffer *data2, 
  * have enough room to store the block (bytesPerPixel * blocksize * blocksize). Data is copied
  * into the block sequentially from left to right, top to bottom.
  */
-BOOL SCImageCopyOutSequentialBlock(const vImage_Buffer *data, uint8_t *block, size_t bytesPerPixel, size_t xblock, size_t yblock, size_t blocksize) {
+BOOL FLImageCopyOutSequentialBlock(const vImage_Buffer *data, uint8_t *block, size_t bytesPerPixel, size_t xblock, size_t yblock, size_t blocksize) {
   assert(data != NULL);
   assert(block != NULL);
   size_t index = 0, bytesPerRow = bytesPerPixel * blocksize;
   for(int y = 0; y < blocksize; y++){
     const uint8_t *row;
-    if((row = SCImageGetPixel(data, bytesPerPixel, (xblock * blocksize), (yblock * blocksize) + y)) == NULL) return FALSE;
+    if((row = FLImageGetPixel(data, bytesPerPixel, (xblock * blocksize), (yblock * blocksize) + y)) == NULL) return FALSE;
     memcpy(block + index, row, bytesPerRow);
     index += bytesPerRow;
   }
@@ -93,13 +93,13 @@ BOOL SCImageCopyOutSequentialBlock(const vImage_Buffer *data, uint8_t *block, si
  * have enough room to store the at its offset. Data is copied from the block sequentially into
  * the image.
  */
-BOOL SCImageCopyInSequentialBlock(const uint8_t *block, vImage_Buffer *data, size_t bytesPerPixel, size_t xblock, size_t yblock, size_t blocksize) {
+BOOL FLImageCopyInSequentialBlock(const uint8_t *block, vImage_Buffer *data, size_t bytesPerPixel, size_t xblock, size_t yblock, size_t blocksize) {
   assert(block != NULL);
   assert(data != NULL);
   size_t index = 0, bytesPerRow = bytesPerPixel * blocksize;
   for(int y = 0; y < blocksize; y++){
     uint8_t *row;
-    if((row = (uint8_t *)SCImageGetPixel(data, bytesPerPixel, (xblock * blocksize), (yblock * blocksize) + y)) == NULL) return FALSE;
+    if((row = (uint8_t *)FLImageGetPixel(data, bytesPerPixel, (xblock * blocksize), (yblock * blocksize) + y)) == NULL) return FALSE;
     memcpy(row, block + index, bytesPerRow);
     //for(int i = 0; i < blocksize; i++) fprintf(stderr, "%02x", *(block + index + i));
     //fputc('\n', stderr);
@@ -111,35 +111,35 @@ BOOL SCImageCopyInSequentialBlock(const uint8_t *block, vImage_Buffer *data, siz
 /**
  * Obtain a pixel offset in the provided image data
  */
-const uint8_t * SCImageGetPixel_ARGB8888(const vImage_Buffer *data, size_t x, size_t y) {
-  return SCImageGetPixel(data, kSCImageBytesPerPixel_ARGB8888, x, y);
+const uint8_t * FLImageGetPixel_ARGB8888(const vImage_Buffer *data, size_t x, size_t y) {
+  return FLImageGetPixel(data, kFLImageBytesPerPixel_ARGB8888, x, y);
 }
 
 /**
  * Compare a pixel between two images
  */
-BOOL SCImagePixelsEqual_ARGB8888(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t threshold, size_t x, size_t y) {
-  return SCImagePixelsEqual(data1, data2, kSCImageBytesPerPixel_ARGB8888, threshold, x, y);
+BOOL FLImagePixelsEqual_ARGB8888(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t threshold, size_t x, size_t y) {
+  return FLImagePixelsEqual(data1, data2, kFLImageBytesPerPixel_ARGB8888, threshold, x, y);
 }
 
 /**
  * Compare a block of pixel between two images
  */
-BOOL SCImageBlocksEqual_ARGB8888(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t threshold, size_t xblock, size_t yblock, size_t blocksize) {
-  return SCImageBlocksEqual(data1, data2, kSCImageBytesPerPixel_ARGB8888, threshold, xblock, yblock, blocksize);
+BOOL FLImageBlocksEqual_ARGB8888(const vImage_Buffer *data1, const vImage_Buffer *data2, size_t threshold, size_t xblock, size_t yblock, size_t blocksize) {
+  return FLImageBlocksEqual(data1, data2, kFLImageBytesPerPixel_ARGB8888, threshold, xblock, yblock, blocksize);
 }
 
 /**
  * Copy a block of pixel from the provided image data into the provided buffer.
  */
-BOOL SCImageCopyOutSequentialBlock_ARGB8888(const vImage_Buffer *data, uint8_t *block, size_t xblock, size_t yblock, size_t blocksize) {
-  return SCImageCopyOutSequentialBlock(data, block, kSCImageBytesPerPixel_ARGB8888, xblock, yblock, blocksize);
+BOOL FLImageCopyOutSequentialBlock_ARGB8888(const vImage_Buffer *data, uint8_t *block, size_t xblock, size_t yblock, size_t blocksize) {
+  return FLImageCopyOutSequentialBlock(data, block, kFLImageBytesPerPixel_ARGB8888, xblock, yblock, blocksize);
 }
 
 /**
  * Copy a block from the provided buffer into the provided image data.
  */
-BOOL SCImageCopyInSequentialBlock_ARGB8888(const uint8_t *block, vImage_Buffer *data, size_t xblock, size_t yblock, size_t blocksize) {
-  return SCImageCopyInSequentialBlock(block, data, kSCImageBytesPerPixel_ARGB8888, xblock, yblock, blocksize);
+BOOL FLImageCopyInSequentialBlock_ARGB8888(const uint8_t *block, vImage_Buffer *data, size_t xblock, size_t yblock, size_t blocksize) {
+  return FLImageCopyInSequentialBlock(block, data, kFLImageBytesPerPixel_ARGB8888, xblock, yblock, blocksize);
 }
 

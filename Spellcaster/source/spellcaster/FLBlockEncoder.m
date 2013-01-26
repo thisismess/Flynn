@@ -22,13 +22,13 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCBlockEncoder.h"
-#import "SCImage.h"
-#import "SCCodec.h"
-#import "SCError.h"
-#import "SCLog.h"
+#import "FLBlockEncoder.h"
+#import "FLImage.h"
+#import "FLCodec.h"
+#import "FLError.h"
+#import "FLLog.h"
 
-@implementation SCBlockEncoder
+@implementation FLBlockEncoder
 
 @synthesize codecSettings = _codecSettings;
 @synthesize directory = _directory;
@@ -62,21 +62,21 @@
     if(keyframe != NULL){
       _bytesPerPixel = CGImageGetBitsPerPixel(keyframe) / CGImageGetBitsPerComponent(keyframe);
     }else{
-      if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Keyframe is null");
+      if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"Keyframe is null");
       goto error;
     }
     
-    if((number = [codecSettings objectForKey:kSCCodecBlockSizeKey]) != nil){
+    if((number = [codecSettings objectForKey:kFLCodecBlockSizeKey]) != nil){
       _blockLength = [number integerValue];
     }else{
-      if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Codec settings does not define a block size (%@)", kSCCodecBlockSizeKey);
+      if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"Codec settings does not define a block size (%@)", kFLCodecBlockSizeKey);
       goto error;
     }
     
-    if((number = [codecSettings objectForKey:kSCCodecImageSizeKey]) != nil){
+    if((number = [codecSettings objectForKey:kFLCodecImageSizeKey]) != nil){
       _imageLength = [number integerValue];
     }else{
-      if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Codec settings does not define a stream image maximum size (%@)", kSCCodecImageSizeKey);
+      if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"Codec settings does not define a stream image maximum size (%@)", kFLCodecImageSizeKey);
       goto error;
     }
     
@@ -90,7 +90,7 @@ error:
  * Open a frame sequence for reading
  */
 -(BOOL)open:(NSError **)error {
-  if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Subclasses must override %s", __PRETTY_FUNCTION__);
+  if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"Subclasses must override %s", __PRETTY_FUNCTION__);
   return FALSE;
 }
 
@@ -98,7 +98,7 @@ error:
  * Open a previously opened frame sequence
  */
 -(BOOL)close:(NSError **)error {
-  if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Subclasses must override %s", __PRETTY_FUNCTION__);
+  if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"Subclasses must override %s", __PRETTY_FUNCTION__);
   return FALSE;
 }
 
@@ -107,7 +107,7 @@ error:
  * the error is described in the @p error parameter, if present.
  */
 -(BOOL)encodeBlocks:(NSArray *)blocks forImage:(CGImageRef)image error:(NSError **)error {
-  if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Subclasses must override %s", __PRETTY_FUNCTION__);
+  if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"Subclasses must override %s", __PRETTY_FUNCTION__);
   return FALSE;
 }
 

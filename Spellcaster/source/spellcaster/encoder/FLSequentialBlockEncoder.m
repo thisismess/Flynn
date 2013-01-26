@@ -22,12 +22,12 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCSequentialBlockEncoder.h"
-#import "SCImage.h"
-#import "SCError.h"
-#import "SCLog.h"
+#import "FLSequentialBlockEncoder.h"
+#import "FLImage.h"
+#import "FLError.h"
+#import "FLLog.h"
 
-@implementation SCSequentialBlockEncoder
+@implementation FLSequentialBlockEncoder
 
 /**
  * Clean up
@@ -62,10 +62,10 @@
   
   // setup our output directory
   if((exists = [[NSFileManager defaultManager] fileExistsAtPath:_directory isDirectory:&isdir]) && !isdir){
-    if(error) *error = NSERROR_WITH_FILE(kSCSpellcasterErrorDomain, kSCStatusError, _directory, @"File at path exists but does not represent a directory");
+    if(error) *error = NSERROR_WITH_FILE(kFLFlynnErrorDomain, kFLStatusError, _directory, @"File at path exists but does not represent a directory");
     return FALSE;
   }else if(!exists && ![[NSFileManager defaultManager] createDirectoryAtPath:_directory withIntermediateDirectories:TRUE attributes:nil error:&inner]){
-    if(error) *error = NSERROR_WITH_FILE(kSCSpellcasterErrorDomain, kSCStatusError, _directory, @"Could not create export directory");
+    if(error) *error = NSERROR_WITH_FILE(kFLFlynnErrorDomain, kFLStatusError, _directory, @"Could not create export directory");
     return FALSE;
   }
   
@@ -89,7 +89,7 @@
   
   // make sure the image is valid
   if(image == NULL){
-    if(error) *error = NSERROR(kSCSpellcasterErrorDomain, kSCStatusError, @"Frame image is null");
+    if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"Frame image is null");
     goto error;
   }
   
@@ -102,13 +102,13 @@
   
   // make sure the image has the correct number of bytes per pixel
   if(bytesPerPixel != self.bytesPerPixel){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame image must use a pixel format with %ld bytes per pixel", self.bytesPerPixel], NSLocalizedDescriptionKey, nil]];
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame image must use a pixel format with %ld bytes per pixel", self.bytesPerPixel], NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
   // make sure the image is has dimensions in multiples of blocks
   if((width % _blockLength) != 0 || (height % _blockLength) != 0){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame image must have dimensions in multiples of blocks (%ldx%ld)", _blockLength, _blockLength], NSLocalizedDescriptionKey, nil]];
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame image must have dimensions in multiples of blocks (%ldx%ld)", _blockLength, _blockLength], NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
@@ -126,7 +126,7 @@
   buffer.rowBytes = bytesPerRow;
   
   // copy in blocks
-  for(SCRange *block in blocks){
+  for(FLRange *block in blocks){
     for(size_t i = 0; i < block.count; i++){
       size_t position = block.position + i;
       
@@ -142,8 +142,8 @@
       size_t yblock = position / wblocks;
       
       // copy in our block
-      if(!SCImageCopyOutSequentialBlock(&buffer, _blockBuffer + _offset, bytesPerPixel, xblock, yblock, _blockLength)){
-        if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Could not copy block at position %ld (%ld, %ld)", position, xblock, yblock], NSLocalizedDescriptionKey, nil]];
+      if(!FLImageCopyOutSequentialBlock(&buffer, _blockBuffer + _offset, bytesPerPixel, xblock, yblock, _blockLength)){
+        if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Could not copy block at position %ld (%ld, %ld)", position, xblock, yblock], NSLocalizedDescriptionKey, nil]];
         goto error;
       }
       
@@ -185,7 +185,7 @@ error:
   
   // make sure we don't exceed our dimension constraints
   if(width > self.imageLength || height > self.imageLength){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Block buffer is too large", NSLocalizedDescriptionKey, nil]];
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Block buffer is too large", NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
@@ -201,8 +201,8 @@ error:
     // determine our block coordinates for the block offset
     size_t xblock = i % imageLength, yblock = i / imageLength;
     // copy in the block
-    if(!SCImageCopyInSequentialBlock(_blockBuffer + (i * bytesPerBlock), &buffer, _bytesPerPixel, xblock, yblock, _blockLength)){
-      if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not copy image block", NSLocalizedDescriptionKey, nil]];
+    if(!FLImageCopyInSequentialBlock(_blockBuffer + (i * bytesPerBlock), &buffer, _bytesPerPixel, xblock, yblock, _blockLength)){
+      if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not copy image block", NSLocalizedDescriptionKey, nil]];
       goto error;
     }
   }
@@ -210,26 +210,26 @@ error:
   // setup our output path
   NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_%03zd.png", self.namespace, _encodedImages + 1]];
   // note it
-  SCVerbose(@"exporting %ldx%ld for %ld blocks: %@", width, height, blocks, outputPath);
+  FLVerbose(@"exporting %ldx%ld for %ld blocks: %@", width, height, blocks, outputPath);
   
   // setup our colorspace
   colorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
   
   // setup our data provider
   if((dataProvider = CGDataProviderCreateWithData(NULL, buffer.data, buffer.rowBytes * height, NULL)) == NULL){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image data provider", NSLocalizedDescriptionKey, nil]];
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image data provider", NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
   // create an image from our buffer
   if((image = CGImageCreate(width, height, 8, _bytesPerPixel * 8, buffer.rowBytes, colorspace, kCGImageAlphaLast, dataProvider, NULL, FALSE, kCGRenderingIntentDefault)) == NULL){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image from block data", NSLocalizedDescriptionKey, nil]];
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image from block data", NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
   // create a destination for our image
   if((imageDestination = CGImageDestinationCreateWithURL((CFURLRef)[NSURL fileURLWithPath:outputPath], kUTTypePNG, 1, nil)) == NULL){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image destination", NSLocalizedDescriptionKey, nil]];
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image destination", NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
@@ -238,7 +238,7 @@ error:
   
   // finalize our image destination
   if(!CGImageDestinationFinalize(imageDestination)){
-    if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not finalize image destination", NSLocalizedDescriptionKey, nil]];
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not finalize image destination", NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   

@@ -22,18 +22,22 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-/**
- * A frame sequence. This is an abstract base for frame sequences, which produce
- * individual frame images from some underlying media.
- * 
- * @author Brian William Wolter
- */
-@interface SCFrameSequence : NSObject
+#define kFLFlynnErrorDomain @"FLFlynnErrorDomain"
 
--(BOOL)open:(NSError **)error;
--(BOOL)close:(NSError **)error;
+typedef enum {
+  kFLStatusOk             =  0,
+  kFLStatusError          = -1,
+  kFLStatusNotImplemented = -2
+} FLStatus;
 
--(CGImageRef)copyNextFrameImageWithError:(NSError **)error;
+#define NSERROR(d, c, m...) \
+  [NSError errorWithDomain:(d) code:(c) userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:m], NSLocalizedDescriptionKey, nil]]
 
-@end
+#define NSERROR_WITH_FILE(d, c, p, m...) \
+  [NSError errorWithDomain:(d) code:(c) userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:m], NSLocalizedDescriptionKey, (p), NSFilePathErrorKey, nil]]
+
+#define NSERROR_WITH_CAUSE(d, c, r, m...) \
+  [NSError errorWithDomain:(d) code:(c) userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:m], NSLocalizedDescriptionKey, (r), NSUnderlyingErrorKey, nil]]
+
+void FLErrorDisplayBacktrace(NSError *error);
 

@@ -22,19 +22,36 @@
 // Made by Mess - http://thisismess.com/
 // 
 
+#import "FLLog.h"
+
+static FLLogLevel __FLLogLevel = kFLLogLevelInfo;
+
 /**
- * A block range.
- * 
- * @author Brian William Wolter
+ * Obtain the application wide log level
  */
-@interface SCRange : NSObject
+FLLogLevel __FLGetLogLevel(void) {
+  return __FLLogLevel;
+}
 
-+(SCRange *)rangeWithPosition:(size_t)position count:(size_t)count;
+/**
+ * Obtain the application wide log level
+ */
+void __FLSetLogLevel(FLLogLevel level) {
+  __FLLogLevel = level;
+}
 
--(id)initWithPosition:(size_t)position count:(size_t)count;
-
-@property (readonly) size_t position;
-@property (readonly) size_t count;
-
-@end
+/**
+ * Log a message
+ */
+void __FLLog(int level, NSString *format, ...) {
+  if(level <= __FLLogLevel){
+    va_list ap;
+    va_start(ap, format);
+    fputs([[[NSProcessInfo processInfo] processName] UTF8String], stderr);
+    fputs(": ", stderr);
+    fputs([[[[NSString alloc] initWithFormat:format arguments:ap] autorelease] UTF8String], stderr);
+    fputc('\n', stderr);
+    va_end(ap);
+  }
+}
 

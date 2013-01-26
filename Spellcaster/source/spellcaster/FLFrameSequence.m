@@ -22,16 +22,16 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCFrameSequence.h"
-#import "SCError.h"
+#import "FLFrameSequence.h"
+#import "FLError.h"
 
-@implementation SCFrameSequence
+@implementation FLFrameSequence
 
 /**
  * Open a frame sequence for reading
  */
 -(BOOL)open:(NSError **)error {
-  if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusNotImplemented userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Subclasses must override %s", __PRETTY_FUNCTION__], NSLocalizedDescriptionKey, nil]];
+  if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusNotImplemented userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Subclasses must override %s", __PRETTY_FUNCTION__], NSLocalizedDescriptionKey, nil]];
   return FALSE;
 }
 
@@ -39,7 +39,7 @@
  * Open a previously opened frame sequence
  */
 -(BOOL)close:(NSError **)error {
-  if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusNotImplemented userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Subclasses must override %s", __PRETTY_FUNCTION__], NSLocalizedDescriptionKey, nil]];
+  if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusNotImplemented userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Subclasses must override %s", __PRETTY_FUNCTION__], NSLocalizedDescriptionKey, nil]];
   return FALSE;
 }
 
@@ -48,7 +48,7 @@
  * the error is described in the @p error parameter, if present.
  */
 -(CGImageRef)copyNextFrameImageWithError:(NSError **)error {
-  if(error) *error = [NSError errorWithDomain:kSCSpellcasterErrorDomain code:kSCStatusNotImplemented userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Subclasses must override %s", __PRETTY_FUNCTION__], NSLocalizedDescriptionKey, nil]];
+  if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusNotImplemented userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Subclasses must override %s", __PRETTY_FUNCTION__], NSLocalizedDescriptionKey, nil]];
   return nil;
 }
 

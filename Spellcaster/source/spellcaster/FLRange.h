@@ -22,26 +22,19 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCRange.h"
-
 /**
- * An image comparator. Comparators determine which blocks need to be updated
- * between two sequential frames in an animation.
+ * A block range.
  * 
  * @author Brian William Wolter
  */
-@interface SCImageComparator : NSObject
+@interface FLRange : NSObject
 
--(id)initWithKeyframeImage:(CGImageRef)keyframe codecSettings:(NSDictionary *)codecSettings error:(NSError **)error;
++(FLRange *)rangeWithPosition:(size_t)position count:(size_t)count;
 
--(NSArray *)updateBlocksForImage:(CGImageRef)image error:(NSError **)error;
+-(id)initWithPosition:(size_t)position count:(size_t)count;
 
-@property (readonly) NSDictionary * codecSettings;
-@property (readonly) CGImageRef     currentImage;
-@property (readonly) NSUInteger     blockLength;
-@property (readonly) NSUInteger     blockThreshold;
-@property (readonly) NSUInteger     bytesPerPixel;
-@property (readonly) CGBitmapInfo   bitmapInfo;
+@property (readonly) size_t position;
+@property (readonly) size_t count;
 
 @end
 

@@ -22,7 +22,7 @@
 // Made by Mess - http://thisismess.com/
 // 
 
-#import "SCRange.h"
+#import "FLRange.h"
 
 /**
  * An animation manifest. A manifest describes the animation's components and
@@ -30,12 +30,12 @@
  * 
  * @author Brian William Wolter
  */
-@interface SCManifest : NSObject
+@interface FLManifest : NSObject
 
 -(id)initWithCodecSettings:(NSDictionary *)codecSettings error:(NSError **)error;
 
 -(BOOL)startFrame;
--(BOOL)encodeCopyBlocks:(SCRange *)range;
+-(BOOL)encodeCopyBlocks:(FLRange *)range;
 -(BOOL)encodeCopyBlocksAtPosition:(size_t)position count:(size_t)blocks;
 
 -(NSString *)externalRepresentationWithImageCount:(NSUInteger)imageCount;
