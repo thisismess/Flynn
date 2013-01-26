@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		D323155316A3DBED0071D96D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D323155216A3DBED0071D96D /* Foundation.framework */; };
 		D323155616A3DBED0071D96D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D323155516A3DBED0071D96D /* main.m */; };
-		D323155A16A3DBED0071D96D /* Spellcaster.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = D323155916A3DBED0071D96D /* Spellcaster.1 */; };
+		D323155A16A3DBED0071D96D /* flynn.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = D323155916A3DBED0071D96D /* flynn.1 */; };
 		D323156416A3E6FB0071D96D /* FLManifest.m in Sources */ = {isa = PBXBuildFile; fileRef = D323156316A3E6FB0071D96D /* FLManifest.m */; };
 		D323156916A3EAE50071D96D /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = D323156816A3EAE50071D96D /* JSONKit.m */; };
 		D323156F16A3F1CE0071D96D /* FLRange.m in Sources */ = {isa = PBXBuildFile; fileRef = D323156D16A3F1CD0071D96D /* FLRange.m */; };
@@ -37,18 +37,18 @@
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-				D323155A16A3DBED0071D96D /* Spellcaster.1 in CopyFiles */,
+				D323155A16A3DBED0071D96D /* flynn.1 in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		D323154E16A3DBED0071D96D /* spellcaster */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = spellcaster; sourceTree = BUILT_PRODUCTS_DIR; };
+		D323154E16A3DBED0071D96D /* flynn */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = flynn; sourceTree = BUILT_PRODUCTS_DIR; };
 		D323155216A3DBED0071D96D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		D323155516A3DBED0071D96D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = main.m; path = source/main.m; sourceTree = "<group>"; };
-		D323155816A3DBED0071D96D /* Spellcaster-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Spellcaster-Prefix.pch"; path = "source/Spellcaster-Prefix.pch"; sourceTree = "<group>"; };
-		D323155916A3DBED0071D96D /* Spellcaster.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; name = Spellcaster.1; path = resources/Spellcaster.1; sourceTree = "<group>"; };
+		D323155516A3DBED0071D96D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ../Flynn/source/main.m; sourceTree = "<group>"; };
+		D323155816A3DBED0071D96D /* Flynn-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Flynn-Prefix.pch"; path = "../Flynn/source/Flynn-Prefix.pch"; sourceTree = "<group>"; };
+		D323155916A3DBED0071D96D /* flynn.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; name = flynn.1; path = ../Flynn/resources/flynn.1; sourceTree = "<group>"; };
 		D323156216A3E6FB0071D96D /* FLManifest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLManifest.h; sourceTree = "<group>"; };
 		D323156316A3E6FB0071D96D /* FLManifest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLManifest.m; sourceTree = "<group>"; };
 		D323156716A3EAE50071D96D /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
@@ -111,7 +111,7 @@
 		D323154F16A3DBED0071D96D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D323154E16A3DBED0071D96D /* spellcaster */,
+				D323154E16A3DBED0071D96D /* flynn */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -141,8 +141,8 @@
 		D323155716A3DBED0071D96D /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				D323155916A3DBED0071D96D /* Spellcaster.1 */,
-				D323155816A3DBED0071D96D /* Spellcaster-Prefix.pch */,
+				D323155916A3DBED0071D96D /* flynn.1 */,
+				D323155816A3DBED0071D96D /* Flynn-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -151,12 +151,12 @@
 			isa = PBXGroup;
 			children = (
 				D323156516A3EAE50071D96D /* external */,
-				D323156116A3E6FB0071D96D /* spellcaster */,
+				D323156116A3E6FB0071D96D /* flynn */,
 			);
 			name = Source;
 			sourceTree = "<group>";
 		};
-		D323156116A3E6FB0071D96D /* spellcaster */ = {
+		D323156116A3E6FB0071D96D /* flynn */ = {
 			isa = PBXGroup;
 			children = (
 				D3D7D22A16A73C740071DE5D /* encoder */,
@@ -182,8 +182,8 @@
 				D323158516A4A4560071D96D /* FLBlockEncoder.h */,
 				D323158616A4A4560071D96D /* FLBlockEncoder.m */,
 			);
-			name = spellcaster;
-			path = source/spellcaster;
+			name = flynn;
+			path = ../Flynn/source/flynn;
 			sourceTree = "<group>";
 		};
 		D323156516A3EAE50071D96D /* external */ = {
@@ -192,7 +192,7 @@
 				D323156616A3EAE50071D96D /* json */,
 			);
 			name = external;
-			path = source/external;
+			path = ../Flynn/source/external;
 			sourceTree = "<group>";
 		};
 		D323156616A3EAE50071D96D /* json */ = {
@@ -227,9 +227,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D323154D16A3DBED0071D96D /* Spellcaster */ = {
+		D323154D16A3DBED0071D96D /* Flynn */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D323155D16A3DBED0071D96D /* Build configuration list for PBXNativeTarget "Spellcaster" */;
+			buildConfigurationList = D323155D16A3DBED0071D96D /* Build configuration list for PBXNativeTarget "Flynn" */;
 			buildPhases = (
 				D323154A16A3DBED0071D96D /* Sources */,
 				D323154B16A3DBED0071D96D /* Frameworks */,
@@ -239,9 +239,9 @@
 			);
 			dependencies = (
 			);
-			name = Spellcaster;
+			name = Flynn;
 			productName = Spellcaster;
-			productReference = D323154E16A3DBED0071D96D /* spellcaster */;
+			productReference = D323154E16A3DBED0071D96D /* flynn */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -253,7 +253,7 @@
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = Mess;
 			};
-			buildConfigurationList = D323154816A3DBED0071D96D /* Build configuration list for PBXProject "Spellcaster" */;
+			buildConfigurationList = D323154816A3DBED0071D96D /* Build configuration list for PBXProject "Flynn" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -265,7 +265,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D323154D16A3DBED0071D96D /* Spellcaster */,
+				D323154D16A3DBED0071D96D /* Flynn */,
 			);
 		};
 /* End PBXProject section */
@@ -351,8 +351,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Spellcaster/source/Spellcaster-Prefix.pch";
-				PRODUCT_NAME = spellcaster;
+				GCC_PREFIX_HEADER = "Flynn/source/Flynn-Prefix.pch";
+				PRODUCT_NAME = flynn;
 			};
 			name = Debug;
 		};
@@ -360,15 +360,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Spellcaster/source/Spellcaster-Prefix.pch";
-				PRODUCT_NAME = spellcaster;
+				GCC_PREFIX_HEADER = "Flynn/source/Flynn-Prefix.pch";
+				PRODUCT_NAME = flynn;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D323154816A3DBED0071D96D /* Build configuration list for PBXProject "Spellcaster" */ = {
+		D323154816A3DBED0071D96D /* Build configuration list for PBXProject "Flynn" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D323155B16A3DBED0071D96D /* Debug */,
@@ -377,7 +377,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D323155D16A3DBED0071D96D /* Build configuration list for PBXNativeTarget "Spellcaster" */ = {
+		D323155D16A3DBED0071D96D /* Build configuration list for PBXNativeTarget "Flynn" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D323155E16A3DBED0071D96D /* Debug */,

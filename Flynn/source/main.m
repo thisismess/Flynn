@@ -288,9 +288,10 @@ error:
 void FLFlynnUsage(FILE *stream) {
   fputs(
     "Flynn - A block differential animation encoder\n"
-    "Copyright 2013 Mess\n"
+    "Copyright 2013 Mess  -  http://thisismess.com/\n"
     "\n"
     "Usage: flynn [options] <file1> [... <fileN>]\n"
+    " Help: man flynn\n"
     "\n"
     "Options:\n"
     " -n --name <name>              Specify a namespace for the animation (default: 'flynn')\n"
