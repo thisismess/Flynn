@@ -24,41 +24,63 @@
 .Nm
 evaluates a series of input animation frame images and encodes them into a sequence of output
 images which represent the animation in a (generally) more efficient form. This encoded format,
-called Block Differential Frame Encoding, is based on an implementation used by Apple on the
-apple.com website.
+called Block Differential Frame Encoding (or colloquially: a Flynn animation), is based on an
+implementation used by Apple on the apple.com website.
 .Pp
-Each of the components of a BDFE animation (a JSON manifest file and a number of encoded image
-files) can be directly decoded by a modern Web browser. As a result, BDFE animations can be
-played on a wide variety of platforms, including mobile browsers such as Mobile Safari on iOS.
+Deliberately, each of the components of a Flynn animation (a JSON manifest file and a number
+of encoded image files) can be directly and efficiently decoded by a modern Web browser. As a result,
+Flynn animations can be played on a wide variety of platforms, including mobile browsers such as
+Mobile Safari on iOS.
 .Pp
-BDFE animations can be very efficient for content of the sort to which it is well suited: short
+Flynn animations can be very efficient for content of the sort to which it is well suited: short
 animations and motion graphics in which a relatively small region of the image changes from frame
 to frame. The format is not especially well suited to encoding video.
-.Pp
-.Nm
-Underlining is accomplished with the .Ar macro like this:
-.Ar underlined text .
-.Pp                      \" Inserts a space
-A list of items with descriptions:
-.Bl -tag -width -indent  \" Begins a tagged list 
-.It item a               \" Each item preceded by .It macro
-Description of item a
-.It item b
-Description of item b
-.El                      \" Ends the list
-.Pp
-The following options supported by
+.Sh OPTIONS
+The following options are supported by
 .Nm
 for encoding:
 .Bl -tag -width -indent  \" Differs from above in tag removed 
-.It Fl n -name
-The name of the animation. This name is used as the base name for output files (e.g., the name 'hello'
-might produce files 'hello_manifest.json', 'hello_keyframe.png', 'hello_001.png', and so fourth).
+.It Fl n -name Ar name
+The name of the animation. This name is used as the base name for output files (e.g., the
+.Ar name
+\'hello' might produce files 'hello_manifest.json', 'hello_keyframe.png', 'hello_001.png',
+and so fourth). The default name for animations is 'flynn'.
 .It Fl o -output Ar path
 Output encoded animation files under
 .Ar path.
-.It Fl b
-Description of -b flag
+.It Fl b -block-size Ar size
+Use the dimesion
+.Ar size
+as the block size for the animation. The
+.Ar size
+is used for both dimensions of a block, which must be square. You can use any block size you like
+provided it is:
+1) a factor of the encoded image size; and
+2) both greater than 1 and less than the image size (
+.Fl I -image-size
+). The default block
+.Ar size
+is 8.
+.It Fl t -block-threshold Ar count
+Use the block error threshold
+.Ar count
+for determining differences between frames. The block error threshold refers to the number
+of pixels in a single block which do not exactly match between two frames before the entire block
+is updated. A threshold of 1 means a single pixel difference between frames causes that pixel's block
+to be updated; a threshold of 10 means 10 pixels must differ before the block is updated. The default threshold
+.Ar count
+is 1.
+.It Fl I -image-size Ar size
+Use the dimension
+.Ar size
+as the image size for encoded block-stream images. The
+.Ar size
+is used for both dimensions of the image, which must be square. You can use any image size you like provided
+that it is a multiple of the block size (
+.Fl b -block-size
+). The default image size is 1624.
+.It Fl v -verbose
+Display more information about the conversion process.
 .El                      \" Ends the list
 .Pp
 .\" .Sh ENVIRONMENT      \" May not be needed
@@ -68,13 +90,13 @@ Description of -b flag
 .\" .It Ev ENV_VAR_2
 .\" Description of ENV_VAR_2
 .\" .El                      
-.Sh FILES                \" File used or created by the topic of the man page
-.Bl -tag -width "/Users/joeuser/Library/really_long_file_name" -compact
-.It Pa /usr/share/file_name
-FILE_1 description
-.It Pa /Users/joeuser/Library/really_long_file_name
-FILE_2 description
-.El                      \" Ends the list
+.\" .Sh FILES                \" File used or created by the topic of the man page
+.\" .Bl -tag -width "/Users/joeuser/Library/really_long_file_name" -compact
+.\" .It Pa /usr/share/file_name
+.\" FILE_1 description
+.\" .It Pa /Users/joeuser/Library/really_long_file_name
+.\" FILE_2 description
+.\" .El                      \" Ends the list
 .\" .Sh DIAGNOSTICS       \" May not be needed
 .\" .Bl -diag
 .\" .It Diagnostic Tag
@@ -82,15 +104,22 @@ FILE_2 description
 .\" .It Diagnostic Tag
 .\" Diagnostic informtion here.
 .\" .El
-.Sh SEE ALSO 
+.\" .Sh SEE ALSO 
 .\" List links in ascending order by section, alphabetically within a section.
 .\" Please do not reference files that do not exist without filing a bug report
-.Xr a 1 , 
-.Xr b 1 ,
-.Xr c 1 ,
-.Xr a 2 ,
-.Xr b 2 ,
-.Xr a 3 ,
-.Xr b 3 
+.\" .Xr a 1 , 
+.\" .Xr b 1 ,
+.\" .Xr c 1 ,
+.\" .Xr a 2 ,
+.\" .Xr b 2 ,
+.\" .Xr a 3 ,
+.\" .Xr b 3 
 .\" .Sh BUGS              \" Document known, unremedied bugs 
 .\" .Sh HISTORY           \" Document history if command behaves in a unique manner
+.Sh ABOUT
+Get the source for
+.Nm
+at
+.Ar https://bitbucket.org/thisismess/flynn
+.Pp
+Copyright 2013 Mess, All rights reserved.
