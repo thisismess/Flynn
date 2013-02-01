@@ -4,26 +4,37 @@
 .\"man mdoc for the short list of editing options
 .\"/usr/share/misc/mdoc.template
 .Dd 1/14/13               \" DATE 
-.Dt Spellcaster 1      \" Program name and manual section number 
+.Dt flynn 1               \" Program name and manual section number 
 .Os Darwin
-.Sh NAME                 \" Section Header - required - don't modify 
-.Nm Spellcaster,
-.\" The following lines are read in generating the apropos(man -k) database. Use only key
-.\" words here as the database is built based on the words here and in the .ND line. 
-.Nm Other_name_for_same_program(),
-.Nm Yet another name for the same program.
+.Sh NAME                  \" Section Header - required - don't modify 
+.Nm flynn
 .\" Use .Nm macro to designate other names for the documented program.
-.Nd This line parsed for whatis database.
+.Nd A block differential animation encoder.
 .Sh SYNOPSIS             \" Section Header - required - don't modify
 .Nm
-.Op Fl abcd              \" [-abcd]
-.Op Fl a Ar path         \" [-a path] 
-.Op Ar file              \" [file]
-.Op Ar                   \" [file ...]
-.Ar arg0                 \" Underlined argument - use .Ar anywhere to underline
-arg2 ...                 \" Arguments
+.Op options
+.Op Fl o Ar path
+.Ar directory
+.Nm
+.Op options
+.Op Fl o Ar path
+.Ar file1
+.Op Ar file2 ...
 .Sh DESCRIPTION          \" Section Header - required - don't modify
-Use the .Nm macro to refer to your program throughout the man page like such:
+.Nm
+evaluates a series of input animation frame images and encodes them into a sequence of output
+images which represent the animation in a (generally) more efficient form. This encoded format,
+called Block Differential Frame Encoding, is based on an implementation used by Apple on the
+apple.com website.
+.Pp
+Each of the components of a BDFE animation (a JSON manifest file and a number of encoded image
+files) can be directly decoded by a modern Web browser. As a result, BDFE animations can be
+played on a wide variety of platforms, including mobile browsers such as Mobile Safari on iOS.
+.Pp
+BDFE animations can be very efficient for content of the sort to which it is well suited: short
+animations and motion graphics in which a relatively small region of the image changes from frame
+to frame. The format is not especially well suited to encoding video.
+.Pp
 .Nm
 Underlining is accomplished with the .Ar macro like this:
 .Ar underlined text .
@@ -36,10 +47,16 @@ Description of item a
 Description of item b
 .El                      \" Ends the list
 .Pp
-A list of flags and their descriptions:
+The following options supported by
+.Nm
+for encoding:
 .Bl -tag -width -indent  \" Differs from above in tag removed 
-.It Fl a                 \"-a flag as a list item
-Description of -a flag
+.It Fl n -name
+The name of the animation. This name is used as the base name for output files (e.g., the name 'hello'
+might produce files 'hello_manifest.json', 'hello_keyframe.png', 'hello_001.png', and so fourth).
+.It Fl o -output Ar path
+Output encoded animation files under
+.Ar path.
 .It Fl b
 Description of -b flag
 .El                      \" Ends the list

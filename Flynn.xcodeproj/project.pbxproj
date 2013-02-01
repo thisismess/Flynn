@@ -102,7 +102,7 @@
 		D323154316A3DBED0071D96D = {
 			isa = PBXGroup;
 			children = (
-				D323155416A3DBED0071D96D /* Spellcaster */,
+				D323155416A3DBED0071D96D /* Flynn */,
 				D323155116A3DBED0071D96D /* Frameworks */,
 				D323154F16A3DBED0071D96D /* Products */,
 			);
@@ -128,14 +128,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		D323155416A3DBED0071D96D /* Spellcaster */ = {
+		D323155416A3DBED0071D96D /* Flynn */ = {
 			isa = PBXGroup;
 			children = (
 				D323156016A3DC240071D96D /* Source */,
 				D323155516A3DBED0071D96D /* main.m */,
 				D323155716A3DBED0071D96D /* Supporting Files */,
 			);
-			path = Spellcaster;
+			path = Flynn;
 			sourceTree = "<group>";
 		};
 		D323155716A3DBED0071D96D /* Supporting Files */ = {
