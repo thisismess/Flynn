@@ -42,7 +42,8 @@ enum {
 
 typedef uint32_t SCOptions;
 
-void FLFlynnExport(NSString *inputDirectory, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options);
+void FLFlynnExportDirectory(NSString *inputDirectory, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options);
+void FLFlynnExportSequence(FLFrameSequence *inputSequence, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options);
 void FLFlynnUsage(FILE *stream);
 
 /**
@@ -131,7 +132,7 @@ int main(int argc, const char * argv[]) {
     
     for(int i = 0; i < argc; i++){
       NSString *inputDirectory = [[NSString alloc] initWithUTF8String:argv[i]];
-      FLFlynnExport(inputDirectory, (outputDirectory != nil) ? outputDirectory : [inputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_output", namespace]], namespace, settings, options);
+      FLFlynnExportDirectory(inputDirectory, (outputDirectory != nil) ? outputDirectory : [inputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_output", namespace]], namespace, settings, options);
       [inputDirectory release];
     }
     
@@ -143,20 +144,45 @@ int main(int argc, const char * argv[]) {
 /**
  * Export
  */
-void FLFlynnExport(NSString *inputDirectory, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options) {
+void FLFlynnExportDirectory(NSString *inputDirectory, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options) {
+  FLFrameSequence *inputSequence = nil;
+  NSError *error = nil;
   
-  FLFrameSequence *sequence = nil;
+  if((inputSequence = [[FLImageFrameSequence alloc] initWithImagesInDirectory:inputDirectory error:&error]) == nil){
+    FLLog(@"Could not create image sequence");
+    FLErrorDisplayBacktrace(error);
+    goto error;
+  }
+  
+  if(![inputSequence open:&error]){
+    FLLog(@"Could not open frame sequence");
+    FLErrorDisplayBacktrace(error);
+    goto error;
+  }
+  
+  FLFlynnExportSequence(inputSequence, outputDirectory, namespace, settings, options);
+  
+  if(![inputSequence close:&error]){
+    FLLog(@"Could not close frame sequence");
+    FLErrorDisplayBacktrace(error);
+    goto error;
+  }
+  
+error:
+  [inputSequence release];
+  
+}
+
+/**
+ * Export
+ */
+void FLFlynnExportSequence(FLFrameSequence *inputSequence, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options) {
+  
   FLImageComparator *comparator = nil;
   FLBlockEncoder *encoder = nil;
   FLManifest *manifest = nil;
   CGImageRef keyframe = NULL, image;
   NSError *error = nil;
-  
-  if((sequence = [[FLImageFrameSequence alloc] initWithImagesInDirectory:inputDirectory error:&error]) == nil){
-    FLLog(@"Could not create image sequence");
-    FLErrorDisplayBacktrace(error);
-    goto error;
-  }
   
   if((manifest = [[FLManifest alloc] initWithCodecSettings:settings error:&error]) == nil){
     FLLog(@"Could not create manifest");
@@ -164,13 +190,7 @@ void FLFlynnExport(NSString *inputDirectory, NSString *outputDirectory, NSString
     goto error;
   }
   
-  if(![sequence open:&error]){
-    FLLog(@"Could not open frame sequence");
-    FLErrorDisplayBacktrace(error);
-    goto error;
-  }
-  
-  if((keyframe = [sequence copyNextFrameImageWithError:&error]) == NULL){
+  if((keyframe = [inputSequence copyNextFrameImageWithError:&error]) == NULL){
     FLLog(@"Could not read keyframe image");
     FLErrorDisplayBacktrace(error);
     goto error;
@@ -203,7 +223,7 @@ void FLFlynnExport(NSString *inputDirectory, NSString *outputDirectory, NSString
   }
   
   size_t frames = 0;
-  while((image = [sequence copyNextFrameImageWithError:&error]) != NULL){
+  while((image = [inputSequence copyNextFrameImageWithError:&error]) != NULL){
     size_t diffblocks = 0, totalblocks = (CGImageGetWidth(image) / encoder.blockLength) * (CGImageGetHeight(image) / encoder.blockLength);
     BOOL more = TRUE;
     
@@ -256,12 +276,6 @@ void FLFlynnExport(NSString *inputDirectory, NSString *outputDirectory, NSString
     goto error;
   }
   
-  if(![sequence close:&error]){
-    FLLog(@"Could not close frame sequence");
-    FLErrorDisplayBacktrace(error);
-    goto error;
-  }
-  
   if(!FLImageWritePNGToPath(keyframe, [outputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_keyframe.png", namespace]], &error)){
     FLLog(@"Could not write keyframe");
     FLErrorDisplayBacktrace(error);
@@ -279,7 +293,6 @@ error:
   [encoder release];
   [comparator release];
   [manifest release];
-  [sequence release];
 }
 
 /**
