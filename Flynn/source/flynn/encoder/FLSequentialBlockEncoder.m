@@ -108,7 +108,7 @@
   
   // make sure the image is has dimensions in multiples of blocks
   if((width % _blockLength) != 0 || (height % _blockLength) != 0){
-    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame image must have dimensions in multiples of blocks (%ldx%ld)", _blockLength, _blockLength], NSLocalizedDescriptionKey, nil]];
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Frame image must have dimensions in multiples of blocks: %ldx%ld is not a multiple of %ldx%ld", width, height, _blockLength, _blockLength], NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
