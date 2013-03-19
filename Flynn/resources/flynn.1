@@ -24,17 +24,13 @@
 .Nm
 evaluates a series of input animation frame images and encodes them into a sequence of output
 images which represent the animation in a (generally) more efficient form. This encoded format,
-called Block Differential Frame Encoding (or colloquially: a Flynn animation), is based on an
-implementation used by Apple on the apple.com website.
+called Block Differential Frame Encoding (or: a Flynn animation), is essentially a naive but
+fast video codec. The Flynn animation format is based on an implementation used by Apple on the
+apple.com website.
 .Pp
-Deliberately, each of the components of a Flynn animation (a JSON manifest file and a number
-of encoded image files) can be directly and efficiently decoded by a modern Web browser. As a result,
-Flynn animations can be played on a wide variety of platforms, including mobile browsers such as
-Mobile Safari on iOS.
-.Pp
-Flynn animations can be very efficient for content of the sort to which it is well suited: short
-animations and motion graphics in which a relatively small region of the image changes from frame
-to frame. The format is not especially well suited to encoding video.
+Each of the components of a Flynn animation (a JSON manifest file and a number of encoded image
+files) can be decoded directly by a modern Web browsers. As a result, Flynn animations can be
+played on a wide variety of platforms, including mobile browsers such as Mobile Safari.
 .Sh OPTIONS
 The following options are supported by
 .Nm
@@ -78,11 +74,10 @@ as the image size for encoded block-stream images. The
 is used for both dimensions of the image, which must be square. You can use any image size you like provided
 that it is a multiple of the block size (
 .Fl b -block-size
-). The default image size is 1624.
+). The default image size is 1624, which is probably what you want.
 .It Fl v -verbose
 Display more information about the conversion process.
 .El                      \" Ends the list
-.Pp
 .\" .Sh ENVIRONMENT      \" May not be needed
 .\" .Bl -tag -width "ENV_VAR_1" -indent \" ENV_VAR_1 is width of the string ENV_VAR_1
 .\" .It Ev ENV_VAR_1
