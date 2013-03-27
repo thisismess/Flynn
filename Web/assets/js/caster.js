@@ -1,14 +1,6 @@
 (function($){
   
-  function lpad(value, padding)
-  {
-      var zeroes = "0";
-      for (var i = 0; i < padding; i++) { zeroes += "0"; }
-      return (zeroes + value).slice(padding * -1);
-  };
-  
-  function base64ValueForCharAt(c, a) 
-  {
+  function base64ValueForCharAt(c, a) {
     var b = c.charCodeAt(a);
     if(b > 64 && b < 91)  return b - 65;
     if(b > 96 && b < 123) return b - 71;
@@ -18,12 +10,10 @@
     throw "Invalid Bas64 character: " + c.charAt(a);
   };
   
-  function base64DecodeValue(e, a, d) 
-  {
+  function base64DecodeValue(e, a, d) {
     var c = 0;
     var b;
-    while(d--)
-    {
+    while(d--) {
       b = base64ValueForCharAt(e, a++);
       c += (b << d * 6);
     }
@@ -38,7 +28,7 @@
       
       // Defaults
       ele.options = $.extend({
-        'fps': 24,
+        'fps': 30,
         'loop': true,
         'continous': false,
         'autoplay': true,
@@ -48,6 +38,7 @@
       ele.current_frame = 0;
       ele.keyframe_width = 0;
       ele.keyframe_height = 0;
+      ele.keyframe_image = null;
       ele.current_sequence = 0;
       ele.current_source = 0;
       ele.canvas = null;
@@ -94,8 +85,7 @@
       {
         ele.canvas = $('<canvas></canvas>').appendTo(ele).attr({'width':parseInt($(ele).width(), 10), 'height':parseInt($(ele).height(), 10)});
         ele.actual_canvas = ele.canvas[0];
-        // MAYBE THIS HAS PROBLEMS ON IE, FF WIN?
-        //if(ele.scale != null && ele.scale != 1) ele.actual_canvas.getContext("2d").scale(ele.scale, ele.scale);
+        if(ele.scale != null && ele.scale != 1) ele.actual_canvas.getContext("2d").scale(ele.scale, ele.scale);
       };
       
       ele.setup_debug_canvas = function()
@@ -147,6 +137,7 @@
           context.drawImage(this, 0, 0, this.width, this.height);
           ele.keyframe_width = this.width;
           ele.keyframe_height = this.height;
+          ele.keyframe_image = this;
           ele.source = ele.images[ele.current_source];
           ele.play();
         });
@@ -169,7 +160,7 @@
           // compute our update geometry
           var srcOrigin = ele.originForPosition(ele.source_position - ele.source_offset, srcWidth);
           var dstOrigin = ele.originForPosition(position, ele.keyframe_width);
-          var strip = Math.min(count, (ele.source.width - srcOrigin.x) / ele.block_size);
+          var strip = Math.min(Math.min(count, (ele.keyframe_width - dstOrigin.x) / ele.block_size), (ele.source.width - srcOrigin.x) / ele.block_size);
           var dstFrame = { x: Math.round(dstOrigin.x * ele.scale), y: Math.round(dstOrigin.y * ele.scale), width: Math.round(ele.scale * strip * ele.block_size), height: Math.round(ele.scale * ele.block_size) };
           
           // clear and update the block strip
@@ -199,7 +190,9 @@
       };
       
       ele.loop = function() {
-        ele.actual_canvas.getContext("2d").clearRect(0, 0, ele.actual_canvas.width, ele.actual_canvas.height);
+        var context = ele.actual_canvas.getContext("2d");
+        context.clearRect(0, 0, ele.actual_canvas.width, ele.actual_canvas.height);
+        context.drawImage(ele.keyframe_image, 0, 0, ele.actual_canvas.width, ele.actual_canvas.height);
         ele.current_source = 0;
         ele.source = ele.images[ele.current_source];
         ele.source_position = 0;

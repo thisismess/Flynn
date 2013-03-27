@@ -154,7 +154,13 @@
   // setup our output path
   NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_%03zd.png", self.namespace, _encodedImages + 1]];
   // note it
-  FLVerbose(@"exporting %ldx%ld diff image: %@", width, height, blocks, outputPath);
+  FLVerbose(@"exporting %ldx%ld diff image:", width, height);
+  // display blocks
+  for(FLRange *block in blocks){
+    size_t xblock = (block.position % wblocks) * _blockLength;
+    size_t yblock = (block.position / wblocks) * _blockLength;
+    fprintf(stderr, "  %5ld +%-5ld @ (%5ld, %-5ld)\n", block.position, block.count, xblock, yblock);
+  }
   
   // write our diff frame out
   if(!FLImageWritePNGToPath(outputImage, outputPath, &inner)){

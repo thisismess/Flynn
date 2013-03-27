@@ -148,6 +148,22 @@ void FLFlynnExportDirectory(NSString *inputDirectory, NSString *outputDirectory,
   FLFrameSequence *inputSequence = nil;
   NSError *error = nil;
   
+  if((options & kSCOptionDebug) == kSCOptionDebug){
+    fprintf(stderr,
+      "\n"
+      "Exporting frame sequence:\n"
+      "  %s\n"
+      "   \u21b3 %s\n"
+      "\n"
+      "Settings:\n"
+      "%s\n"
+      "\n",
+      [inputDirectory UTF8String],
+      [outputDirectory UTF8String],
+      [[settings description] UTF8String]
+    );
+  }
+  
   if((inputSequence = [[FLImageFrameSequence alloc] initWithImagesInDirectory:inputDirectory error:&error]) == nil){
     FLLog(@"Could not create image sequence");
     FLErrorDisplayBacktrace(error);
