@@ -23,6 +23,7 @@
 // 
 
 #import "FLSequentialBlockEncoder.h"
+#import "FLCodec.h"
 #import "FLImage.h"
 #import "FLError.h"
 #import "FLLog.h"
@@ -207,10 +208,24 @@ error:
     }
   }
   
+  // setup our output format UTI
+  CFStringRef outputFormat;
+  if((outputFormat = (CFStringRef)[self.codecSettings objectForKey:kFLCodecImageFormatKey]) == NULL){
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Codec settings contain no output format", NSLocalizedDescriptionKey, nil]];
+    goto error;
+  }
+  
+  // obtain the extension for our output format
+  NSString *fileExtension;
+  if((fileExtension = [(NSString *)UTTypeCopyPreferredTagWithClass(outputFormat, kUTTagClassFilenameExtension) autorelease]) == nil){
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not obtain file extension for output format UTI", NSLocalizedDescriptionKey, nil]];
+    goto error;
+  }
+  
   // setup our output path
-  NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_%03zd.png", self.namespace, _encodedImages + 1]];
+  NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_%03zd.%@", self.namespace, _encodedImages + 1, fileExtension]];
   // note it
-  FLVerbose(@"exporting %ldx%ld for %ld blocks: %@", width, height, blocks, outputPath);
+  FLVerbose(@"exporting %ldx%ld for %ld blocks as %@: %@", width, height, blocks, outputFormat, outputPath);
   
   // setup our colorspace
   colorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
@@ -228,7 +243,7 @@ error:
   }
   
   // create a destination for our image
-  if((imageDestination = CGImageDestinationCreateWithURL((CFURLRef)[NSURL fileURLWithPath:outputPath], kUTTypePNG, 1, nil)) == NULL){
+  if((imageDestination = CGImageDestinationCreateWithURL((CFURLRef)[NSURL fileURLWithPath:outputPath], outputFormat, 1, nil)) == NULL){
     if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image destination", NSLocalizedDescriptionKey, nil]];
     goto error;
   }

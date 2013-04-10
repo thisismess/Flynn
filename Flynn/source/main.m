@@ -72,13 +72,14 @@ int main(int argc, const char * argv[]) {
       { "block-threshold",  required_argument,  NULL,         't' },  // block pixel discrepency threshold
       { "block-size",       required_argument,  NULL,         'b' },  // block size
       { "image-size",       required_argument,  NULL,         'I' },  // maximum image size
+      { "format",           required_argument,  NULL,         'f' },  // output image format
       { "debug",            no_argument,        NULL,         'D' },  // debug mode
       { "verbose",          no_argument,        NULL,         'v' },  // be more verbose
       { NULL,               0,                  NULL,          0  }
     };
     
     int flag;
-    while((flag = getopt_long(argc, (char **)argv, "n:o:b:I:t:vD", longopts, NULL)) != -1){
+    while((flag = getopt_long(argc, (char **)argv, "n:o:b:I:f:t:vD", longopts, NULL)) != -1){
       switch(flag){
         
         case 'n':
@@ -95,6 +96,10 @@ int main(int argc, const char * argv[]) {
           
         case 'I':
           [settings setObject:[NSNumber numberWithInt:atoi(optarg)] forKey:kFLCodecImageSizeKey];
+          break;
+          
+        case 'f':
+          [settings setObject:[NSString stringWithUTF8String:optarg] forKey:kFLCodecImageFormatKey];
           break;
           
         case 't':
@@ -292,7 +297,7 @@ void FLFlynnExportSequence(FLFrameSequence *inputSequence, NSString *outputDirec
     goto error;
   }
   
-  if(!FLImageWritePNGToPath(keyframe, [outputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_keyframe.png", namespace]], &error)){
+  if(!FLImageWriteToPathWithExtensionAppended(keyframe, [settings objectForKey:kFLCodecImageFormatKey], [outputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_keyframe", namespace]], &error)){
     FLLog(@"Could not write keyframe");
     FLErrorDisplayBacktrace(error);
     goto error;
@@ -328,6 +333,7 @@ void FLFlynnUsage(FILE *stream) {
     " -b --block-size <size>        Specify the encoding block size (default: 8)\n"
     " -t --block-threshold <count>  Specify a threshold for block discrepencies between frames (default: 0)\n"
     " -I --image-size <size>        Specify the encoded stream image size (default: 1624)\n"
+    " -f --format <uti>             Specify the encoded stream image format as a UTI (default: 'public.png')\n"
     " -v --verbose                  Be more verbose\n"
     "\n"
   , stderr);

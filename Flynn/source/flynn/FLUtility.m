@@ -26,6 +26,29 @@
 #import "FLError.h"
 
 /**
+ * Append the correct extension to the provided path based on its format and write the specified image
+ * to that path.
+ */
+BOOL FLImageWriteToPathWithExtensionAppended(CGImageRef image, NSString *format, NSString *path, NSError **error) {
+  CFStringRef extension = NULL;
+  BOOL status = FALSE;
+  
+  // obtain the extension for our output format
+  if((extension = UTTypeCopyPreferredTagWithClass((CFStringRef)format, kUTTagClassFilenameExtension)) == NULL){
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not obtain file extension for output format UTI", NSLocalizedDescriptionKey, nil]];
+    goto error;
+  }
+  
+  // append the extension and write our image
+  status = FLImageWriteToPath(image, format, [[path stringByDeletingPathExtension] stringByAppendingPathExtension:(NSString *)extension], error);
+  
+error:
+  if(extension) CFRelease(extension);
+  
+  return status;
+}
+
+/**
  * Write an image to disk
  */
 BOOL FLImageWriteToPath(CGImageRef image, NSString *format, NSString *path, NSError **error) {
@@ -33,7 +56,7 @@ BOOL FLImageWriteToPath(CGImageRef image, NSString *format, NSString *path, NSEr
   BOOL status = FALSE;
   
   // create a destination for our image
-  if((imageDestination = CGImageDestinationCreateWithURL((CFURLRef)[NSURL fileURLWithPath:path], kUTTypePNG, 1, nil)) == NULL){
+  if((imageDestination = CGImageDestinationCreateWithURL((CFURLRef)[NSURL fileURLWithPath:path], (CFStringRef)format, 1, nil)) == NULL){
     if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image destination", NSLocalizedDescriptionKey, nil]];
     goto error;
   }

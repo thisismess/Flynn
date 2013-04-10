@@ -24,6 +24,7 @@
 
 #import <ImageIO/ImageIO.h>
 
+BOOL FLImageWriteToPathWithExtensionAppended(CGImageRef image, NSString *format, NSString *path, NSError **error);
 BOOL FLImageWriteToPath(CGImageRef image, NSString *format, NSString *path, NSError **error);
 BOOL FLImageWritePNGToPath(CGImageRef image, NSString *path, NSError **error);
 BOOL FLImageWriteJPEGToPath(CGImageRef image, NSString *path, NSError **error);
