@@ -92,6 +92,7 @@
       ref.setup_canvas = function() {
         ref.canvas = $('<canvas></canvas>').appendTo(ref).attr({'width':parseInt($(ref).width(), 10), 'height':parseInt($(ref).height(), 10)});
         ref.actual_canvas = ref.canvas[0];
+        if(ref.scale != null && ref.scale != 1) ref.actual_canvas.getContext("2d").scale(ref.scale, ref.scale);
       };
       
       /**
@@ -101,6 +102,7 @@
       ref.setup_debug_canvas = function() {
         ref.debug = $('<canvas class="debug"></canvas>').appendTo(ref).attr({'width':ref.source.width, 'height':ref.source.height}).css("background", "#00ff00");
         ref.actual_debug = ref.debug[0];
+        if(ref.scale != null && ref.scale != 1) ref.actual_debug.getContext("2d").scale(ref.scale, ref.scale);
       };
       
       ref.load_manifest = function() {
@@ -148,7 +150,6 @@
       };
       
       ref.play = function(initial_delay) {
-        console.log(initial_delay);
         ref.delay = 1.0 / ref.options.fps * 1000.0;
         ref.timeout = window.setTimeout(ref.next_frame, ref.delay + ((initial_delay != null) ? Number(initial_delay) : 0));
       };
@@ -166,7 +167,7 @@
           var srcOrigin = ref.originForPosition(ref.source_position - ref.source_offset, srcWidth);
           var dstOrigin = ref.originForPosition(position, ref.keyframe_width);
           var strip = Math.min(Math.min(count, (ref.keyframe_width - dstOrigin.x) / ref.block_size), (ref.source.width - srcOrigin.x) / ref.block_size);
-          var dstFrame = { x: Math.round(dstOrigin.x * ref.scale), y: Math.round(dstOrigin.y * ref.scale), width: Math.round(ref.scale * strip * ref.block_size), height: Math.round(ref.scale * ref.block_size) };
+          var dstFrame = { x: Math.round(dstOrigin.x), y: Math.round(dstOrigin.y), width: Math.round(strip * ref.block_size), height: Math.round(ref.block_size) };
           
           // clear and update the block strip
           context.clearRect(dstFrame.x, dstFrame.y, dstFrame.width, dstFrame.height);
@@ -197,7 +198,7 @@
       ref.loop = function() {
         var context = ref.actual_canvas.getContext("2d");
         context.clearRect(0, 0, ref.actual_canvas.width, ref.actual_canvas.height);
-        context.drawImage(ref.keyframe_image, 0, 0, ref.actual_canvas.width, ref.actual_canvas.height);
+        context.drawImage(ref.keyframe_image, 0, 0, ref.keyframe_image.width, ref.keyframe_image.height);
         ref.current_source = 0;
         ref.source = ref.images[ref.current_source];
         ref.source_position = 0;
