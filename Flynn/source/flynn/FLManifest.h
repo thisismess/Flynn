@@ -43,6 +43,8 @@
 @property (readonly) NSDictionary * codecSettings;
 @property (readonly) NSUInteger     version;
 @property (readonly) NSUInteger     blockLength;
+@property (readonly) NSString     * outputFormat;
+@property (readonly) NSString     * outputExtension;
 @property (readonly) NSArray      * frames;
 
 @end

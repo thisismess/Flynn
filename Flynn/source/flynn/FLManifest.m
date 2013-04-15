@@ -33,6 +33,8 @@ static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 
 @synthesize codecSettings = _codecSettings;
 @synthesize version = _version;
+@synthesize outputFormat = _outputFormat;
+@synthesize outputExtension = _outputExtension;
 @synthesize blockLength = _blockLength;
 @synthesize frames = _frames;
 
@@ -41,6 +43,8 @@ static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
  */
 -(void)dealloc {
   [_codecSettings release];
+  [_outputFormat release];
+  [_outputExtension release];
   [_frames release];
   [super dealloc];
 }
@@ -51,6 +55,7 @@ static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 -(id)initWithCodecSettings:(NSDictionary *)codecSettings error:(NSError **)error {
   if((self = [super init]) != nil){
     NSNumber *number;
+    NSString *string;
     
     _codecSettings = [codecSettings retain];
     _frames = [[NSMutableArray alloc] init];
@@ -66,6 +71,20 @@ static const char * kSCManifestBase64Lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
       _blockLength = [number integerValue];
     }else{
       if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"Codec settings does not define a block size (%@)", kFLCodecBlockSizeKey);
+      goto error;
+    }
+    
+    if((string = [codecSettings objectForKey:kFLCodecImageFormatKey]) != nil){
+      _outputFormat = [string retain];
+    }else{
+      if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"Codec settings does not define an output image format (%@)", kFLCodecImageFormatKey);
+      goto error;
+    }
+    
+    if((string = (NSString *)UTTypeCopyPreferredTagWithClass((CFStringRef)_outputFormat, kUTTagClassFilenameExtension)) != nil){
+      _outputExtension = string; // already retained (copy)
+    }else{
+      if(error) *error = NSERROR(kFLFlynnErrorDomain, kFLStatusError, @"Could not determine file extension for image output format '%@'", _outputFormat);
       goto error;
     }
     
@@ -133,6 +152,7 @@ error:
  */
 -(NSString *)externalRepresentationWithImageCount:(NSUInteger)imageCount {
   NSMutableDictionary *external = [NSMutableDictionary dictionary];
+  [external setObject:self.outputExtension forKey:@"format"];
   [external setObject:[NSNumber numberWithInteger:self.version] forKey:@"version"];
   [external setObject:[NSNumber numberWithInteger:self.blockLength] forKey:@"blockSize"];
   [external setObject:[NSNumber numberWithInteger:imageCount] forKey:@"imagesRequired"];
