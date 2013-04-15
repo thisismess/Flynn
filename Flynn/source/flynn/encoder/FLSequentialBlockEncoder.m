@@ -23,6 +23,7 @@
 // 
 
 #import "FLSequentialBlockEncoder.h"
+#import "FLUtility.h"
 #import "FLCodec.h"
 #import "FLImage.h"
 #import "FLError.h"
@@ -167,9 +168,7 @@ error:
 -(BOOL)flushBufferWithError:(NSError **)error {
   BOOL status = FALSE;
   
-  CGColorSpaceRef colorspace = NULL;
   CGDataProviderRef dataProvider = NULL;
-  CGImageDestinationRef imageDestination = NULL;
   CGImageRef image = NULL;
   
   // make sure we have some data
@@ -209,26 +208,14 @@ error:
   }
   
   // setup our output format UTI
-  CFStringRef outputFormat;
-  if((outputFormat = (CFStringRef)[self.codecSettings objectForKey:kFLCodecImageFormatKey]) == NULL){
+  NSString *outputFormat;
+  if((outputFormat = [self.codecSettings objectForKey:kFLCodecImageFormatKey]) == nil){
     if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Codec settings contain no output format", NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
-  // obtain the extension for our output format
-  NSString *fileExtension;
-  if((fileExtension = [(NSString *)UTTypeCopyPreferredTagWithClass(outputFormat, kUTTagClassFilenameExtension) autorelease]) == nil){
-    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not obtain file extension for output format UTI", NSLocalizedDescriptionKey, nil]];
-    goto error;
-  }
-  
   // setup our output path
-  NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_%03zd.%@", self.namespace, _encodedImages + 1, fileExtension]];
-  // note it
-  FLVerbose(@"exporting %ldx%ld for %ld blocks as %@: %@", width, height, blocks, outputFormat, outputPath);
-  
-  // setup our colorspace
-  colorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+  NSString *outputPath = [self.directory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_%03zd", self.namespace, _encodedImages + 1]];
   
   // setup our data provider
   if((dataProvider = CGDataProviderCreateWithData(NULL, buffer.data, buffer.rowBytes * height, NULL)) == NULL){
@@ -237,31 +224,15 @@ error:
   }
   
   // create an image from our buffer
-  if((image = CGImageCreate(width, height, 8, _bytesPerPixel * 8, buffer.rowBytes, colorspace, kCGImageAlphaLast, dataProvider, NULL, FALSE, kCGRenderingIntentDefault)) == NULL){
+  if((image = CGImageCreate(width, height, 8, _bytesPerPixel * 8, buffer.rowBytes, FLImageGetDefaultColorSpace(), kCGImageAlphaLast, dataProvider, NULL, FALSE, kCGRenderingIntentDefault)) == NULL){
     if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image from block data", NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
-  // create a destination for our image
-  if((imageDestination = CGImageDestinationCreateWithURL((CFURLRef)[NSURL fileURLWithPath:outputPath], outputFormat, 1, nil)) == NULL){
-    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not create image destination", NSLocalizedDescriptionKey, nil]];
-    goto error;
-  }
+  // write our image to disk
+  status = FLImageWriteToPathWithExtensionAppended(image, NULL, outputFormat, outputPath, error);
   
-  // add our image to the destination
-  CGImageDestinationAddImage(imageDestination, image, NULL);
-  
-  // finalize our image destination
-  if(!CGImageDestinationFinalize(imageDestination)){
-    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not finalize image destination", NSLocalizedDescriptionKey, nil]];
-    goto error;
-  }
-  
-  status = TRUE;
 error:
-  if(colorspace) CFRelease(colorspace);
-  if(dataProvider) CFRelease(dataProvider);
-  if(imageDestination) CFRelease(imageDestination);
   if(image) CFRelease(image);
   _encodedImages++; // increment the count
   _offset = 0; // clear the offset

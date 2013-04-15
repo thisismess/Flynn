@@ -26,25 +26,36 @@
 #import "FLError.h"
 
 /**
- * Append the correct extension to the provided path based on its format and write the specified image
- * to that path.
+ * Obtain an extension for an image format UTI
  */
-BOOL FLImageWriteToPathWithExtensionAppended(CGImageRef image, NSString *format, NSString *path, NSError **error) {
-  CFStringRef extension = NULL;
+NSString * FLImageGetExtensionForFormat(NSString *format) {
+  NSString *extension = nil;
+  if((extension = (NSString *)UTTypeCopyPreferredTagWithClass((CFStringRef)format, kUTTagClassFilenameExtension)) != nil){
+    return [extension autorelease];
+  }else{
+    return nil;
+  }
+}
+
+/**
+ * Append the correct extension to the provided path based on its format and write the specified image
+ * to that path. If the image does not already use the provided colorspace it is converted before writing.
+ * Use NULL for the colorspace parameter to use the image's existing colorspace without conversion.
+ */
+BOOL FLImageWriteToPathWithExtensionAppended(CGImageRef image, CGColorSpaceRef colorspace, NSString *format, NSString *path, NSError **error) {
+  NSString *extension = nil;
   BOOL status = FALSE;
   
   // obtain the extension for our output format
-  if((extension = UTTypeCopyPreferredTagWithClass((CFStringRef)format, kUTTagClassFilenameExtension)) == NULL){
+  if((extension = FLImageGetExtensionForFormat(format)) == nil){
     if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not obtain file extension for output format UTI", NSLocalizedDescriptionKey, nil]];
     goto error;
   }
   
   // append the extension and write our image
-  status = FLImageWriteToPath(image, format, [[path stringByDeletingPathExtension] stringByAppendingPathExtension:(NSString *)extension], error);
+  status = FLImageWriteToPathUsingColorspace(image, colorspace, format, [[path stringByDeletingPathExtension] stringByAppendingPathExtension:extension], error);
   
 error:
-  if(extension) CFRelease(extension);
-  
   return status;
 }
 
@@ -52,8 +63,38 @@ error:
  * Write an image to disk
  */
 BOOL FLImageWriteToPath(CGImageRef image, NSString *format, NSString *path, NSError **error) {
+  return FLImageWriteToPathUsingColorspace(image, NULL, format, path, error);
+}
+
+/**
+ * Write the image to the provided path using the provided colorspace. If the image does not
+ * already use the provided colorspace it is converted before writing. Use NULL for the
+ * colorspace parameter to use the image's existing colorspace without conversion.
+ */
+BOOL FLImageWriteToPathUsingColorspace(CGImageRef image, CGColorSpaceRef colorspace, NSString *format, NSString *path, NSError **error) {
   CGImageDestinationRef imageDestination = NULL;
+  CGColorSpaceRef imageColorspace = NULL;
+  CGImageRef outputImage = NULL;
   BOOL status = FALSE;
+  
+  // make sure our image is valid
+  if(image == NULL){
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Cannot write null image to disk", NSLocalizedDescriptionKey, nil]];
+    goto error;
+  }
+  
+  // determine if we need to convert our colorspace
+  if(colorspace != NULL && (imageColorspace = CGImageGetColorSpace(image)) != NULL && !CFEqual(colorspace, imageColorspace)){
+    outputImage = CGImageCreateCopyWithColorSpace(image, colorspace);
+  }else{
+    outputImage = CGImageRetain(image); // retain so we can release our image at the end of this routine in either case
+  }
+  
+  // make sure our output image is (still) valid
+  if(outputImage == NULL){
+    if(error) *error = [NSError errorWithDomain:kFLFlynnErrorDomain code:kFLStatusError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Could not convert image to destination colorspace", NSLocalizedDescriptionKey, nil]];
+    goto error;
+  }
   
   // create a destination for our image
   if((imageDestination = CGImageDestinationCreateWithURL((CFURLRef)[NSURL fileURLWithPath:path], (CFStringRef)format, 1, nil)) == NULL){
@@ -62,7 +103,7 @@ BOOL FLImageWriteToPath(CGImageRef image, NSString *format, NSString *path, NSEr
   }
   
   // add our image to the destination
-  CGImageDestinationAddImage(imageDestination, image, NULL);
+  CGImageDestinationAddImage(imageDestination, outputImage, NULL);
   
   // finalize our image destination
   if(!CGImageDestinationFinalize(imageDestination)){
@@ -73,6 +114,7 @@ BOOL FLImageWriteToPath(CGImageRef image, NSString *format, NSString *path, NSEr
   status = TRUE;
 error:
   if(imageDestination) CFRelease(imageDestination);
+  if(outputImage) CFRelease(outputImage);
   
   return status;
 }
@@ -89,6 +131,15 @@ BOOL FLImageWritePNGToPath(CGImageRef image, NSString *path, NSError **error) {
  */
 BOOL FLImageWriteJPEGToPath(CGImageRef image, NSString *path, NSError **error) {
   return FLImageWriteToPath(image, (NSString *)kUTTypeJPEG, path, error);
+}
+
+/**
+ * Obtain the default colorspace
+ */
+CGColorSpaceRef FLImageGetDefaultColorSpace(void) {
+  static CGColorSpaceRef __shared = NULL;
+  if(__shared == NULL) __shared = CGColorSpaceCreateWithName(kFLColorSpaceDefault);
+  return __shared;
 }
 
 /**

@@ -30,6 +30,7 @@
 #import "FLSequentialBlockEncoder.h"
 #import "FLDebuggingBlockEncoder.h"
 #import "FLUtility.h"
+#import "FLImage.h"
 #import "FLCodec.h"
 #import "FLError.h"
 #import "FLLog.h"
@@ -297,7 +298,7 @@ void FLFlynnExportSequence(FLFrameSequence *inputSequence, NSString *outputDirec
     goto error;
   }
   
-  if(!FLImageWriteToPathWithExtensionAppended(keyframe, [settings objectForKey:kFLCodecImageFormatKey], [outputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_keyframe", namespace]], &error)){
+  if(!FLImageWriteToPathWithExtensionAppended(keyframe, FLImageGetDefaultColorSpace(), [settings objectForKey:kFLCodecImageFormatKey], [outputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_keyframe", namespace]], &error)){
     FLLog(@"Could not write keyframe");
     FLErrorDisplayBacktrace(error);
     goto error;
