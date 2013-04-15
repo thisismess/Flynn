@@ -44,6 +44,7 @@ enum {
 typedef uint32_t SCOptions;
 
 void FLFlynnExportDirectory(NSString *inputDirectory, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options);
+void FLFlynnExportFiles(NSArray *inputFiles, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options);
 void FLFlynnExportSequence(FLFrameSequence *inputSequence, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options);
 void FLFlynnUsage(FILE *stream);
 
@@ -136,9 +137,17 @@ int main(int argc, const char * argv[]) {
       exit(0);
     }
     
-    for(int i = 0; i < argc; i++){
-      NSString *inputDirectory = [[NSString alloc] initWithUTF8String:argv[i]];
-      FLFlynnExportDirectory(inputDirectory, (outputDirectory != nil) ? outputDirectory : [inputDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_output", namespace]], namespace, settings, options);
+    // note our first resource, which is used for default output naming
+    NSString *firstResourceBase = [[NSString stringWithUTF8String:argv[0]] stringByDeletingPathExtension];
+    
+    if(argc > 1){
+      NSMutableArray *inputFiles = [[NSMutableArray alloc] init];
+      for(int i = 0; i < argc; i++) [inputFiles addObject:[NSString stringWithUTF8String:argv[i]]];
+      FLFlynnExportFiles(inputFiles, (outputDirectory != nil) ? outputDirectory : [firstResourceBase stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_output", namespace]], namespace, settings, options);
+      [inputFiles release];
+    }else{
+      NSString *inputDirectory = [[NSString alloc] initWithUTF8String:argv[0]];
+      FLFlynnExportDirectory(inputDirectory, (outputDirectory != nil) ? outputDirectory : [firstResourceBase stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_output", namespace]], namespace, settings, options);
       [inputDirectory release];
     }
     
@@ -148,29 +157,45 @@ int main(int argc, const char * argv[]) {
 }
 
 /**
- * Export
+ * Export a directory
  */
 void FLFlynnExportDirectory(NSString *inputDirectory, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options) {
   FLFrameSequence *inputSequence = nil;
   NSError *error = nil;
   
-  if((options & kSCOptionDebug) == kSCOptionDebug){
-    fprintf(stderr,
-      "\n"
-      "Exporting frame sequence:\n"
-      "  %s\n"
-      "   \u21b3 %s\n"
-      "\n"
-      "Settings:\n"
-      "%s\n"
-      "\n",
-      [inputDirectory UTF8String],
-      [outputDirectory UTF8String],
-      [[settings description] UTF8String]
-    );
+  if((inputSequence = [[FLImageFrameSequence alloc] initWithImagesInDirectory:inputDirectory error:&error]) == nil){
+    FLLog(@"Could not create image sequence");
+    FLErrorDisplayBacktrace(error);
+    goto error;
   }
   
-  if((inputSequence = [[FLImageFrameSequence alloc] initWithImagesInDirectory:inputDirectory error:&error]) == nil){
+  if(![inputSequence open:&error]){
+    FLLog(@"Could not open frame sequence");
+    FLErrorDisplayBacktrace(error);
+    goto error;
+  }
+  
+  FLFlynnExportSequence(inputSequence, outputDirectory, namespace, settings, options);
+  
+  if(![inputSequence close:&error]){
+    FLLog(@"Could not close frame sequence");
+    FLErrorDisplayBacktrace(error);
+    goto error;
+  }
+  
+error:
+  [inputSequence release];
+  
+}
+
+/**
+ * Export files
+ */
+void FLFlynnExportFiles(NSArray *inputFiles, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options) {
+  FLFrameSequence *inputSequence = nil;
+  NSError *error = nil;
+  
+  if((inputSequence = [[FLImageFrameSequence alloc] initWithImagesAtPaths:inputFiles error:&error]) == nil){
     FLLog(@"Could not create image sequence");
     FLErrorDisplayBacktrace(error);
     goto error;
