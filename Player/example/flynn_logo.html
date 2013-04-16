@@ -1,21 +1,15 @@
 <html>
 	<head>
 	  
-		<title>Flynn Logo</title>
+		<title>Flynn Logo Animation</title>
 		
-		<!-- Flynn needs a few dependencies -->
-		<script src="../lib/jquery.1.9.1.min.js" type="text/javascript" charset="utf-8"></script>
-		<script src="../lib/jcanvas.13.01.14.js" type="text/javascript" charset="utf-8"></script>
-		<script src="../lib/log.js" type="text/javascript" charset="utf-8"></script>
-		
-		<!-- Import the Flynn player -->
+		<!-- Flynn needs jQuery -->
+		<script src="../lib/jquery-1.9.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<!-- The Flynn player library itself -->
 		<script src="../flynn.js" type="text/javascript" charset="utf-8"></script>
-		
 		<!-- Initialize our animation -->
 		<script type="text/javascript">
-			$(document).ready(function(){
-				$('.flynn-logo').flynn();
-			});
+			$(document).ready(function(){ $('.flynn-logo').flynn(); });
 		</script>
 		
 		<style type="text/css">
