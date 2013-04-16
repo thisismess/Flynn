@@ -1,0 +1,21 @@
+<html>
+	<head>
+		<title>Flynn Logo</title>
+		<script src="../lib/jquery.1.9.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../lib/jcanvas.13.01.14.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../lib/log.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../flynn.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				$('.flynn-logo').flynn();
+			});
+		</script>
+		<style type="text/css">
+			body { background: #000; }
+			.flynn-logo { width:400px; height:250px; background:#101010; margin:0 auto; border:1px solid#ccc; }
+		</style>
+	</head>
+	<body>
+		<div class="flynn-logo" autoplay="true" delay="200" fps="30" scale="1" name="flynn_logo" base="flynn_logo"></div>
+	</body>
+</html>
