@@ -38,6 +38,18 @@ NSString * FLImageGetExtensionForFormat(NSString *format) {
 }
 
 /**
+ * Obtain a UTI for the provided file extension
+ */
+NSString * FLImageGetUTIForExtension(NSString *extension) {
+  NSString *uti = nil;
+  if((uti = (NSString *)UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)extension, NULL)) != nil){
+    return [uti autorelease];
+  }else{
+    return nil;
+  }
+}
+
+/**
  * Append the correct extension to the provided path based on its format and write the specified image
  * to that path. If the image does not already use the provided colorspace it is converted before writing.
  * Use NULL for the colorspace parameter to use the image's existing colorspace without conversion.

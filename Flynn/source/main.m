@@ -57,6 +57,7 @@ int main(int argc, const char * argv[]) {
     NSString *namespace = @"flynn";
     NSString *outputDirectory = nil;
     SCOptions options = FALSE;
+    NSString *outputFormat = nil;
     NSError *error = nil;
     
     // the default codec version (2, the only version)
@@ -66,7 +67,7 @@ int main(int argc, const char * argv[]) {
     // the default stream image maximum dimension (1624, due to iOS image size constraints)
     [settings setObject:[NSNumber numberWithInt:1624] forKey:kFLCodecImageSizeKey];
     // the default stream image format (JPEG, much better compression)
-    [settings setObject:(NSString *)kUTTypeJPEG forKey:kFLCodecImageFormatKey];
+    [settings setObject:(NSString *)kUTTypePNG forKey:kFLCodecImageFormatKey];
     
     static struct option longopts[] = {
       { "name",             required_argument,  NULL,         'n' },  // name of the animation
@@ -101,7 +102,7 @@ int main(int argc, const char * argv[]) {
           break;
           
         case 'f':
-          [settings setObject:[NSString stringWithUTF8String:optarg] forKey:kFLCodecImageFormatKey];
+          outputFormat = [NSString stringWithUTF8String:optarg];
           break;
           
         case 't':
@@ -120,6 +121,16 @@ int main(int argc, const char * argv[]) {
           FLFlynnUsage(stderr);
           exit(0);
           
+      }
+    }
+    
+    if(outputFormat != nil){
+      NSString *uti;
+      if((uti = FLImageGetUTIForExtension(outputFormat)) != nil){
+        [settings setObject:uti forKey:kFLCodecImageFormatKey];
+      }else{
+        FLLog(@"The output format '%@' is not supported. Use a supported file extension such as 'png' or 'jpeg'.", outputFormat);
+        exit(-1);
       }
     }
     
@@ -221,7 +232,7 @@ error:
 }
 
 /**
- * Export
+ * Export a frame sequence
  */
 void FLFlynnExportSequence(FLFrameSequence *inputSequence, NSString *outputDirectory, NSString *namespace, NSDictionary *settings, SCOptions options) {
   
@@ -360,7 +371,7 @@ void FLFlynnUsage(FILE *stream) {
     " -b --block-size <size>        Specify the encoding block size (default: 8)\n"
     " -t --block-threshold <count>  Specify a threshold for block discrepencies between frames (default: 0)\n"
     " -I --image-size <size>        Specify the encoded stream image size (default: 1624)\n"
-    " -f --format <uti>             Specify the encoded stream image format as a UTI (default: 'public.png')\n"
+    " -f --format <format>          Specify the encoded stream image format as a file extension (default: 'png')\n"
     " -v --verbose                  Be more verbose\n"
     "\n"
   , stderr);

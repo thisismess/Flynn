@@ -27,6 +27,7 @@
 #define kFLColorSpaceDefault kCGColorSpaceGenericRGB
 
 NSString * FLImageGetExtensionForFormat(NSString *format);
+NSString * FLImageGetUTIForExtension(NSString *extension);
 
 BOOL FLImageWriteToPathWithExtensionAppended(CGImageRef image, CGColorSpaceRef colorspace, NSString *format, NSString *path, NSError **error);
 BOOL FLImageWriteToPath(CGImageRef image, NSString *format, NSString *path, NSError **error);
