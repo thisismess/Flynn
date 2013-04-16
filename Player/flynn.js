@@ -54,10 +54,7 @@
       
       // default options
       ref.options = $.extend({
-        'fps': 30,
-        'loop': false,
-        'autoplay': true,
-        'delay': 0,
+        'fps': 30, 'loop': false, 'autoplay': true, 'delay': 0
       }, options);
       
       // take options from the container element
