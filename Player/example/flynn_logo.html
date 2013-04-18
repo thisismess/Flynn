@@ -1,8 +1,7 @@
 <html>
 	<head>
-	  
-		<title>Flynn Logo Animation</title>
-		
+    <title>Flynn Logo Animation</title>
+    
 		<!-- Flynn needs jQuery -->
 		<script src="../depend/jquery-1.9.1.min.js" type="text/javascript" charset="utf-8"></script>
 		<!-- The Flynn player library itself -->
@@ -11,12 +10,16 @@
 		<script type="text/javascript">
 			$(document).ready(function(){ $('.flynn-logo').flynn(); });
 		</script>
-		
-		<style type="text/css">
-			body { background: #000; }
-			.flynn-logo { width:400px; height:250px; background:#101010; margin:0 auto; border:1px solid#ccc; }
-		</style>
-		
+    
+    <!-- 
+      We'll set the dimensions of our animation via CSS here. One way or another, you need to make the
+      dimensions of the animation's container div the same dimensions as an animation frame.
+     -->
+    <style type="text/css">
+      .flynn-logo { width:400px; height:250px; background:#101010; margin:0 auto; border:1px solid#ccc; }
+      body { background: #000; }
+    </style>
+    
 	</head>
 	<body>
 	  
