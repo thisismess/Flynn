@@ -9,7 +9,7 @@
 .Sh NAME                  \" Section Header - required - don't modify 
 .Nm flynn
 .\" Use .Nm macro to designate other names for the documented program.
-.Nd A block differential animation encoder.
+.Nd Encode animation frames into the Flynn animation format.
 .Sh SYNOPSIS             \" Section Header - required - don't modify
 .Nm
 .Op options
@@ -19,18 +19,40 @@
 .Op options
 .Op Fl o Ar path
 .Ar file1
-.Op Ar file2 ...
+.Ar file1
+.Op Ar ... fileN
 .Sh DESCRIPTION          \" Section Header - required - don't modify
 .Nm
-evaluates a series of input animation frame images and encodes them into a sequence of output
-images which represent the animation in a (generally) more efficient form. This encoded format,
-called Block Differential Frame Encoding (or: a Flynn animation), is essentially a naive but
-fast video codec. The Flynn animation format is based on an implementation used by Apple on the
-apple.com website.
+evaluates a series of input animation frame images and encodes them into a sequence of
+specially-formatted output images which represent the animation in a (generally) more efficient
+form.
 .Pp
-Each of the components of a Flynn animation (a JSON manifest file and a number of encoded image
-files) can be decoded directly by a modern Web browsers. As a result, Flynn animations can be
-played on a wide variety of platforms, including mobile browsers such as Mobile Safari.
+Flynn animations can be decoded and played in any modern Web browser by the Flynn player, a
+Javascript library which you can obtain from
+.Ar http://flynn.thisismess.com/ .
+.Sh USAGE
+The
+.Nm
+encoder can be invoked in two ways:
+.Pp
+If
+.Ar exactly one
+input file argument is provided, that file is assumed to be a directory full of images.
+.Nm
+will traverse the directory non-recursively and encode each image it encounters as a frame in the
+output animation. The images are encoded in lexical order based on their filename. As such, you
+should name your frame images with some kind of numerical suffix, e.g.:
+.Ar frame_001.png ,
+.Ar frame_002.png ,
+and so fourth.
+.Pp
+If
+.Ar more than one
+input file argument is provided, those files are assumed to be individual frame images.
+.Nm
+will encode each of the image files provided as arguments as a frame in the output animation. The images
+are encoded in the order they are provided on the command line. If you provide frame images in this
+way their filenames are not significant to the encoder.
 .Sh OPTIONS
 The following options are supported by
 .Nm
@@ -42,39 +64,64 @@ The name of the animation. This name is used as the base name for output files (
 \'hello' might produce files 'hello_manifest.json', 'hello_keyframe.png', 'hello_001.png',
 and so fourth). The default name for animations is 'flynn'.
 .It Fl o -output Ar path
-Output encoded animation files under
-.Ar path.
+Output encoded animation files under the directory
+.Ar path .
+The directory at
+.Ar path
+will be created if it does not already exist.
 .It Fl b -block-size Ar size
 Use the dimesion
 .Ar size
-as the block size for the animation. The
+as the block size for the animation. Blocks are square and
 .Ar size
-is used for both dimensions of a block, which must be square. You can use any block size you like
-provided it is:
-1) a factor of the encoded image size; and
-2) both greater than 1 and less than the image size (
+is used for both dimensions (e.g., a
+.Ar size
+of 8 means 8x8 pixels). You can use any block size you like
+provided that:
+(1) the width and height of individual animation frames are a multiple of
+.Ar size ,
+and
+(2) 
+.Ar size
+is both greater than 1 and less than the image size (
 .Fl I -image-size
-). The default block
+). By default
 .Ar size
 is 8.
 .It Fl t -block-threshold Ar count
 Use the block error threshold
 .Ar count
-for determining differences between frames. The block error threshold refers to the number
-of pixels in a single block which do not exactly match between two frames before the entire block
-is updated. A threshold of 1 means a single pixel difference between frames causes that pixel's block
-to be updated; a threshold of 10 means 10 pixels must differ before the block is updated. The default threshold
+when determining differences between frames. The error threshold refers to the maximum number of pixels which may
+differ between frames in a single block before the entire block is updated. A threshold of 1 means a single pixel
+difference between two frames causes that pixel's block to be updated; a threshold of 10 means 10 pixels must differ
+before the block is updated. The default threshold
 .Ar count
 is 1.
 .It Fl I -image-size Ar size
 Use the dimension
 .Ar size
-as the image size for encoded block-stream images. The
+as the image size of encoded block-stream images. Block-stream images are square and
 .Ar size
-is used for both dimensions of the image, which must be square. You can use any image size you like provided
-that it is a multiple of the block size (
+is used for both dimensions (e.g., a
+.Ar size
+of 1624 means 1624x1624 pixels). You can use any
+.Ar size
+you like provided that it is a multiple of the block size (
 .Fl b -block-size
-). The default image size is 1624, which is probably what you want.
+). The default
+.Ar size
+is 1624, which is almost certainly what you want. 1624 is the maximum image dimension permitted by iOS devices.
+.It Fl f -format Ar format
+Use the specified image
+.Ar format
+for encoded block-stream images. By default PNG images are generated, but JPEG images are also supported and may
+be preferable for animations that do not require transparency. The
+.Ar format
+is specified as a file extension. Use
+.Ar png
+to encode PNG images or
+.Ar jpeg
+to encode JPEG images.
 .It Fl v -verbose
 Display more information about the conversion process.
 .El                      \" Ends the list
@@ -115,6 +162,6 @@ Display more information about the conversion process.
 Get the source for
 .Nm
 at
-.Ar https://bitbucket.org/thisismess/flynn
+.Ar http://flynn.thisismess.com/
 .Pp
 Copyright 2013 Mess, All rights reserved.
