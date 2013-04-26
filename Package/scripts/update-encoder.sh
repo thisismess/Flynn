@@ -15,5 +15,6 @@ if [ ! -d "$PRODUCT_BASE" ]; then
 fi
 
 cp -r "$ARCHIVE_BASE/"* "$PRODUCT_BASE"
+chown -R root:wheel "$PRODUCT_BASE"
 
 

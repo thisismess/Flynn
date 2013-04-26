@@ -358,8 +358,8 @@ error:
  */
 void FLFlynnUsage(FILE *stream) {
   fputs(
-    "Flynn - A block differential animation encoder\n"
-    "Copyright 2013 Mess  -  http://thisismess.com/\n"
+    "Flynn - Fast animation for the Web\n"
+    "Copyright 2013 Mess - http://flynn.thisismess.com/\n"
     "\n"
     "Usage: flynn [options] <directory>\n"
     "Usage: flynn [options] <file1> <file2> [... <fileN>]\n"
