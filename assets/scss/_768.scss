@@ -1,0 +1,56 @@
+// =====================
+// HEADER
+
+	.logo {
+		margin: 60px 0;
+	}
+
+	.canvas .logo {
+		&:before {
+			top: 30px;
+			@include transition(opacity 250ms ease); }
+
+		&:hover {
+			&:before { opacity: .5; }
+		}
+	}
+
+	.canvas .header { height: 380px; }
+	.canvas .logo canvas { top: 10px }
+
+	.vid-container {
+	display: block;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		top: 0;
+		width: 100%;
+		overflow: hidden;
+		z-index: 2; }
+
+	.vid-bg {
+		position: absolute;
+		top: 0px; right: 0px;
+		min-width: 100%; max-width: 100%;
+		min-height: 100%; max-height: 126%;
+		width: auto;
+		height: auto;
+		overflow: hidden; }
+
+
+
+
+// =====================
+// SECTIONS
+
+	.section {
+		padding: 2.1875em 6.25em;
+
+		h1,h2 {
+			margin-bottom: 2em;
+			@include hr-after; }
+
+		.buttons {
+			margin-top: 2em;
+			@include hr-before; }
+	}

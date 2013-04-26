@@ -1,0 +1,27 @@
+
+.container { width: 92%; }
+
+// =====================
+// HEADER
+
+	.logo {
+		margin: 20px 0;
+		font-size: 1.1875em;
+	}
+
+	.canvas {
+		.header { height: 300px; }
+		.logo:before { margin-left: -40px; top: 0; }
+		.logo canvas {
+			display: block;
+			margin-left: -200px;
+			top: -20px; }
+	}
+
+
+// =====================
+// SECTIONS
+
+	.section { padding: 1.25em 1.75em; }
+
+

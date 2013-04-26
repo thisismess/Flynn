@@ -1,0 +1,223 @@
+* { @include box-sizing(border-box) }
+
+body {
+	background: #8f8f8f;
+	font-family: $tg;
+	color: #636466; }
+
+h1,h2 { font-family: $tgc; }
+
+a { text-decoration: none; color: #00aeef; }
+
+em { font-style: italic; }
+
+p {
+	font-size: .875em;
+	line-height: 1.75em;
+	margin-bottom: 1em; }
+
+table { @extend p; border-top: 1px solid #ccc; }
+td {
+	padding: 10px 15px;
+	border: 1px solid #ccc;
+	border-top: none;
+	line-height: 1em;
+	background: rgba(255,255,255,.3); }
+tr:nth-child(even) { background: rgba(255,255,255,.5); }
+
+.gzip { color: #00AEEF; }
+
+ol { margin-left: 2em; font-size: .875em; }
+ol li { list-style-type: decimal; margin-bottom: 1em; }
+ol p { font-size: 1em; margin-bottom: .25em; }
+
+.tab { display: inline-block; width: 2em; }
+
+.container {
+	width: 100%;
+	margin: 0 auto;
+	background: #fff;
+	box-shadow: 0 5px 15px 1px #666; }
+
+code, .code {
+	font-family: $monospace;
+	line-height: 1.5em;
+	width: 100%;
+	font-size: .875em;
+	padding: .75em 1em;
+	margin-bottom: 1em;
+	background: $code-uri;
+	border-radius: 4px;
+	display: block;
+	box-shadow: inset 0 1px 4px rgba(0,0,0,.1),
+				0 1px 1px #fff; }
+
+.code { display: inline; padding: .25em .375em; }
+
+// =====================
+// HEADER
+
+	.header {
+		background: url(../img/header-bg.jpg) center center no-repeat;
+		background-size: cover;
+		position: relative;
+		padding-bottom: 30px;
+		overflow: hidden; }
+
+	.header:before {
+		content: " ";
+		position: absolute;
+		left: 0; top: 0;
+		background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQIW2NgYGB4z4AAFUhsFAG4IsICMIBiLgBmEQcEyASpFQAAAABJRU5ErkJggg==);
+		width: 100%; height: 100%;
+		z-index: 3;
+		opacity: .25;
+		box-shadow: inset 0 0 50px 15px #000; }
+
+	.made-by {
+		position: relative;
+		left: 3%;
+		z-index: 3;
+
+		a {
+			display: block;
+			width: 80px; height: 41px;
+			background: url(../img/mess.png) center bottom no-repeat;
+			@include hd ("../img/mess-2x.png", 80px, 64px);
+			@include hide-text; }
+	}
+
+	.logo {
+		width: 100%;
+		text-transform: uppercase;
+		text-align: center;
+		position: relative;
+		z-index: 3;
+		font-size: 1.125em;
+
+		a {
+			font-family: $tgc;
+			width: 100%;
+			max-width: 343px;
+			display: block;
+			margin: 0 auto;
+			color: #fff; }
+
+		img {
+			max-width: 100%;
+			display: block;
+			margin: 0 auto -2.5em; }
+
+		canvas { display: none; }
+	}
+
+	.vid-container { display: none; }
+
+	.canvas {
+		.header { height: 260px; }
+
+		.logo {
+			width: 400px;
+			height: 200px;
+			margin: 0 auto;
+			position: relative;
+
+			&:before {
+				content: "Drag me";
+				display: block;
+				padding: 0;
+				width: 80px;
+				text-align: center;
+				font-size: 12px;
+				color: #fff;
+				position: absolute;
+				left: 50%; margin-left: -80px;
+				top: -10px;
+				border-radius: 10px;
+				background: rgba(255,255,255,.5);
+				opacity: .35;
+				@include transition(opacity 250ms ease); }
+
+			&:hover {
+				&:before { opacity: .5; }
+			}
+
+			a {
+				position: absolute;
+				left:0; top: 0;
+				max-width: 100%; height: 100%;
+				@include transition (opacity 500ms ease); }
+			a:hover { opacity: .9 }
+
+			img,span { display: none; }
+
+			#flynn1 canvas { opacity: .8; }
+
+			#flynn2 {
+				display: block;
+				position: absolute;
+				left: 0; top: 0;
+				width: 100%; height: 100%;
+				@include transition (opacity 500ms ease); }
+
+			canvas {
+				display: block;
+				position: absolute;
+				left: 50%; margin-left: -238px;
+				top: -30px; }
+		}
+	}
+
+
+
+// =====================
+// SECTIONS
+
+	.section {
+		width: 100%;
+		padding: 1em;
+		background: #e5e5e5;
+		border-bottom: 1px solid #c7c8ca;
+		@extend %clear;
+
+		h1,h2 {
+			font-weight: bold;
+			position: relative;
+			text-transform: uppercase;
+			font-size: 1.5em;
+			margin-bottom: .25em; }
+
+		.buttons {
+			position: relative;
+			font-size: 1em;
+			@extend %clear; }
+
+		.buttons a { float: left; clear: left; }
+
+		.btn {
+			display: block;
+			text-transform: uppercase;
+			padding: .25em .75em;
+			border: 3px solid #00aeef;
+			float: left;
+			margin: 0 1em .25em 0; }
+	}
+
+
+
+// =====================
+// FOOTER
+
+	.footer {
+		width: 92%;
+		margin: 1.5em auto;
+		font-size: .75em;
+		text-transform: uppercase;
+		@extend %clear;
+
+		a { color: #ddd; @include transition(color 250ms ease); }
+		a:hover { color: #fff; }
+
+		.left { float: left; }
+		.right { float: right; }
+	}

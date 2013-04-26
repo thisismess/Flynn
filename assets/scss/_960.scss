@@ -1,0 +1,36 @@
+a { @include transition(opacity 250ms ease) }
+a:hover { opacity: .5; }
+
+.container { width: 940px; }
+
+// =====================
+// HEADER
+
+	.header { height: 421px; padding: 0; }
+
+	.logo { margin: 70px 0; }
+
+	.canvas {
+		.header { height: 400px; }
+		.logo canvas { top: 20px; }
+	}
+
+
+
+// =====================
+// SECTIONS
+
+	.section {
+		padding: 2.1875em 9.375em;
+
+		.buttons a { clear: none;}
+	}
+
+
+
+
+
+// =====================
+// FOOTER
+
+	.footer { width: 940px; }

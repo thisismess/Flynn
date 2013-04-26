@@ -1,29 +1,161 @@
-<html>
-	<head>
-	  
-		<title>Flynn Logo Animation</title>
-		
-		<!-- Flynn needs jQuery -->
-		<script src="depend/jquery-1.9.1.min.js" type="text/javascript" charset="utf-8"></script>
-		<!-- The Flynn player library itself -->
-		<script src="flynn.js" type="text/javascript" charset="utf-8"></script>
-		<!-- Initialize our animation -->
-		<script type="text/javascript">
-			$(document).ready(function(){ $('.flynn-logo').flynn(); });
-		</script>
-		
-		<style type="text/css">
-			body { background: #000; }
-			.flynn-logo { width:400px; height:250px; background:#101010; margin:0 auto; border:1px solid#ccc; }
-		</style>
-		
-	</head>
-	<body>
-	  
-	  <!--
-	    Flynn can be mostly configured just by setting parameters on the animation's container div.
-	  -->
-		<div class="flynn-logo" autoplay="true" delay="200" fps="30" scale="1" name="flynn_logo" base="flynn_logo"></div>
-		
-	</body>
+<!DOCTYPE html>
+ <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+ <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+ <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+ <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title></title>
+	<meta name="description" content="">
+
+	<link rel="stylesheet" href="assets/css/style.css">
+	<script src="assets/js/lib/modernizr.js"></script>
+
+	<!--[if lt IE 9]>
+		<link rel="stylesheet" href="assets/css/ie.css">
+	<![endif]-->
+</head>
+<body>
+
+	<!-- container -->
+	<div class="container">
+
+		<!-- header -->
+		<header role="banner" class="header">
+			<h1>
+				<p class="made-by"><a href="http://www.thisismess.com">Made By Mess</a></p>
+				<p class="logo" data-after="video.html" data-media="(min-width: 48em)">
+					<a id="flynn1" href="/" autoplay="true" delay="0" fps="30" scale="1" name="flynn_logo" base="assets/js/flynn/flynn_logo">
+						<img src="assets/img/logo.png" alt="Flynn Logo"><br>
+						<span>Transparent Web Animations Simplified</span>
+						<span id="flynn2" autoplay="true" delay="5000" fps="30" scale="1" name="highlight" base="assets/js/flynn/highlight" loop></span>
+					</a>
+				</p>
+			</h1>
+		</header>
+
+		<article>
+			<div class="section">
+				<h2>What's This?</h2>
+				<p>Flynn is an animation format designed for the Web. Flynn animations can be played in any modern Web browser, including mobile browsers like Mobile Safari and Android for Chrome. All Flynn needs is support for the <span class="code">&lt;canvas&gt;</span> element and Javascript.</p>
+				<p class="buttons">
+					<a href="http://thisismess.github.io/Flynn/downloads/Flynn-Encoder.zip" class="btn">Download Encoder</a>
+					<a href="http://thisismess.github.io/Flynn/downloads/Flynn-Player.zip" class="btn">Download Player</a>
+					<a href="https://github.com/thisismess/Flynn" class="btn">Get the Source</a>
+				</p>
+			</div>
+
+			<div class="section">
+				<h2>Why Flynn?</h2>
+				<p>There are a lot of options out there for animation on the Web: animated GIFs, sprite sheet animation, and video, among others. Flynn doesn't try to be all things to all situations, but for a lot of situations Flynn may be just what you've been looking for.</p>
+				<p>Flynn supports full alpha channel transparency in PNG-based animations, is generally much more compact than sprite-sheet animations, can be controlled via Javascript, and works in any modern browser. For short animations like interface elements, moving screenshots, and overlaid content, you should probably give Flynn a try.</p>
+			</div>
+
+			<div class="section">
+				<h2>Flynn vs. Brand X</h2>
+				<p>Let's take a look at a real-world example: that little animated Flynn logo at the top of this page. That's the example animation included in the Flynn player distribution (which you can get by clicking "Download Player" above).</p>
+				<table>
+					<tr>
+						<td>Frame Images:</td>
+						<td>5.1MB</td>
+					</tr>
+					<tr>
+						<td>Sprite Sheet:</td>
+						<td>1.8MB</td>
+					</tr>
+					<tr>
+						<td>Flynn</td>
+						<td>1.3MB</td>
+					</tr>
+					<tr class="gzip">
+						<td>Flynn (gzip)</td>
+						<td>1.1MB</td>
+					</tr>
+				</table>
+				<p>After gzip, Flynn is 21% of frames and 62% of the sprite sheet.</p>
+			</div>
+
+			<div class="section">
+				<h2>Download the Flynn Player</h2>
+				<p>The Flynn player is a Javascript library that plays animations encoded in the Flynn format. You can get the Flynn player by clicking "Download Player" above. After you unpack the archive, take a look in the example directory. This is the <span class="code">example</span> animation we're going to be using.</p>
+			</div class="section">
+
+			<div class="section">
+				<h2>Install the Flynn Encoder Tool</h2>
+				<p>To encode our animation in the Flynn format we're going to use the Flynn encoder command line tool. You can get the Flynn encoder by clicking "Download Encoder" above and running the installer.</p>
+				<p>If you have Xcode installed and you'd rather build from source, just clone the Flynn repository and build the Flynn Xcode project. (We'll leave this exercise to the experienced.)</p>
+			</div class="section">
+
+			<div class="section">
+				<h2>Encode the animation</h2>
+				<p>Flynn creates animations from a sequence of individual frame images. You can export frame images pretty easily from most video editing and animation software. Take a look in <span class="code">example/flynn_logo_frames</span> to see the frame image sequence we'll be encoding.</p>
+				<p>After you've installed the Flynn encoder tool one way or another, you can generate a Flynn animation from the frame image sequence in the example like so:</p>
+				<code>
+					$ cd example<br>
+					$ flynn -n flynn_logo -o flynn_logo -b 2 -v flynn_logo_frames<br>
+					# ... Flynn does some stuff<br>
+				</code>
+				<p>And Bob's your uncle! You've now got an encoded Flynn animation in the directory <span class="code">flynn_logo</span>.</p>
+			</div class="section">
+
+			<div class="section">
+				<h2>Setting up an animation</h2>
+				<p>As you can see from the source of the example HTML file, you don't need to do much to get a Flynn animation going. Basically you'll just do the following:</p>
+				<ol>
+					<li>
+						<p>Import the Flynn player script and import jQuery (if you haven't already)</p>
+						<code>
+							&lt;script src="path/to/jquery.js"&gt;&lt;/script&gt;<br>
+							&lt;script src="path/to/flynn.js"&gt;&lt;/script&gt;
+						</code>
+					</li>
+					<li>
+						<p>Add a container that the animation will be created in.</p>
+						<code>
+							&lt;div id="flynn" autoplay="true" delay="0" fps="30" scale="1" name="flynn" base="path/to/flynn" loop&gt;&lt;/div&gt;
+						</code>
+					</li>
+					<li>
+						<p>Add a bit of script to initialize Flynn when the page loads, and</p>
+						<code>
+							$(document).ready(function(){<br>
+							<span class="tab"></span>$('#flynn').flynn();<br>
+							});
+						</code>
+					</li>
+				</ol>
+			</div class="section">
+
+			<div class="section">
+				<h2>Play the Animation!</h2>
+				<p>Flynn can play animations in pretty much any modern Web browser, including mobile browsers like Mobile Safari and Chrome for Android. The Flynn player only needs a few basic things: the <span class="code">&lt;canvas&gt;</span> element, some images, and Javascript.</p>
+				<p>The example project contains a barebones HTML file that is already setup to play the animation you just encoded at <span class="code">Player/example/flynn_logo.html</span>. Open it up in your browser to see it in action.</p>
+				<p><em>(Note that Chrome won't let you load images via Javascript in an HTML file loaded from disk for "security" reasons. So you'll need to either use another browser list Safari or load it from a locally-running webserver.)</em></p>
+			</div class="section">
+		</article>
+
+	</div>
+
+	<!-- footer -->
+	<footer class="footer">
+		<a href="http://www.thisismess.com" class="left">&copy; 2013 Mess</a>
+	</footer>
+
+	<!-- javascript -->
+	<script src="assets/js/site.min.js"></script>
+
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-8213419-3', 'thisismess.com');
+		ga('send', 'pageview');
+	</script>
+
+</body>
 </html>
