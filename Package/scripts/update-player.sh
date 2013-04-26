@@ -10,7 +10,7 @@ SHIP_BASE=$(cd "$ME_HOME/.." && pwd)
 PROJECT_BASE=$(cd "$SHIP_BASE/.." && pwd)
 PRODUCT_BASE="$SHIP_BASE/products/player"
 ARCHIVE_BASE="$PROJECT_BASE/Player"
-VERSION_BASE="$SHIP_BASE/versions"
+VERSION_BASE="$SHIP_BASE/releases"
 
 if [ ! -z "$1" ]; then
   VERSION="-$1"; shift
