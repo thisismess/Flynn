@@ -214,6 +214,17 @@ code, .code {
 		letter-spacing: 1px;
 		font-weight: bold;
 		font-family: "TG BC","Helvetica Neue",Helvetica,Arial,sans-serif;
+		position: relative;
+
+		&:before {
+			content: " ";
+			position: absolute;
+			left: 0; top: 0;
+			background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQIW2NgYGB4z4AAFUhsFAG4IsICMIBiLgBmEQcEyASpFQAAAABJRU5ErkJggg==);
+			width: 100%; height: 100%;
+			z-index: 3;
+			opacity: .25;
+			box-shadow: inset 0 0 50px 15px #000; }
 	}
 
 
