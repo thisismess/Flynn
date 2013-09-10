@@ -47,7 +47,6 @@
   };
   
   $.fn.flynn = function(options){ 
-    
     return this.each(function(){
       var ref = this;
       var temp;
@@ -242,7 +241,16 @@
         var hasframes;
         if((hasframes = (++ref.current_frame < ref.frames.length)) || ref.options.loop){
           ref.timeout = window.setTimeout(ref.next_frame, ref.delay);
-          if(!hasframes) ref.loop();
+        }
+        
+        // if we're out of frames, either loop or stop
+        if(!hasframes){
+          if(ref.options.loop){
+            $(ref).trigger("animationWillLoop");
+            ref.loop();
+          }else{
+            $(ref).trigger("animationDidFinish");
+          }
         }
         
       };

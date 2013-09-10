@@ -8,7 +8,15 @@
 		<script src="../flynn.js" type="text/javascript" charset="utf-8"></script>
 		<!-- Initialize our animation -->
 		<script type="text/javascript">
-			$(document).ready(function(){ $('.flynn-logo').flynn(); });
+			$(document).ready(function(){
+			  $('.flynn-logo').flynn();
+			  $('.flynn-logo').on("animationDidFinish", function() {
+			    console.log("Animation is complete!");
+			  });
+			  $('.flynn-logo').on("animationWillLoop", function() {
+			    console.log("Animation will loop!");
+			  });
+			});
 		</script>
     
     <!-- 
