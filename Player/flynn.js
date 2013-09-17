@@ -183,7 +183,13 @@
             var frame = parseInt(sour.split('/').slice(-1)[0].split('.').slice(0)[0].split('_').slice(-1)[0], 10) - 1;
             ref.images[frame] = this;
             ref.images_loaded++;
-            if(ref.images_loaded >= ref.manifest.imagesRequired && (ref.playing === true || ref.options.autoplay === true)) ref.start();
+            if(ref.images_loaded >= ref.manifest.imagesRequired){
+              if(ref.playing === true || ref.options.autoplay === true){
+                ref.start();
+              }else{
+                ref.update_keyframe(false);
+              }
+            }
           });
         }
       };
@@ -192,6 +198,8 @@
         if(!ref.isSupported()) return;
         ref.playing = true;
         if(!ref.loading) ref.load_manifest();
+        ref.update_keyframe(true);
+        /*
         var src = ref.image_directory +'/'+ ref.animation_name +'_keyframe.'+ ref.manifest.format;
         $(new Image()).attr('src', src).load(function(){
           var context = ref.actual_canvas.getContext("2d");
@@ -202,12 +210,26 @@
           ref.source = ref.images[ref.current_source];
           ref.play(ref.options.delay);
         });
+        */
       };
       
       ref.play = function(initial_delay) {
         if(!ref.isSupported()) return;
         ref.delay = 1.0 / ref.options.fps * 1000.0;
         ref.timeout = window.setTimeout(ref.next_frame, ref.delay + ((initial_delay != null) ? Number(initial_delay) : 0));
+      };
+      
+      ref.update_keyframe = function(thenplay) {
+        var src = ref.image_directory +'/'+ ref.animation_name +'_keyframe.'+ ref.manifest.format;
+        $(new Image()).attr('src', src).load(function(){
+          var context = ref.actual_canvas.getContext("2d");
+          context.drawImage(this, 0, 0, this.width, this.height);
+          ref.keyframe_width = this.width;
+          ref.keyframe_height = this.height;
+          ref.keyframe_image = this;
+          ref.source = ref.images[ref.current_source];
+          if(thenplay) ref.play(ref.options.delay);
+        });
       };
       
       ref.update_frame = function(sequence) {
