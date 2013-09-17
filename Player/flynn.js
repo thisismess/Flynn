@@ -61,6 +61,7 @@
       if((temp = $(ref).attr('loop')) != null) ref.options.loop = true;
       if((temp = $(ref).attr('autoplay')) != null) ref.options.autoplay = true;
       if((temp = $(ref).attr('delay')) != null) ref.options.delay = Number(temp);
+      if((temp = $(ref).attr('poster')) != null) ref.options.poster = temp;
       
       // initialize all counters to 0
       ref.current_frame = 0;
@@ -72,6 +73,7 @@
       ref.canvas = null;
       ref.actual_canvas = null;
       ref.actual_debug = null;
+      ref.poster = null;
       
       ref.frames = [];
       ref.images = [];
@@ -98,6 +100,14 @@
       ref.scale = (ref.scale != null) ? Math.floor(Number(ref.scale)) : 1;
       
       /**
+       * Determine if Flynn is supported
+       */
+      ref.isSupported = function() {
+        var elem = document.createElement('canvas');
+        return !!(elem.getContext && elem.getContext('2d'));
+      }
+      
+      /**
        * Obtain the name of a frame with the specified index
        */
       ref.streamImageNameForIndex = function(prefix, index, type) {
@@ -115,6 +125,15 @@
         ref.canvas = $('<canvas></canvas>').appendTo(ref).attr({'width':parseInt($(ref).width(), 10), 'height':parseInt($(ref).height(), 10)});
         ref.actual_canvas = ref.canvas[0];
         if(ref.scale != null && ref.scale != 1) ref.actual_canvas.getContext("2d").scale(ref.scale, ref.scale);
+      };
+      
+      /**
+       * Initialize the poster image.
+       */
+      ref.setup_poster = function() {
+        if(ref.options.poster != null){
+          ref.poster = $('<img></img>').appendTo(ref).attr({'src':ref.options.poster});
+        }
       };
       
       /**
@@ -255,8 +274,18 @@
         
       };
       
-      if(ref.options.autoplay) ref.setup_canvas();
-      if(ref.options.autoplay) ref.load_manifest();
+      if(ref.isSupported()){
+        ref.setup_canvas();
+        ref.load_manifest();
+      }else{
+        ref.setup_poster();
+      }
+      
+      /*
+      if(!ref.options.autoplay || !ref.isSupported()){
+        ref.setup_poster();
+      }
+      */
       
     });
   };
