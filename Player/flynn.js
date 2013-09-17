@@ -74,6 +74,8 @@
       ref.actual_canvas = null;
       ref.actual_debug = null;
       ref.poster = null;
+      ref.playing = false;
+      ref.loading = false;
       
       ref.frames = [];
       ref.images = [];
@@ -118,6 +120,14 @@
       }
       
       /**
+       * Initialize
+       */
+      ref.init = function() {
+        ref.setup_canvas();
+        ref.load_manifest();
+      };
+      
+      /**
        * Initialize the canvas into which we'll draw our animation frames. If scaling is required
        * we set it up in the graphics context here.
        */
@@ -147,6 +157,7 @@
       };
       
       ref.load_manifest = function() {
+        ref.loading = true;
         $.getJSON(ref.manifest_file, function(data){
           ref.manifest = data;
           ref.parse_header();
@@ -172,12 +183,15 @@
             var frame = parseInt(sour.split('/').slice(-1)[0].split('.').slice(0)[0].split('_').slice(-1)[0], 10) - 1;
             ref.images[frame] = this;
             ref.images_loaded++;
-            if(ref.images_loaded >= ref.manifest.imagesRequired && ref.options.autoplay === true) ref.start();
+            if(ref.images_loaded >= ref.manifest.imagesRequired && (ref.playing === true || ref.options.autoplay === true)) ref.start();
           });
         }
       };
       
       ref.start = function() {
+        if(!ref.isSupported()) return;
+        ref.playing = true;
+        if(!ref.loading) ref.load_manifest();
         var src = ref.image_directory +'/'+ ref.animation_name +'_keyframe.'+ ref.manifest.format;
         $(new Image()).attr('src', src).load(function(){
           var context = ref.actual_canvas.getContext("2d");
@@ -191,6 +205,7 @@
       };
       
       ref.play = function(initial_delay) {
+        if(!ref.isSupported()) return;
         ref.delay = 1.0 / ref.options.fps * 1000.0;
         ref.timeout = window.setTimeout(ref.next_frame, ref.delay + ((initial_delay != null) ? Number(initial_delay) : 0));
       };
@@ -275,17 +290,10 @@
       };
       
       if(ref.isSupported()){
-        ref.setup_canvas();
-        ref.load_manifest();
+        ref.init();
       }else{
         ref.setup_poster();
       }
-      
-      /*
-      if(!ref.options.autoplay || !ref.isSupported()){
-        ref.setup_poster();
-      }
-      */
       
     });
   };
